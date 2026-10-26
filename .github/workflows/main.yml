@@ -1,0 +1,42 @@
+name: Auto Update Fantasy Dashboard
+
+on:
+  schedule:
+    # 比賽高峰期（香港時間早上 7:00 - 下午 1:00，即 UTC 23:00 - 05:00），每 15 分鐘跑一次
+    - cron: '*/15 23-5 * * *'
+    # 傍晚賽事統計期（香港時間下午 5:50 - 6:10，即 UTC 9:50 - 10:10），每 5 分鐘跑一次
+    - cron: '*/5 9-10 * * *'
+    # 其餘離峰時段，每小時跑一次
+    - cron: '0 * * * *'
+  workflow_dispatch: # 允許你隨時手動按一下按鈕強制重新整理！
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy requests espn_api
+
+      - name: Run Python script to generate data.json
+        env:
+          SWID: ${{ secrets.SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+        run: |
+          python3 build_app_cloud.py
+
+      - name: Commit and push changes if data updated
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add data.json
+          git commit -m "Auto-update fantasy data.json [skip ci]" || exit 0
+          git push
