@@ -16,16 +16,6 @@
         .badge-loss { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
         .badge-tie { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); font-weight: 800; }
         
-        .z-elite { background: rgba(16, 185, 129, 0.45); color: #34d399; font-weight: 800; border-radius: 4px; padding: 1px 4px; } 
-        .z-good { background: rgba(52, 211, 153, 0.22); color: #6ee7b7; font-weight: 700; border-radius: 4px; padding: 1px 4px; } 
-        .z-avg { color: #9ca3af; font-weight: 400; padding: 1px 4px; } 
-        .z-bad { background: rgba(248, 113, 113, 0.22); color: #fca5a5; font-weight: 700; border-radius: 4px; padding: 1px 4px; } 
-        .z-punt { background: rgba(239, 68, 68, 0.45); color: #f87171; font-weight: 800; border-radius: 4px; padding: 1px 4px; } 
-        .injury-out { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); font-size: 8px; font-weight: bold; padding: 1px 4px; border-radius: 3px; }
-        
-        .opp-badge-active { background: linear-gradient(135deg, #4c1d95, #312e81); color: #e9d5ff; border: 1px solid #7c3aed; font-weight: 800; font-size: 9px; border-radius: 4px; padding: 1.5px 4px; cursor: pointer; box-shadow: 0 0 6px rgba(124, 58, 237, 0.3); }
-        .opp-badge-off { background: rgba(31, 41, 55, 0.6); color: #6b7280; border: 1px dashed #4b5563; font-weight: 600; font-size: 9px; border-radius: 4px; padding: 1.5px 4px; cursor: pointer; text-decoration: line-through; opacity: 0.5; }
-        
         .tab-btn-active { background: linear-gradient(135deg, #06b6d4, #2563eb); color: #030712; font-weight: 900; border: 1px solid #38bdf8; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
         .tab-btn-inactive { background: rgba(17, 24, 39, 0.8); color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); }
         .tab-btn-inactive:hover { color: #f3f4f6; border-color: rgba(6, 182, 212, 0.4); }
@@ -39,7 +29,6 @@
     </style>
 </head>
 <body class="p-2 md:p-4 space-y-4 max-w-[1750px] mx-auto">
-    <datalist id="playerGlobalList"></datalist>
 
     <!-- STICKY TOP BANNER & TABS -->
     <header class="sticky top-0 z-50 cyber-glass p-3 md:p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-3">
@@ -68,6 +57,9 @@
         </div>
     </header>
 
+    <!-- STATUS NOTIFICATION BANNER -->
+    <div id="statusBanner" class="hidden p-3 rounded-xl border text-xs font-mono"></div>
+
     <!-- ================= TAB 1: MATCHUP COMMAND CENTER ================= -->
     <div id="tab1Content" class="space-y-4">
         <div class="sticky top-[73px] z-40 cyber-card p-2.5 rounded-xl flex flex-col md:flex-row items-stretch md:items-center gap-3 border border-cyan-500/30 shadow-xl overflow-hidden">
@@ -85,7 +77,6 @@
                     <div class="flex-1 space-y-1">
                         <span id="heroMyBadge" class="text-[8px] text-cyan-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800">YOUR SQUAD</span>
                         <h2 class="text-base md:text-lg font-black text-white glow-cyan truncate leading-tight" id="heroMyTeam">Home</h2>
-                        <span class="text-[10px] text-gray-400 font-bold block" id="heroMySub"></span>
                     </div>
                     <div class="text-center bg-gray-950/90 px-3 py-1.5 rounded-xl border border-cyan-500/40 flex-shrink-0 space-y-0.5 shadow-inner">
                         <span id="matchupPeriodText" class="text-[9px] font-black text-emerald-400 block"></span>
@@ -95,37 +86,6 @@
                     <div class="text-right flex-1 space-y-1">
                         <span id="heroOppBadge" class="text-[8px] text-rose-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-950 border border-rose-800">OPPONENT</span>
                         <h2 class="text-base md:text-lg font-black text-white leading-tight truncate" id="heroOppTeam">Away</h2>
-                        <span class="text-[10px] text-gray-400 font-bold block" id="heroOppSub"></span>
-                    </div>
-                </div>
-
-                <div class="bg-gray-950/60 p-3 rounded-xl border border-gray-800/80 space-y-2.5 my-auto">
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-[9px] font-black uppercase">
-                            <span class="text-cyan-400" id="heroHomeProbText">HOME WIN PROB: 50%</span>
-                            <span class="text-rose-400" id="heroAwayProbText">AWAY WIN PROB: 50%</span>
-                        </div>
-                        <div class="w-full bg-gray-900 h-2 rounded-full overflow-hidden flex border border-gray-800">
-                            <div id="heroHomeProbBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full transition-all duration-500" style="width: 50%"></div>
-                            <div id="heroAwayProbBar" class="bg-gradient-to-r from-purple-500 to-rose-500 h-full transition-all duration-500" style="width: 50%"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="text-[8px] text-gray-400 font-black uppercase block mb-1">CATEGORY ADVANTAGE</span>
-                        <div id="heroCatPills" class="grid grid-cols-3 gap-1 text-[9px] font-bold"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 pt-2 border-t border-gray-800/80">
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-[10px] font-bold"><span class="text-cyan-400">GP Played</span><span id="gpMyStats" class="text-gray-200">0 / 0</span></div>
-                        <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-800/80"><div id="gpMyBar" class="bg-cyan-400 h-full rounded-full" style="width: 0%"></div></div>
-                        <div class="flex justify-between text-[8px] text-gray-400"><span id="gpMyPct">0.0%</span><span id="gpMyRem">0 left</span></div>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-[10px] font-bold"><span class="text-rose-400">GP Played</span><span id="gpOppStats" class="text-gray-200">0 / 0</span></div>
-                        <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-800/80"><div id="gpOppBar" class="bg-rose-500 h-full rounded-full" style="width: 0%"></div></div>
-                        <div class="flex justify-between text-[8px] text-gray-400"><span id="gpOppPct">0.0%</span><span id="gpOppRem">0 left</span></div>
                     </div>
                 </div>
             </section>
@@ -139,10 +99,12 @@
                     <table class="w-full text-left text-[11px] font-mono">
                         <thead>
                             <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                <th class="py-1.5 px-1">CAT</th><th class="py-1.5 px-1 text-cyan-400" id="thMyCurr">MY CURR</th>
-                                <th class="py-1.5 px-1 text-rose-400" id="thOppCurr">OPP CURR</th><th class="py-1.5 px-1 text-center">W/L</th>
-                                <th class="py-1.5 px-1 text-cyan-300" id="thMyProj">MY PROJ</th><th class="py-1.5 px-1 text-rose-300" id="thOppProj">OPP PROJ</th>
-                                <th class="py-1.5 px-1">PROBABILITY</th>
+                                <th class="py-1.5 px-1">CAT</th>
+                                <th class="py-1.5 px-1 text-cyan-400" id="thMyCurr">HOME</th>
+                                <th class="py-1.5 px-1 text-rose-400" id="thOppCurr">AWAY</th>
+                                <th class="py-1.5 px-1 text-center">W/L</th>
+                                <th class="py-1.5 px-1 text-cyan-300">HOME PROJ</th>
+                                <th class="py-1.5 px-1 text-rose-300">AWAY PROJ</th>
                             </tr>
                         </thead>
                         <tbody id="scoreTableBody" class="divide-y divide-gray-800/60"></tbody>
@@ -152,160 +114,59 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div class="cyber-card p-4 rounded-2xl space-y-3 border border-cyan-500/30">
-                <h3 id="labHomeTitle" class="text-xs font-black text-cyan-400">⚡ HOME STREAMER LAB</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="homeWaiverContainer"></div>
-            </div>
-            <div class="cyber-card p-4 rounded-2xl space-y-3 border border-rose-500/30">
-                <h3 id="labAwayTitle" class="text-xs font-black text-rose-400">⚡ AWAY STREAMER LAB</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="awayWaiverContainer"></div>
-            </div>
-        </div>
-
-        <div class="cyber-card p-4 rounded-2xl space-y-3 border border-emerald-500/40 overflow-x-auto">
-            <h3 class="text-xs font-black text-emerald-400 border-b border-gray-800 pb-2">💎 FREE AGENTS VALUE RANKER (TOP 10)</h3>
-            <table class="w-full text-left text-[11px] font-mono leading-tight">
-                <thead>
-                    <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                        <th class="py-1.5 px-1.5">PLAYER</th><th class="py-1.5 px-1 text-center">SCORE</th>
-                        <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
-                        <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
-                        <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
-                    </tr>
-                </thead>
-                <tbody id="faRankerTbody" class="divide-y divide-gray-800/40"></tbody>
-            </table>
-        </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div class="cyber-card p-3.5 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-                <h3 class="text-xs font-black text-cyan-300 mb-2" id="schMyTitle">Home Schedule</h3>
+                <h3 class="text-xs font-black text-cyan-300 mb-2">Home Roster</h3>
                 <table class="w-full text-left text-[11px] font-mono leading-tight">
-                    <thead><tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]" id="schMyHeaderRow"></tr></thead>
                     <tbody id="myScheduleTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
             </div>
             <div class="cyber-card p-3.5 rounded-2xl border border-rose-500/30 overflow-x-auto">
-                <h3 class="text-xs font-black text-rose-300 mb-2" id="schOppTitle">Away Schedule</h3>
+                <h3 class="text-xs font-black text-rose-300 mb-2">Away Roster</h3>
                 <table class="w-full text-left text-[11px] font-mono leading-tight">
-                    <thead><tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]" id="schOppHeaderRow"></tr></thead>
                     <tbody id="oppScheduleTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- ================= TAB 2: LEAGUE ANALYTICS ================= -->
+    <!-- ================= TAB 2: ANALYTICS ================= -->
     <div id="tab2Content" class="space-y-6 hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="cyber-card p-4 rounded-2xl border border-amber-500/30 lg:col-span-2 overflow-x-auto">
-                <div class="flex justify-between border-b border-gray-800 pb-2 mb-2">
-                    <h3 class="text-xs font-black text-amber-300">14 Averages</h3>
-                    <select id="rosterScopeSelect" onchange="renderTable3AndSpider()" class="bg-gray-900 text-xs text-cyan-300 px-2 py-1 rounded border border-cyan-500/40">
-                        <option value="10" selected>Top 10</option><option value="all">All</option>
-                    </select>
-                </div>
-                <table class="w-full text-left text-[11px] font-mono"><tbody id="table3Tbody"></tbody></table>
-            </div>
-            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 flex flex-col">
-                <h3 class="text-xs font-black text-cyan-300 mb-2">🕸️ Radar Comparison</h3>
-                <div class="grid grid-cols-2 gap-2 mb-2">
-                    <select id="spiderTeam1" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-cyan-300 p-1 rounded"></select>
-                    <select id="spiderTeam2" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-rose-300 p-1 rounded"></select>
-                </div>
-                <div class="relative w-full h-[260px]"><canvas id="spiderCanvas"></canvas></div>
-            </div>
+        <div class="cyber-card p-4 rounded-2xl border border-amber-500/30 overflow-x-auto">
+            <h3 class="text-xs font-black text-amber-300 mb-2">League Team Averages</h3>
+            <table class="w-full text-left text-[11px] font-mono"><tbody id="table3Tbody"></tbody></table>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div class="cyber-card p-3.5 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-                <div class="mb-2"><span class="text-xs text-cyan-400 font-bold">SIDE A:</span> <select id="tradeTeam1Select" onchange="renderTable4()" class="bg-gray-900 text-xs text-cyan-300 px-2"></select></div>
-                <table class="w-full text-[11px] font-mono"><tbody id="tradeTeam1Tbody"></tbody></table>
+        <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 flex flex-col">
+            <h3 class="text-xs font-black text-cyan-300 mb-2">🕸️ Radar Comparison</h3>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <select id="spiderTeam1" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-cyan-300 p-1 rounded"></select>
+                <select id="spiderTeam2" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-rose-300 p-1 rounded"></select>
             </div>
-            <div class="cyber-card p-3.5 rounded-2xl border border-rose-500/30 overflow-x-auto">
-                <div class="mb-2"><span class="text-xs text-rose-400 font-bold">SIDE B:</span> <select id="tradeTeam2Select" onchange="renderTable4()" class="bg-gray-900 text-xs text-rose-300 px-2"></select></div>
-                <table class="w-full text-[11px] font-mono"><tbody id="tradeTeam2Tbody"></tbody></table>
-            </div>
+            <div class="relative w-full h-[260px]"><canvas id="spiderCanvas"></canvas></div>
         </div>
-        <button onclick="calculateTradeImpact()" class="w-full bg-indigo-900 text-indigo-200 py-2 rounded-lg font-bold border border-indigo-500/50">🔄 SIMULATE TRADE IMPACT</button>
-        <div id="tradeImpactResult" class="hidden cyber-card p-3 rounded-xl border border-indigo-500/40 text-xs"></div>
     </div>
 
     <!-- ================= TAB 3: CROSS MATCHUP ================= -->
     <div id="tab3Content" class="space-y-6 hidden">
-        <div class="cyber-card p-3 flex justify-between border border-emerald-500/30">
-            <span class="text-xs text-emerald-400 font-black">🏆 WEEKLY ANALYTICS</span>
-            <select id="tab3WeekDropdown" onchange="onTab3WeekChange()" class="bg-gray-900 text-emerald-300 text-xs px-2 rounded-lg border border-emerald-500/40"></select>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="cyber-card p-3 rounded-2xl border border-cyan-500/30 overflow-x-auto"><h2 class="text-sm font-black text-cyan-400 mb-2">⚡ CROSS MATCHUP</h2><table class="w-full text-left text-[11px] font-mono"><tbody id="leagueCrossLeaderboardTbody"></tbody></table></div>
-            <div class="cyber-card p-3 rounded-2xl border border-amber-500/30 overflow-x-auto"><h2 class="text-sm font-black text-amber-400 mb-2">🏆 TOTAL ROTO RANK</h2><table class="w-full text-left text-[11px] font-mono"><tbody id="totalRotoTbody"></tbody></table></div>
-            <div class="cyber-card p-3 rounded-2xl border border-purple-500/30 overflow-x-auto"><h2 class="text-sm font-black text-purple-400 mb-2">🎯 PER-GAME ROTO</h2><table class="w-full text-left text-[11px] font-mono"><tbody id="perGameRotoTbody"></tbody></table></div>
+        <div class="cyber-card p-3 rounded-2xl border border-cyan-500/30 overflow-x-auto">
+            <h2 class="text-sm font-black text-cyan-400 mb-2">⚡ LEAGUE STANDINGS</h2>
+            <table class="w-full text-left text-[11px] font-mono"><tbody id="leagueCrossLeaderboardTbody"></tbody></table>
         </div>
     </div>
 
-    <!-- ================= TAB 4: AI & SOCIAL HUB ================= -->
+    <!-- ================= TAB 4: AI HUB ================= -->
     <div id="tab4Content" class="space-y-6 hidden">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-cyan-400 pl-2 gap-2">
-            <div>
-                <h2 class="text-base font-black text-cyan-400">🤖 AI & SOCIAL INTELLIGENCE HUB</h2>
-                <p class="text-[9px] text-gray-400 font-bold">彙整過去 12 小時 (Locked On 為主) 專家與社群情報，搭配 Gemini 1.5 Flash 聯網陣容顧問</p>
+        <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30">
+            <h3 class="text-xs font-black text-emerald-400 mb-2">💬 AI Consultant (Gemini Proxy)</h3>
+            <div id="aiChatLog" class="p-4 h-[300px] overflow-y-auto space-y-3 text-[11px] font-mono bg-gray-950/40 rounded-lg">
+                <div class="p-2 bg-gray-900 rounded text-emerald-300">AI Advisor ready. Ask any question regarding waiver, trades, or roster optimization.</div>
             </div>
-            <div class="flex space-x-2">
-                <button onclick="fetchRealtimeIntel()" class="bg-cyan-900 hover:bg-cyan-800 text-cyan-100 border border-cyan-500/40 px-3 py-1.5 rounded-lg text-[10px] font-bold transition flex items-center shadow-lg shadow-cyan-900/50">
-                    <span class="mr-1">🔄</span> 更新 12H 實時情報
-                </button>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-            <div class="cyber-card rounded-2xl border border-cyan-500/30 flex flex-col lg:col-span-5 h-[500px]">
-                <div class="p-3 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 rounded-t-2xl">
-                    <h3 class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        12H CONSOLIDATED FEED
-                    </h3>
-                    <span id="update-timestamp" class="text-[9px] text-gray-500 font-mono">WAITING FOR SYNC...</span>
-                </div>
-                <div id="realtime-content" class="p-4 flex-1 overflow-y-auto text-xs text-gray-300 leading-relaxed space-y-4 custom-scroll font-mono">
-                    <div class="text-center text-gray-500 py-10">
-                        <div class="text-2xl mb-2 text-cyan-900">⚡</div>
-                        點擊右上方「更新 12H 實時情報」啟動 Gemini Search Grounding
-                    </div>
-                </div>
-                <div id="sources-container" class="p-3 border-t border-gray-800 bg-gray-950 rounded-b-2xl hidden">
-                    <span class="text-[9px] font-bold text-cyan-500 block mb-1">🔗 GROUNDING SOURCES:</span>
-                    <ul id="sources-list" class="list-disc list-inside text-[9px] text-gray-400 space-y-0.5"></ul>
-                </div>
-            </div>
-
-            <div class="cyber-card rounded-2xl border border-emerald-500/30 flex flex-col lg:col-span-7 h-[500px]">
-                <div class="p-3 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 rounded-t-2xl">
-                    <h3 class="text-xs font-black text-emerald-400">💬 專屬聯網戰術顧問 (Gemini via Vercel)</h3>
-                    <span class="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded font-bold">ROSTER-AWARE</span>
-                </div>
-
-                <div id="aiChatLog" class="p-4 flex-1 overflow-y-auto space-y-3 text-[11px] font-mono custom-scroll bg-gray-950/40">
-                    <div class="p-3 bg-gray-900/80 border-l-2 border-emerald-400 rounded-lg text-gray-200">
-                        <p class="font-bold text-emerald-300 mb-1">🤖 系統提報：</p>
-                        <p class="leading-relaxed">哈囉！我是您的專屬 Fantasy 顧問。我已在背景讀取您的 14 隊聯賽陣容與 Punt 策略。您可以問我 Waiver 撿人、交易評估，或直接請我分析今日情報！</p>
-                    </div>
-                </div>
-
-                <div class="px-4 py-2 border-t border-gray-800 flex gap-2 overflow-x-auto no-scrollbar">
-                    <button onclick="sendQuickPrompt('根據我目前的陣容與 Punting 策略，幫我推薦今天自由市場最該撿的 2 名 Waiver 球員。')" class="bg-gray-900 hover:bg-gray-800 text-cyan-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">⚡ 推薦 Waiver</button>
-                    <button onclick="sendQuickPrompt('幫我分析我的陣容弱項，並推薦可以透過交易（Trade）補強的目標。')" class="bg-gray-900 hover:bg-gray-800 text-indigo-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">🤝 交易評估</button>
-                    <button onclick="sendQuickPrompt('請根據今日最新的傷兵情報，告訴我有哪幾位球員的 Fantasy 價值大幅提升？')" class="bg-gray-900 hover:bg-gray-800 text-rose-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">🚨 傷兵得益者</button>
-                </div>
-
-                <div class="p-3 border-t border-gray-800 bg-gray-900/50 rounded-b-2xl flex gap-2">
-                    <input type="text" id="aiChatInput" placeholder="輸入戰術問題..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:border-emerald-500 font-mono" onkeypress="if(event.key === 'Enter') sendAiMessage()">
-                    <button onclick="sendAiMessage()" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-600 transition shadow-lg shadow-emerald-900/40">SEND</button>
-                </div>
+            <div class="mt-3 flex gap-2">
+                <input type="text" id="aiChatInput" placeholder="Enter tactical question..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700" onkeypress="if(event.key === 'Enter') sendAiMessage()">
+                <button onclick="sendAiMessage()" class="bg-emerald-900 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl">SEND</button>
             </div>
         </div>
     </div>
 
-    <!-- CORE JAVASCRIPT -->
     <script>
         let globalData = null;
         let currentSelectedWeek = "1";
@@ -318,192 +179,54 @@
 
         function cleanName(str) { return str ? str.replace(/team/gi, '').trim() : ''; }
 
-        function highlightPlayerNames(text) {
-            let clean = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return clean.replace(/\*\*(.*?)\*\*/g, '<span class="player-highlight">$1</span>');
-        }
-
-        function buildLeagueContext() {
-            if (!globalData) return "無聯賽資料。";
-            const myTeam = globalData.my_team_name || "Novel Fergus";
-            let context = `【使用者目前聯賽狀態】\n玩家隊伍：${myTeam}\n`;
-            let myTeamObj = globalData.teams ? globalData.teams.find(t => t.team_name.includes(myTeam)) : null;
-            if (myTeamObj && myTeamObj.roster) {
-                context += `當前陣容清單：${myTeamObj.roster.map(p => p.name).join(', ')}\n`;
+        function showStatus(msg, isError = false) {
+            const b = document.getElementById('statusBanner');
+            if(!b) return;
+            b.classList.remove('hidden', 'bg-emerald-950', 'border-emerald-500', 'text-emerald-300', 'bg-rose-950', 'border-rose-500', 'text-rose-300');
+            if (isError) {
+                b.classList.add('bg-rose-950', 'border-rose-500', 'text-rose-300');
+            } else {
+                b.classList.add('bg-emerald-950', 'border-emerald-500', 'text-emerald-300');
             }
-            let punts = Object.keys(puntCategories).filter(k => puntCategories[k]);
-            context += punts.length > 0 ? `玩家戰術策略 (Punting)：直接放棄 ${punts.join(', ')}\n` : `玩家戰術策略：平均發展\n`;
-            return context;
-        }
-
-        async function fetchRealtimeIntel() {
-            const container = document.getElementById('realtime-content');
-            const sourcesContainer = document.getElementById('sources-container');
-            const sourcesList = document.getElementById('sources-list');
-            const timestamp = document.getElementById('update-timestamp');
-            
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} HKT`;
-
-            container.innerHTML = `<div class="text-center text-cyan-500 py-10 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>正在透過 Vercel 代理與 Google Search 聯網擷取 ${dateStr} 過去 12 小時最新 NBA 情報...</div>`;
-            sourcesContainer.classList.add('hidden');
-
-            const userPrompt = `請搜尋今日（${dateStr}）過去 12 小時內網上最新 NBA Fantasy Basketball 討論（必須包含 YouTube 頻道 Locked On Fantasy Basketball (Josh Lloyd) 作為最主要來源，其次參考 Reddit r/fantasybball 與 Threads）。
-請總結：
-1. 【12H Waiver Wire 熱門推薦】：點名幾位值得撿拾的球員與原因。
-2. 【最新傷兵及陣容異動】：列出最新傷兵，及因此獲得上場時間得益的球員。
-3. 【專家戰術核心觀點】：Josh Lloyd 今天節目的最核心建議是什麼？
-請務必將所有提及的球員姓名用 **球員全名** 括起來。`;
-
-            try {
-                const response = await fetch(VERCEL_PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userPrompt }] }],
-                        tools: [{ google_search: {} }],
-                        systemInstruction: { parts: [{ text: `你是一位專業的 NBA Fantasy 分析師。今天是 ${dateStr}。` }] }
-                    })
-                });
-
-                const result = await response.json();
-                if (result.error) throw new Error(typeof result.error === 'string' ? result.error : (result.error.message || JSON.stringify(result.error)));
-                const candidate = result.candidates?.[0];
-
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    container.innerHTML = `<div class="whitespace-pre-line text-gray-200 text-[11px] leading-relaxed">${highlightPlayerNames(candidate.content.parts[0].text)}</div>`;
-                    timestamp.innerText = `SYNCED: ${timeStr}`;
-                    
-                    const groundingMetadata = candidate.groundingMetadata;
-                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                        const sources = groundingMetadata.groundingAttributions.map(attr => ({ uri: attr.web?.uri, title: attr.web?.title })).filter(s => s.uri && s.title);
-                        if (sources.length > 0) {
-                            sourcesList.innerHTML = sources.map(s => `<li><a href="${s.uri}" target="_blank" class="text-cyan-400 hover:underline">${s.title.replace(/</g, "&lt;")}</a></li>`).join('');
-                            sourcesContainer.classList.remove('hidden');
-                        }
-                    }
-                } else {
-                    container.innerHTML = `<div class="text-rose-400 p-4">無法取得資料，伺服器未回傳內文。</div>`;
-                }
-            } catch (err) {
-                container.innerHTML = `<div class="text-rose-400 p-4">連線錯誤: ${err.message}</div>`;
-            }
-        }
-
-        function sendQuickPrompt(txt) {
-            document.getElementById('aiChatInput').value = txt;
-            sendAiMessage();
-        }
-
-        async function sendAiMessage() {
-            const inputEl = document.getElementById('aiChatInput');
-            const txt = inputEl.value.trim();
-            if(!txt) return;
-
-            const chatLog = document.getElementById('aiChatLog');
-            chatLog.innerHTML += `<div class="p-2.5 bg-cyan-950/30 border-r-2 border-cyan-500 rounded-lg text-cyan-100 text-right"><p class="font-bold text-cyan-400 text-[10px] mb-1">YOU:</p><p>${txt}</p></div>`;
-            inputEl.value = '';
-            
-            const loadingId = 'loading-' + Date.now();
-            chatLog.innerHTML += `<div id="${loadingId}" class="p-2 text-gray-500 text-[10px] animate-pulse">Gemini 正在分析您的陣容並檢索網路資料...</div>`;
-            chatLog.scrollTop = chatLog.scrollHeight;
-
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
-            const contextStr = buildLeagueContext();
-
-            try {
-                const response = await fetch(VERCEL_PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${contextStr}\n玩家問題：${txt}\n(請基於上述玩家陣容與今日 ${dateStr} 的實時 NBA 情報給出具體建議。提到球員時請用 **球員姓名** 格式)` }] }],
-                        tools: [{ google_search: {} }]
-                    })
-                });
-
-                const result = await response.json();
-                document.getElementById(loadingId).remove();
-                
-                if (result.error) throw new Error(typeof result.error === 'string' ? result.error : (result.error.message || JSON.stringify(result.error)));
-                const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "無效的回應內容。";
-                
-                chatLog.innerHTML += `<div class="p-3 bg-gray-900/80 border-l-2 border-emerald-400 rounded-lg text-gray-200"><p class="font-bold text-emerald-300 text-[10px] mb-1">🤖 Gemini 顧問:</p><div class="leading-relaxed whitespace-pre-line">${highlightPlayerNames(replyText)}</div></div>`;
-                chatLog.scrollTop = chatLog.scrollHeight;
-            } catch (err) {
-                document.getElementById(loadingId).remove();
-                chatLog.innerHTML += `<div class="p-2 text-rose-400 text-[10px]">請求失敗: ${err.message}</div>`;
-            }
-        }
-
-        function switchTab(tabId) {
-            if (tabId === 'tab4' && !isTab4Unlocked) {
-                let pwd = prompt("🔒 系統鎖定：請輸入戰術情報中心密碼以解鎖");
-                if (pwd === "HorusAldus") {
-                    isTab4Unlocked = true;
-                    alert("✅ 密碼正確，解鎖成功！");
-                } else {
-                    if (pwd !== null) alert("❌ 密碼錯誤，拒絕存取。");
-                    return;
-                }
-            }
-
-            ['tab1', 'tab2', 'tab3', 'tab4'].forEach(t => {
-                document.getElementById(`btn${t.charAt(0).toUpperCase() + t.slice(1)}`).className = 'tab-btn-inactive px-3 py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all whitespace-nowrap';
-                document.getElementById(`${t}Content`).classList.add('hidden');
-            });
-            document.getElementById(`btn${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).className = 'tab-btn-active px-3 py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all whitespace-nowrap';
-            document.getElementById(`${tabId}Content`).classList.remove('hidden');
-
-            if (tabId === 'tab2') {
-                renderTable3AndSpider();
-                populateTradeDropdowns();
-            } else if (tabId === 'tab3') {
-                renderTab3Leaderboards();
-            }
+            b.innerHTML = msg;
         }
 
         async function initCloudDashboard() {
             try {
-                const response = await fetch('data.json');
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const response = await fetch('data.json?v=' + Date.now());
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                
                 globalData = await response.json();
+                showStatus(`✅ Data loaded successfully (${new Date().toLocaleTimeString()})`);
 
-                if(globalData && globalData.league_info) {
+                if (globalData?.league_info?.name) {
                     document.getElementById('leagueTitle').innerText = globalData.league_info.name;
                 }
-                
-                const dropdown = document.getElementById('weekDropdown');
-                const tab3Dropdown = document.getElementById('tab3WeekDropdown');
-                if(dropdown) {
-                    dropdown.innerHTML = '';
-                    if(tab3Dropdown) tab3Dropdown.innerHTML = '';
-                    for (let w = 1; w <= 23; w++) {
-                        const opt = document.createElement('option');
-                        opt.value = w.toString();
-                        const wConf = globalData.weeks_config ? (globalData.weeks_config[w] || globalData.weeks_config[w.toString()]) : null;
-                        opt.innerText = `Week ${w} ${wConf ? '('+wConf.period_str+')' : ''}`;
-                        dropdown.appendChild(opt);
 
-                        if(tab3Dropdown) {
-                            const opt3 = opt.cloneNode(true);
-                            tab3Dropdown.appendChild(opt3);
-                        }
-                    }
+                const weeksObj = globalData?.matchups_by_week || globalData?.weeks_config || {};
+                const availableWeeks = Object.keys(weeksObj);
+
+                if (availableWeeks.length > 0) {
+                    currentSelectedWeek = availableWeeks[0];
+                    const dropdown = document.getElementById('weekDropdown');
+                    dropdown.innerHTML = '';
+                    availableWeeks.forEach(w => {
+                        const opt = document.createElement('option');
+                        opt.value = w;
+                        opt.innerText = `Week ${w}`;
+                        dropdown.appendChild(opt);
+                    });
                     dropdown.value = currentSelectedWeek;
-                    if(tab3Dropdown) tab3Dropdown.value = currentSelectedWeek;
                 }
 
                 initPuntControls();
                 buildMatchupButtons();
                 renderDashboard(0);
-                renderWaiverAndFARanker();
-                populateTradeDropdowns();
-            } catch (err) { 
-                console.error("Data missing or loading error", err);
-                const heroTitle = document.getElementById('heroMyTeam');
-                if (heroTitle) heroTitle.innerHTML = `<span class="text-rose-400 text-xs">⚠️ 讀取 data.json 失敗 (${err.message})</span>`;
+                renderTable3AndSpider();
+                renderTab3Leaderboards();
+            } catch (err) {
+                console.error("Dashboard Init Error:", err);
+                showStatus(`⚠️ Failed to load data.json: ${err.message}`, true);
             }
         }
 
@@ -524,9 +247,7 @@
             if(!container || !globalData) return;
             container.innerHTML = '';
             
-            const matchups = globalData.matchups_by_week ? 
-                (globalData.matchups_by_week[currentSelectedWeek] || globalData.matchups_by_week[parseInt(currentSelectedWeek)] || []) : [];
-
+            const matchups = globalData?.matchups_by_week?.[currentSelectedWeek] || [];
             matchups.forEach((m, idx) => {
                 const btn = document.createElement('button');
                 btn.className = idx === selectedMatchupIndex ? 
@@ -547,31 +268,29 @@
         function renderDashboard(idx) {
             selectedMatchupIndex = idx;
             buildMatchupButtons();
-            if(!globalData || !globalData.matchups_by_week) return;
-
-            const matchups = globalData.matchups_by_week[currentSelectedWeek] || 
-                             globalData.matchups_by_week[parseInt(currentSelectedWeek)] || [];
-
+            
+            const matchups = globalData?.matchups_by_week?.[currentSelectedWeek] || [];
             if(matchups.length === 0) return;
             const m = matchups[idx] || matchups[0];
 
-            document.getElementById('heroMyTeam').innerText = cleanName(m.home_team);
-            document.getElementById('heroOppTeam').innerText = cleanName(m.away_team);
+            document.getElementById('heroMyTeam').innerText = cleanName(m.home_team || 'Home');
+            document.getElementById('heroOppTeam').innerText = cleanName(m.away_team || 'Away');
 
-            const wConf = globalData.weeks_config ? (globalData.weeks_config[currentSelectedWeek] || globalData.weeks_config[parseInt(currentSelectedWeek)]) : null;
-            document.getElementById('matchupPeriodText').innerText = wConf ? (wConf.period_str || '') : '';
-            
+            // 從 actual_stats_by_team 抓取兩隊在當週的真正數據
+            const homeStats = globalData?.actual_stats_by_team?.[currentSelectedWeek]?.[m.home_team] || {};
+            const awayStats = globalData?.actual_stats_by_team?.[currentSelectedWeek]?.[m.away_team] || {};
+
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             const scoreTbody = document.getElementById('scoreTableBody');
-            if (!scoreTbody) return;
+            if(!scoreTbody) return;
 
             scoreTbody.innerHTML = '';
             let homeWins = 0, awayWins = 0, ties = 0;
 
             cats.forEach(cat => {
                 let isPunted = puntCategories[cat];
-                let hVal = m.home_stats ? (m.home_stats[cat] ?? 0) : 0;
-                let aVal = m.away_stats ? (m.away_stats[cat] ?? 0) : 0;
+                let hVal = homeStats[cat] ?? 0;
+                let aVal = awayStats[cat] ?? 0;
                 
                 let winTag = '<span class="badge-tie px-1.5 py-0.5 rounded">TIE</span>';
                 if(cat === "TO") {
@@ -593,106 +312,34 @@
                     <td class="py-1.5 px-1 text-center">${winTag}</td>
                     <td class="py-1.5 px-1 text-cyan-300 font-bold font-mono">${typeof hVal === 'number' && hVal < 1 && hVal > 0 ? (hVal * 1.05).toFixed(3) : Math.round(hVal * 1.05)}</td>
                     <td class="py-1.5 px-1 text-rose-300 font-bold font-mono">${typeof aVal === 'number' && aVal < 1 && aVal > 0 ? (aVal * 1.05).toFixed(3) : Math.round(aVal * 1.05)}</td>
-                    <td class="py-1.5 px-1">${isPunted ? '<span class="text-gray-500">PUNTED</span>' : '<span class="text-emerald-400 font-bold">58% Win</span>'}</td>
                 `;
                 scoreTbody.appendChild(tr);
             });
 
             document.getElementById('heroProjScore').innerText = `${homeWins}-${awayWins}-${ties}`;
-
-            renderSchedules(m);
+            renderRosters(m);
         }
 
-        function renderWaiverAndFARanker() {
-            const homeContainer = document.getElementById('homeWaiverContainer');
-            const awayContainer = document.getElementById('awayWaiverContainer');
-            const faTbody = document.getElementById('faRankerTbody');
-
-            const faList = (globalData && (globalData.free_agents || globalData.waiver_players)) ? (globalData.free_agents || globalData.waiver_players) : [];
-
-            if (faTbody) {
-                faTbody.innerHTML = '';
-                if (faList.length === 0) {
-                    faTbody.innerHTML = '<tr><td colspan="11" class="py-2 text-center text-gray-500">尚無 Free Agent 評分資料</td></tr>';
-                } else {
-                    faList.slice(0, 10).forEach(p => {
-                        const tr = document.createElement('tr');
-                        tr.className = "border-b border-gray-800/40 hover:bg-gray-900/50";
-                        tr.innerHTML = `
-                            <td class="py-1.5 px-1.5 font-bold text-cyan-300">${p.name || p.player_name || 'Unknown'} <span class="text-[9px] text-gray-500">(${p.team || 'FA'})</span></td>
-                            <td class="py-1.5 px-1 text-center font-bold text-emerald-400">${p.score || p.value || '8.5'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['FG%'] || p.fg_pct || '.480'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['FT%'] || p.ft_pct || '.810'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['3PTM'] || p.tpm || '1.8'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['PTS'] || p.pts || '14.2'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['REB'] || p.reb || '5.1'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['AST'] || p.ast || '3.4'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['STL'] || p.stl || '1.1'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['BLK'] || p.blk || '0.6'}</td>
-                            <td class="py-1.5 px-1 text-center text-gray-300">${p['TO'] || p.to || '1.8'}</td>
-                        `;
-                        faTbody.appendChild(tr);
-                    });
-                }
-            }
-
-            if (homeContainer && awayContainer) {
-                homeContainer.innerHTML = '';
-                awayContainer.innerHTML = '';
-                const streamers = faList.slice(0, 4);
-                streamers.forEach((p, idx) => {
-                    const card = `
-                        <div class="bg-gray-950 p-2 rounded-xl border border-cyan-500/20 flex justify-between items-center">
-                            <div>
-                                <div class="font-bold text-xs text-cyan-300">${p.name || 'Streamer Target ' + (idx+1)}</div>
-                                <div class="text-[9px] text-gray-400">${p.team || 'FA'} • 3 Games Left</div>
-                            </div>
-                            <span class="text-xs font-black text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">+${(8.5 - idx*0.5).toFixed(1)}</span>
-                        </div>
-                    `;
-                    if (idx < 2) homeContainer.innerHTML += card;
-                    else awayContainer.innerHTML += card;
-                });
-            }
-        }
-
-        function renderSchedules(m) {
-            const myHeader = document.getElementById('schMyHeaderRow');
-            const oppHeader = document.getElementById('schOppHeaderRow');
-            const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-            
-            if(myHeader) myHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
-            if(oppHeader) oppHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
-
+        function renderRosters(m) {
             const myTbody = document.getElementById('myScheduleTbody');
             const oppTbody = document.getElementById('oppScheduleTbody');
             if(myTbody) myTbody.innerHTML = '';
             if(oppTbody) oppTbody.innerHTML = '';
 
-            const homeTeamObj = globalData.teams ? globalData.teams.find(t => t.team_name.includes(m.home_team)) : null;
-            const awayTeamObj = globalData.teams ? globalData.teams.find(t => t.team_name.includes(m.away_team)) : null;
+            const homeTeamObj = globalData?.teams?.find(t => t.team_name?.includes(m.home_team));
+            const awayTeamObj = globalData?.teams?.find(t => t.team_name?.includes(m.away_team));
 
-            if (homeTeamObj && homeTeamObj.roster && myTbody) {
-                homeTeamObj.roster.slice(0, 10).forEach(p => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[100px]">${p.name}</td>` + 
-                        days.map(() => `<td class="py-1 px-1 text-center"><span class="opp-badge-active">GAME</span></td>`).join('');
-                    myTbody.appendChild(tr);
-                });
-            }
+            homeTeamObj?.roster?.forEach(p => {
+                if(myTbody) myTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 px-1 font-bold text-gray-200">${p.name}</td></tr>`;
+            });
 
-            if (awayTeamObj && awayTeamObj.roster && oppTbody) {
-                awayTeamObj.roster.slice(0, 10).forEach(p => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[100px]">${p.name}</td>` + 
-                        days.map(() => `<td class="py-1 px-1 text-center"><span class="opp-badge-active">GAME</span></td>`).join('');
-                    oppTbody.appendChild(tr);
-                });
-            }
+            awayTeamObj?.roster?.forEach(p => {
+                if(oppTbody) oppTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 px-1 font-bold text-gray-200">${p.name}</td></tr>`;
+            });
         }
 
         function renderTable3AndSpider() {
-            if (!globalData || !globalData.teams) return;
+            if (!globalData?.teams) return;
             const tbody = document.getElementById('table3Tbody');
             if(!tbody) return;
             tbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">TEAM</th><th class="py-1">FG%</th><th class="py-1">FT%</th><th class="py-1">3PTM</th><th class="py-1">PTS</th><th class="py-1">REB</th><th class="py-1">AST</th><th class="py-1">STL</th><th class="py-1">BLK</th><th class="py-1">TO</th></tr>';
@@ -705,50 +352,35 @@
                 tbody.appendChild(tr);
             });
 
-            renderSpiderChart();
+            populateSpiderDropdowns();
         }
 
-        function populateTradeDropdowns() {
-            if (!globalData || !globalData.teams) return;
+        function populateSpiderDropdowns() {
             const s1 = document.getElementById('spiderTeam1');
             const s2 = document.getElementById('spiderTeam2');
-            const t1 = document.getElementById('tradeTeam1Select');
-            const t2 = document.getElementById('tradeTeam2Select');
-            
-            [s1, s2, t1, t2].forEach(sel => {
-                if(!sel) return;
-                sel.innerHTML = '';
-                globalData.teams.forEach((t, i) => {
-                    const opt = document.createElement('option');
-                    opt.value = i;
-                    opt.innerText = cleanName(t.team_name);
-                    sel.appendChild(opt);
-                });
+            if(!s1 || !s2 || !globalData?.teams) return;
+
+            s1.innerHTML = ''; s2.innerHTML = '';
+            globalData.teams.forEach((t, i) => {
+                const opt1 = document.createElement('option'); opt1.value = i; opt1.innerText = cleanName(t.team_name); s1.appendChild(opt1);
+                const opt2 = document.createElement('option'); opt2.value = i; opt2.innerText = cleanName(t.team_name); s2.appendChild(opt2);
             });
-
-            if(s2 && s2.options.length > 1) s2.selectedIndex = 1;
-            if(t2 && t2.options.length > 1) t2.selectedIndex = 1;
-
-            renderTable4();
+            if(s2.options.length > 1) s2.selectedIndex = 1;
+            renderSpiderChart();
         }
 
         function renderSpiderChart() {
             const ctx = document.getElementById('spiderCanvas');
-            if(!ctx || !globalData || !globalData.teams) return;
+            if(!ctx || !globalData?.teams) return;
 
-            const t1El = document.getElementById('spiderTeam1');
-            const t2El = document.getElementById('spiderTeam2');
-            const t1Idx = t1El ? t1El.value : 0;
-            const t2Idx = t2El ? t2El.value : 1;
-            const t1 = globalData.teams[t1Idx];
-            const t2 = globalData.teams[t2Idx];
+            const t1 = globalData.teams[document.getElementById('spiderTeam1').value || 0];
+            const t2 = globalData.teams[document.getElementById('spiderTeam2').value || 1];
 
             const cats = ['FG%', 'FT%', '3PTM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TO'];
-            const data1 = cats.map(c => t1 && t1.stats ? t1.stats[c] || 5 : 5);
-            const data2 = cats.map(c => t2 && t2.stats ? t2.stats[c] || 5 : 5);
+            const data1 = cats.map(c => t1?.stats?.[c] || 5);
+            const data2 = cats.map(c => t2?.stats?.[c] || 5);
 
             if(spiderChart) spiderChart.destroy();
-
             spiderChart = new Chart(ctx, {
                 type: 'radar',
                 data: {
@@ -767,55 +399,59 @@
             });
         }
 
-        function renderTable4() {
-            const t1El = document.getElementById('tradeTeam1Select');
-            const t2El = document.getElementById('tradeTeam2Select');
-            if(!t1El || !t2El || !globalData || !globalData.teams) return;
-
-            const t1 = globalData.teams[t1El.value || 0];
-            const t2 = globalData.teams[t2El.value || 1];
-
-            const tbody1 = document.getElementById('tradeTeam1Tbody');
-            const tbody2 = document.getElementById('tradeTeam2Tbody');
-            if(tbody1) tbody1.innerHTML = '';
-            if(tbody2) tbody2.innerHTML = '';
-
-            if (t1 && t1.roster && tbody1) {
-                t1.roster.forEach(p => {
-                    tbody1.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name}</td></tr>`;
-                });
-            }
-            if (t2 && t2.roster && tbody2) {
-                t2.roster.forEach(p => {
-                    tbody2.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name}</td></tr>`;
-                });
-            }
-        }
-
-        function calculateTradeImpact() {
-            const res = document.getElementById('tradeImpactResult');
-            if(!res) return;
-            res.classList.remove('hidden');
-            res.innerHTML = `<span class="text-emerald-400 font-bold">TRADE SIMULATION COMPLETE:</span> Both teams gain category balance. Side A +1.2 AST, Side B +2.4 REB.`;
-        }
-
-        function onTab3WeekChange() {
-            renderTab3Leaderboards();
-        }
-
         function renderTab3Leaderboards() {
-            if(!globalData || !globalData.teams) return;
+            if(!globalData?.teams) return;
             const wTbody = document.getElementById('leagueCrossLeaderboardTbody');
-            const rTbody = document.getElementById('totalRotoTbody');
-            const pTbody = document.getElementById('perGameRotoTbody');
+            if(wTbody) {
+                wTbody.innerHTML = '';
+                globalData.teams.forEach((t, i) => {
+                    wTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-cyan-400">#${i+1} ${cleanName(t.team_name)}</td></tr>`;
+                });
+            }
+        }
 
-            [wTbody, rTbody, pTbody].forEach(tb => { if(tb) tb.innerHTML = ''; });
+        function switchTab(tabId) {
+            if (tabId === 'tab4' && !isTab4Unlocked) {
+                let pwd = prompt("🔒 Enter Passcode:");
+                if (pwd === "HorusAldus") {
+                    isTab4Unlocked = true;
+                } else {
+                    if (pwd !== null) alert("❌ Wrong passcode.");
+                    return;
+                }
+            }
 
-            globalData.teams.forEach((t, i) => {
-                if(wTbody) wTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-cyan-400">#${i+1} ${cleanName(t.team_name)}</td><td class="py-1 text-right">${120 - i*8} WINS</td></tr>`;
-                if(rTbody) rTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-amber-400">#${i+1} ${cleanName(t.team_name)}</td><td class="py-1 text-right">${90 - i*5} PTS</td></tr>`;
-                if(pTbody) pTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-purple-400">#${i+1} ${cleanName(t.team_name)}</td><td class="py-1 text-right">${85 - i*4} PTS</td></tr>`;
+            ['tab1', 'tab2', 'tab3', 'tab4'].forEach(t => {
+                document.getElementById(`btn${t.charAt(0).toUpperCase() + t.slice(1)}`).className = 'tab-btn-inactive px-3 py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all whitespace-nowrap';
+                document.getElementById(`${t}Content`).classList.add('hidden');
             });
+            document.getElementById(`btn${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).className = 'tab-btn-active px-3 py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all whitespace-nowrap';
+            document.getElementById(`${tabId}Content`).classList.remove('hidden');
+        }
+
+        async function sendAiMessage() {
+            const inputEl = document.getElementById('aiChatInput');
+            const txt = inputEl.value.trim();
+            if(!txt) return;
+
+            const chatLog = document.getElementById('aiChatLog');
+            chatLog.innerHTML += `<div class="p-2 bg-cyan-950 border-r-2 border-cyan-500 rounded text-cyan-100 text-right"><p class="font-bold text-[10px]">YOU:</p><p>${txt}</p></div>`;
+            inputEl.value = '';
+
+            try {
+                const response = await fetch(VERCEL_PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] })
+                });
+
+                const result = await response.json();
+                const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+                chatLog.innerHTML += `<div class="p-2 bg-gray-900 border-l-2 border-emerald-400 rounded text-gray-200"><p class="font-bold text-[10px] text-emerald-300">AI Advisor:</p><p>${replyText}</p></div>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            } catch (err) {
+                chatLog.innerHTML += `<div class="p-2 text-rose-400 text-[10px]">Error: ${err.message}</div>`;
+            }
         }
 
         initCloudDashboard();
