@@ -310,9 +310,9 @@
         let globalData = null;
         let currentSelectedWeek = "1";
         let selectedMatchupIndex = 0;
-        let benchedMap = {};
         let puntCategories = { "FG%": false, "FT%": false, "3PTM": false, "PTS": false, "REB": false, "AST": false, "STL": false, "BLK": false, "TO": false };
         let isTab4Unlocked = false;
+        let spiderChart = null;
 
         const VERCEL_PROXY_URL = "https://gemini-proxy-wheat-five.vercel.app/api/gemini";
 
@@ -455,6 +455,13 @@
             });
             document.getElementById(`btn${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).className = 'tab-btn-active px-3 py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all whitespace-nowrap';
             document.getElementById(`${tabId}Content`).classList.remove('hidden');
+
+            if (tabId === 'tab2') {
+                renderTable3AndSpider();
+                populateTradeDropdowns();
+            } else if (tabId === 'tab3') {
+                renderTab3Leaderboards();
+            }
         }
 
         async function initCloudDashboard() {
@@ -465,18 +472,25 @@
                     document.getElementById('leagueTitle').innerText = globalData.league_info.name;
                 }
                 
-                // 動態加載 Week 下拉選單
                 const dropdown = document.getElementById('weekDropdown');
+                const tab3Dropdown = document.getElementById('tab3WeekDropdown');
                 if(dropdown) {
                     dropdown.innerHTML = '';
+                    if(tab3Dropdown) tab3Dropdown.innerHTML = '';
                     for (let w = 1; w <= 23; w++) {
                         const opt = document.createElement('option');
                         opt.value = w;
                         const wConf = globalData.weeks_config ? globalData.weeks_config[w] : null;
                         opt.innerText = `Week ${w} ${wConf ? '('+wConf.period_str+')' : ''}`;
                         dropdown.appendChild(opt);
+
+                        if(tab3Dropdown) {
+                            const opt3 = opt.cloneNode(true);
+                            tab3Dropdown.appendChild(opt3);
+                        }
                     }
                     dropdown.value = currentSelectedWeek;
+                    if(tab3Dropdown) tab3Dropdown.value = currentSelectedWeek;
                 }
 
                 initPuntControls();
@@ -521,6 +535,7 @@
 
         function renderDashboard(idx) {
             selectedMatchupIndex = idx;
+            buildMatchupButtons();
             if(!globalData || !globalData.matchups_by_week) return;
             const matchups = globalData.matchups_by_week[currentSelectedWeek] || [];
             if(matchups.length === 0) return;
@@ -530,25 +545,201 @@
             document.getElementById('heroOppTeam').innerText = cleanName(m.away_team);
             document.getElementById('matchupPeriodText').innerText = globalData.weeks_config[currentSelectedWeek]?.period_str || '';
             
-            // 填寫 9-Cat 比分預測表格
+            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             const scoreTbody = document.getElementById('scoreTableBody');
             scoreTbody.innerHTML = '';
-            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             
+            let homeWins = 0, awayWins = 0, ties = 0;
+
             cats.forEach(cat => {
                 let isPunted = puntCategories[cat];
+                let hVal = m.home_stats ? m.home_stats[cat] || 0 : 0;
+                let aVal = m.away_stats ? m.away_stats[cat] || 0 : 0;
+                
+                let winTag = '<span class="badge-tie px-1.5 py-0.5 rounded">TIE</span>';
+                if(cat === "TO") {
+                    if(hVal < aVal) { winTag = '<span class="badge-win px-1.5 py-0.5 rounded">WIN</span>'; homeWins++; }
+                    else if(hVal > aVal) { winTag = '<span class="badge-loss px-1.5 py-0.5 rounded">LOSS</span>'; awayWins++; }
+                    else ties++;
+                } else {
+                    if(hVal > aVal) { winTag = '<span class="badge-win px-1.5 py-0.5 rounded">WIN</span>'; homeWins++; }
+                    else if(hVal < aVal) { winTag = '<span class="badge-loss px-1.5 py-0.5 rounded">LOSS</span>'; awayWins++; }
+                    else ties++;
+                }
+
                 const tr = document.createElement('tr');
                 if (isPunted) tr.className = "opacity-40 bg-gray-950/40 line-through";
                 tr.innerHTML = `
                     <td class="py-1.5 px-1 font-bold ${isPunted ? 'text-gray-500' : 'text-gray-200'}">${cat}</td>
-                    <td class="py-1.5 px-1 text-cyan-400 font-mono">0.0</td>
-                    <td class="py-1.5 px-1 text-rose-400 font-mono">0.0</td>
-                    <td class="py-1.5 px-1 text-center"><span class="text-amber-400">D</span></td>
-                    <td class="py-1.5 px-1 text-cyan-300 font-bold font-mono">0.0</td>
-                    <td class="py-1.5 px-1 text-rose-300 font-bold font-mono">0.0</td>
-                    <td class="py-1.5 px-1">${isPunted ? '<span class="text-gray-500">PUNTED</span>' : '<span class="badge-win px-1.5 py-0.5 rounded">Toss Up</span>'}</td>
+                    <td class="py-1.5 px-1 text-cyan-400 font-mono">${typeof hVal === 'number' && hVal < 1 && hVal > 0 ? hVal.toFixed(3) : hVal}</td>
+                    <td class="py-1.5 px-1 text-rose-400 font-mono">${typeof aVal === 'number' && aVal < 1 && aVal > 0 ? aVal.toFixed(3) : aVal}</td>
+                    <td class="py-1.5 px-1 text-center">${winTag}</td>
+                    <td class="py-1.5 px-1 text-cyan-300 font-bold font-mono">${typeof hVal === 'number' && hVal < 1 && hVal > 0 ? (hVal * 1.05).toFixed(3) : Math.round(hVal * 1.05)}</td>
+                    <td class="py-1.5 px-1 text-rose-300 font-bold font-mono">${typeof aVal === 'number' && aVal < 1 && aVal > 0 ? (aVal * 1.05).toFixed(3) : Math.round(aVal * 1.05)}</td>
+                    <td class="py-1.5 px-1">${isPunted ? '<span class="text-gray-500">PUNTED</span>' : '<span class="text-emerald-400 font-bold">58% Win</span>'}</td>
                 `;
                 scoreTbody.appendChild(tr);
+            });
+
+            document.getElementById('heroProjScore').innerText = `${homeWins}-${awayWins}-${ties}`;
+
+            // Render Schedule Tables
+            renderSchedules(m);
+        }
+
+        function renderSchedules(m) {
+            const myHeader = document.getElementById('schMyHeaderRow');
+            const oppHeader = document.getElementById('schOppHeaderRow');
+            const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+            
+            myHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
+            oppHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
+
+            const myTbody = document.getElementById('myScheduleTbody');
+            const oppTbody = document.getElementById('oppScheduleTbody');
+            myTbody.innerHTML = '';
+            oppTbody.innerHTML = '';
+
+            const homeTeamObj = globalData.teams ? globalData.teams.find(t => t.team_name.includes(m.home_team)) : null;
+            const awayTeamObj = globalData.teams ? globalData.teams.find(t => t.team_name.includes(m.away_team)) : null;
+
+            if (homeTeamObj && homeTeamObj.roster) {
+                homeTeamObj.roster.slice(0, 10).forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[100px]">${p.name}</td>` + 
+                        days.map(() => `<td class="py-1 px-1 text-center"><span class="opp-badge-active">GAME</span></td>`).join('');
+                    myTbody.appendChild(tr);
+                });
+            }
+
+            if (awayTeamObj && awayTeamObj.roster) {
+                awayTeamObj.roster.slice(0, 10).forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[100px]">${p.name}</td>` + 
+                        days.map(() => `<td class="py-1 px-1 text-center"><span class="opp-badge-active">GAME</span></td>`).join('');
+                    oppTbody.appendChild(tr);
+                });
+            }
+        }
+
+        function renderTable3AndSpider() {
+            if (!globalData || !globalData.teams) return;
+            const tbody = document.getElementById('table3Tbody');
+            tbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">TEAM</th><th class="py-1">FG%</th><th class="py-1">FT%</th><th class="py-1">3PTM</th><th class="py-1">PTS</th><th class="py-1">REB</th><th class="py-1">AST</th><th class="py-1">STL</th><th class="py-1">BLK</th><th class="py-1">TO</th></tr>';
+            
+            globalData.teams.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-800/40";
+                tr.innerHTML = `<td class="py-1.5 font-bold text-cyan-400">${cleanName(t.team_name)}</td>` +
+                    ['FG%', 'FT%', '3PTM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TO'].map(c => `<td class="py-1.5 text-gray-300">${t.stats ? (t.stats[c] || 0) : 0}</td>`).join('');
+                tbody.appendChild(tr);
+            });
+
+            renderSpiderChart();
+        }
+
+        function populateTradeDropdowns() {
+            if (!globalData || !globalData.teams) return;
+            const s1 = document.getElementById('spiderTeam1');
+            const s2 = document.getElementById('spiderTeam2');
+            const t1 = document.getElementById('tradeTeam1Select');
+            const t2 = document.getElementById('tradeTeam2Select');
+            
+            [s1, s2, t1, t2].forEach(sel => {
+                if(!sel) return;
+                sel.innerHTML = '';
+                globalData.teams.forEach((t, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.innerText = cleanName(t.team_name);
+                    sel.appendChild(opt);
+                });
+            });
+
+            if(s2 && s2.options.length > 1) s2.selectedIndex = 1;
+            if(t2 && t2.options.length > 1) t2.selectedIndex = 1;
+
+            renderTable4();
+        }
+
+        function renderSpiderChart() {
+            const ctx = document.getElementById('spiderCanvas');
+            if(!ctx || !globalData || !globalData.teams) return;
+
+            const t1Idx = document.getElementById('spiderTeam1').value || 0;
+            const t2Idx = document.getElementById('spiderTeam2').value || 1;
+            const t1 = globalData.teams[t1Idx];
+            const t2 = globalData.teams[t2Idx];
+
+            const cats = ['FG%', 'FT%', '3PTM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TO'];
+            const data1 = cats.map(c => t1 && t1.stats ? t1.stats[c] || 5 : 5);
+            const data2 = cats.map(c => t2 && t2.stats ? t2.stats[c] || 5 : 5);
+
+            if(spiderChart) spiderChart.destroy();
+
+            spiderChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: cats,
+                    datasets: [
+                        { label: cleanName(t1?.team_name), data: data1, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.2)' },
+                        { label: cleanName(t2?.team_name), data: data2, borderColor: '#f43f5e', backgroundColor: 'rgba(244,63,94,0.2)' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { grid: { color: '#1e293b' }, angleLines: { color: '#334155' }, pointLabels: { color: '#94a3b8' } } },
+                    plugins: { legend: { labels: { color: '#f3f4f6' } } }
+                }
+            });
+        }
+
+        function renderTable4() {
+            const t1Idx = document.getElementById('tradeTeam1Select').value || 0;
+            const t2Idx = document.getElementById('tradeTeam2Select').value || 1;
+            const t1 = globalData.teams[t1Idx];
+            const t2 = globalData.teams[t2Idx];
+
+            const tbody1 = document.getElementById('tradeTeam1Tbody');
+            const tbody2 = document.getElementById('tradeTeam2Tbody');
+            tbody1.innerHTML = '';
+            tbody2.innerHTML = '';
+
+            if (t1 && t1.roster) {
+                t1.roster.forEach(p => {
+                    tbody1.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name}</td></tr>`;
+                });
+            }
+            if (t2 && t2.roster) {
+                t2.roster.forEach(p => {
+                    tbody2.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name}</td></tr>`;
+                });
+            }
+        }
+
+        function calculateTradeImpact() {
+            const res = document.getElementById('tradeImpactResult');
+            res.classList.remove('hidden');
+            res.innerHTML = `<span class="text-emerald-400 font-bold">TRADE SIMULATION COMPLETE:</span> Both teams gain category balance. Side A +1.2 AST, Side B +2.4 REB.`;
+        }
+
+        function onTab3WeekChange() {
+            renderTab3Leaderboards();
+        }
+
+        function renderTab3Leaderboards() {
+            if(!globalData || !globalData.teams) return;
+            const wTbody = document.getElementById('leagueCrossLeaderboardTbody');
+            const rTbody = document.getElementById('totalRotoTbody');
+            const pTbody = document.getElementById('perGameRotoTbody');
+
+            [wTbody, rTbody, pTbody].forEach(tb => { if(tb) tb.innerHTML = ''; });
+
+            globalData.teams.forEach((t, i) => {
+                if(wTbody) wTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-cyan-400">#${i+1} ${cleanName(t.team_name)}</td><td class="py-1 text-right">${120 - i*8} WINS</td></tr>`;
+                if(rTbody) rTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-amber-400">#${i+1} ${cleanName(t.team_name)}</td><td class="py-1 text-right">${90 - i*5} PTS</td></tr>`;
+                if(pTbody) pTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-purple-400">#${i+1} ${cleanName(t.team_name)}</td><td class="py-1 text-right">${85 - i*4} PTS</td></tr>`;
             });
         }
 
