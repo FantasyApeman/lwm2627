@@ -572,7 +572,7 @@
             <div class="flex justify-between items-center border-l-4 border-emerald-400 pl-2">
                 <div>
                     <h2 class="text-base font-black text-emerald-400">📊 ALL TEAMS WEEKLY STATS SUMMARY</h2>
-                    <p class="text-[9px] text-gray-400 font-bold">該週全聯盟所有隊伍的真實/預測 9 類別累計數據與出場場次 (GP)</p>
+                    <p class="text-[9px] text-gray-400 font-bold">該週全聯盟所有隊伍的真實/預測 9 類別累計數據與出場場次 (GP)（已根據當週實際分佈動態計算熱力標籤）</p>
                 </div>
             </div>
             <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30 overflow-x-auto">
@@ -1057,6 +1057,24 @@
             const meta = metaObj[cat] || { mean: 10, std: 5 };
             let z = meta.std > 0 ? (val - meta.mean) / meta.std : 0;
             if (cat === 'TO') z = -z;
+            if (z >= 0.8) return 'z-elite';
+            if (z >= 0.25) return 'z-good';
+            if (z >= -0.24) return 'z-avg';
+            if (z >= -0.79) return 'z-bad';
+            return 'z-punt';
+        }
+
+        // 專門用於當週數據摘要的動態 Z-Score 計算
+        function getWeeklyDynamicZClass(cat, val, statsMap) {
+            if(puntCategories[cat]) return 'z-avg opacity-40 line-through';
+            let values = globalData.teams.map(t => statsMap[t.team_name][cat]);
+            let mean = values.reduce((a, b) => a + b, 0) / values.length;
+            let variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
+            let std = Math.sqrt(variance);
+
+            let z = std > 0 ? (val - mean) / std : 0;
+            if (cat === 'TO') z = -z; // TO 越低越好
+
             if (z >= 0.8) return 'z-elite';
             if (z >= 0.25) return 'z-good';
             if (z >= -0.24) return 'z-avg';
@@ -1949,7 +1967,6 @@
             renderPerGameRotoRank(statsMap);
         }
 
-        // 優化：全聯盟交叉對戰總勝負排行榜（移除獨立 W/L/T 欄位，精簡顯示）
         function renderLeagueCrossLeaderboard(statsMap) {
             const tbody = document.getElementById('leagueCrossLeaderboardTbody');
             if(!tbody) return;
@@ -2015,6 +2032,7 @@
             });
         }
 
+        // 優化：使用當週動態 Z-Score 重新計算 ALL TEAMS WEEKLY STATS SUMMARY 的熱力標籤顏色
         function renderWeeklyStatsSummary(statsMap) {
             const tbody = document.getElementById('tab3WeeklyStatsTbody');
             if(!tbody) return;
@@ -2034,15 +2052,15 @@
                 tr.innerHTML = `
                     <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(tObj.team_name)} ${isMyTeam ? '⭐' : ''}</td>
                     <td class="py-1 px-1 text-center text-cyan-300 font-bold">${st.GP}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('FG%', st['FG%'])}">${fmtPct(st['FG%'])}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('FT%', st['FT%'])}">${fmtPct(st['FT%'])}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('3PTM', st['3PTM'])}">${Math.round(st['3PTM'])}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('PTS', st.PTS)}">${Math.round(st.PTS)}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('REB', st.REB)}">${Math.round(st.REB)}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('AST', st.AST)}">${Math.round(st.AST)}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('STL', st.STL)}">${Math.round(st.STL)}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('BLK', st.BLK)}">${Math.round(st.BLK)}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('TO', st.TO)}">${Math.round(st.TO)}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('FG%', st['FG%'], statsMap)}">${fmtPct(st['FG%'])}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('FT%', st['FT%'], statsMap)}">${fmtPct(st['FT%'])}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('3PTM', st['3PTM'], statsMap)}">${Math.round(st['3PTM'])}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('PTS', st.PTS, statsMap)}">${Math.round(st.PTS)}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('REB', st.REB, statsMap)}">${Math.round(st.REB)}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('AST', st.AST, statsMap)}">${Math.round(st.AST)}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('STL', st.STL, statsMap)}">${Math.round(st.STL)}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('BLK', st.BLK, statsMap)}">${Math.round(st.BLK)}</td>
+                    <td class="py-1 px-1 text-center ${getWeeklyDynamicZClass('TO', st.TO, statsMap)}">${Math.round(st.TO)}</td>
                 `;
                 tbody.appendChild(tr);
             });
