@@ -466,6 +466,19 @@
 
     <!-- ================= TAB 3: WEEKLY ROTO & CROSS MATCHUP ================= -->
     <div id="tab3Content" class="space-y-6 hidden">
+        <!-- TAB 3 STICKY WEEK SELECTION BAR -->
+        <div class="cyber-card p-3 rounded-xl flex items-center justify-between border border-emerald-500/30 shadow-xl mb-4">
+            <div class="flex items-center space-x-2">
+                <span class="text-xs text-emerald-400 font-black uppercase">🏆 TAB 3 WEEKLY ANALYTICS</span>
+                <span class="text-[9px] text-gray-400 font-bold">(僅顯示已開打及當前週次)</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1.5 rounded-lg border border-emerald-500/40">
+                <span class="text-[10px] text-emerald-400 font-black uppercase">ANALYTICS WEEK:</span>
+                <select id="tab3WeekDropdown" onchange="onTab3WeekChange()" class="bg-gray-900 text-emerald-300 font-black text-xs px-2 py-1 rounded-lg border border-emerald-500/40 focus:outline-none cursor-pointer">
+                </select>
+            </div>
+        </div>
+
         <!-- SECTION 1: ALL TEAMS WEEKLY 9-CAT RESULTS SUMMARY -->
         <div class="space-y-3">
             <div class="flex justify-between items-center border-l-4 border-emerald-400 pl-2">
@@ -1814,14 +1827,50 @@
         // 🏆 TAB 3: WEEKLY ROTO & 1-VS-ALL CROSS MATCHUP LOGIC
         // =========================================================================
 
+        function initCrossMatchupSelector() {
+            // 初始化 Tab 3 的 Week 下拉選單（只允許選擇過去週次 + 當前週次）
+            const tab3Dropdown = document.getElementById('tab3WeekDropdown');
+            if (tab3Dropdown && tab3Dropdown.options.length === 0) {
+                tab3Dropdown.innerHTML = '';
+                let currentWeekNum = parseInt(getDefaultWeekByDate());
+                
+                for (let w = 1; w <= currentWeekNum; w++) {
+                    const opt = document.createElement('option');
+                    opt.value = w;
+                    const wConf = globalData.weeks_config[w];
+                    opt.innerText = `Week ${w} (${wConf ? wConf.period_str : ''})`;
+                    tab3Dropdown.appendChild(opt);
+                }
+                tab3Dropdown.value = currentWeekNum;
+            }
+
+            const sel = document.getElementById('crossMatchupTeamSelect');
+            if(!sel) return;
+            if(sel.options.length === 0) {
+                const myTeamName = globalData.my_team_name || "Novel Fergus";
+                globalData.teams.forEach(t => {
+                    sel.add(new Option(cleanName(t.team_name), t.team_name));
+                });
+                let myObj = globalData.teams.find(t => t.team_name === myTeamName || t.team_name.includes("Novel Fergus"));
+                sel.value = myObj ? myObj.team_name : globalData.teams[0].team_name;
+            }
+        }
+
+        function onTab3WeekChange() {
+            renderTab3AllSections();
+        }
+
         function getWeeklyTeamStatsMap() {
             let statsMap = {};
-            const daysList = globalData.weeks_config[currentSelectedWeek].days || [];
+            const tab3Dropdown = document.getElementById('tab3WeekDropdown');
+            let targetWeek = tab3Dropdown ? tab3Dropdown.value : getDefaultWeekByDate();
+            
+            const daysList = globalData.weeks_config[targetWeek].days || [];
             const todayIso = new Date().toISOString().split('T')[0];
 
             globalData.teams.forEach(tObj => {
                 let tName = tObj.team_name;
-                const weekActuals = (globalData.actual_stats_by_team || {})[currentSelectedWeek] || {};
+                const weekActuals = (globalData.actual_stats_by_team || {})[targetWeek] || {};
                 let act = weekActuals[tName] || { "PTS": 0, "REB": 0, "AST": 0, "3PTM": 0, "STL": 0, "BLK": 0, "TO": 0, "FG%": 0, "FT%": 0, "GP": 0, "FGM": 0, "FGA": 0, "FTM": 0, "FTA": 0 };
 
                 let totalFgm = act.FGM || 0, totalFga = act.FGA || 0;
@@ -1833,7 +1882,7 @@
                 if (tObj.roster) {
                     tObj.roster.forEach(p => {
                         let s = p.stats || {};
-                        let sched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
+                        let sched = (p.schedules_by_week || {})[targetWeek] || {};
                         let remGp = 0;
 
                         daysList.forEach(dObj => {
@@ -1869,19 +1918,6 @@
             });
 
             return statsMap;
-        }
-
-        function initCrossMatchupSelector() {
-            const sel = document.getElementById('crossMatchupTeamSelect');
-            if(!sel) return;
-            if(sel.options.length === 0) {
-                const myTeamName = globalData.my_team_name || "Novel Fergus";
-                globalData.teams.forEach(t => {
-                    sel.add(new Option(cleanName(t.team_name), t.team_name));
-                });
-                let myObj = globalData.teams.find(t => t.team_name === myTeamName || t.team_name.includes("Novel Fergus"));
-                sel.value = myObj ? myObj.team_name : globalData.teams[0].team_name;
-            }
         }
 
         function renderTab3AllSections() {
