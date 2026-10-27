@@ -6,6 +6,7 @@
     <title>Fantasy Expert Dashboard • Cyber Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background: #030712; color: #f3f4f6; font-family: 'JetBrains Mono', monospace; }
         .cyber-glass { background: rgba(13, 18, 30, 0.92); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(6, 182, 212, 0.25); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8); }
@@ -23,6 +24,8 @@
 
         .injury-out { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); font-size: 8px; font-weight: bold; padding: 1px 4px; border-radius: 3px; }
         .injury-dtd { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); font-size: 8px; font-weight: bold; padding: 1px 4px; border-radius: 3px; }
+
+        .player-highlight { color: #38bdf8; font-weight: 800; background: rgba(56, 189, 248, 0.15); padding: 1px 4px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
         .opp-badge-active { 
             background: linear-gradient(135deg, #4c1d95, #312e81); 
@@ -69,6 +72,10 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 2px; }
+
         select option { background: #0f172a; color: #f3f4f6; }
     </style>
 </head>
@@ -92,10 +99,11 @@
         </div>
 
         <div class="flex items-center space-x-2">
-            <button onclick="switchTab('tab1')" id="btnTab1" class="tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">⚡ Matchup Command</button>
-            <button onclick="switchTab('tab2')" id="btnTab2" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">📊 League Analytics</button>
-            <button onclick="switchTab('tab3')" id="btnTab3" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">🏆 Weekly Roto & Cross Matchup</button>
-            <button onclick="switchTab('tab4')" id="btnTab4" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">🔒 AI Hub</button>
+            <button onclick="switchTab('tab1')" id="btnTab1" class="tab-btn-active px-3 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">⚡ Matchup Command</button>
+            <button onclick="switchTab('tab2')" id="btnTab2" class="tab-btn-inactive px-3 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">📊 League Analytics</button>
+            <button onclick="switchTab('tab3')" id="btnTab3" class="tab-btn-inactive px-3 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">🏆 Weekly Roto & Cross</button>
+            <button onclick="switchTab('tab4')" id="btnTab4" class="tab-btn-inactive px-3 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">🤖 AI & Social Hub</button>
+            <button onclick="setApiKey()" title="設定 Gemini API Key" class="bg-gray-900 hover:bg-gray-800 text-cyan-400 border border-cyan-500/40 p-2 rounded-xl transition shadow-lg">⚙️</button>
         </div>
     </header>
 
@@ -637,21 +645,75 @@
         </div>
     </div>
 
-    <!-- ================= TAB 4: AI HUB ================= -->
+    <!-- ================= TAB 4: AI & SOCIAL HUB (NEW CYBERPUNK INTEGRATION) ================= -->
     <div id="tab4Content" class="space-y-6 hidden">
-        <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30">
-            <h3 class="text-xs font-black text-emerald-400 mb-2">💬 專屬聯網戰術顧問 (Gemini via Vercel)</h3>
-            <div id="aiChatLog" class="p-4 h-[350px] overflow-y-auto space-y-3 text-[11px] font-mono bg-gray-950/40 rounded-lg border border-gray-800">
-                <div class="p-2.5 bg-gray-900 border-l-2 border-emerald-400 rounded text-emerald-300">哈囉！我是您的專屬 Fantasy 顧問。已讀取您的聯賽陣容。你可以問我 Waiver 撿人、交易評估，或對戰策略！</div>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-cyan-400 pl-2 gap-2">
+            <div>
+                <h2 class="text-base font-black text-cyan-400">🤖 AI & SOCIAL INTELLIGENCE HUB</h2>
+                <p class="text-[9px] text-gray-400 font-bold">彙整過去 12 小時 (Locked On 為主) 專家與社群情報，搭配 Gemini 1.5 Flash 聯網陣容顧問</p>
             </div>
-            <div class="mt-3 flex gap-2">
-                <input type="text" id="aiChatInput" placeholder="輸入戰術問題..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700 font-mono focus:outline-none focus:border-emerald-500" onkeypress="if(event.key === 'Enter') sendAiMessage()">
-                <button onclick="sendAiMessage()" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-600 transition">SEND</button>
+            <div class="flex space-x-2">
+                <button onclick="fetchRealtimeIntel()" class="bg-cyan-900 hover:bg-cyan-800 text-cyan-100 border border-cyan-500/40 px-3 py-1.5 rounded-lg text-[10px] font-bold transition flex items-center shadow-lg shadow-cyan-900/50">
+                    <span class="mr-1">🔄</span> 更新 12H 實時情報
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            
+            <!-- LEFT: UNIFIED 12H FEED -->
+            <div class="cyber-card rounded-2xl border border-cyan-500/30 flex flex-col lg:col-span-5 h-[500px]">
+                <div class="p-3 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 rounded-t-2xl">
+                    <h3 class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        12H CONSOLIDATED FEED
+                    </h3>
+                    <span id="update-timestamp" class="text-[9px] text-gray-500 font-mono">WAITING FOR SYNC...</span>
+                </div>
+                <div id="realtime-content" class="p-4 flex-1 overflow-y-auto text-xs text-gray-300 leading-relaxed space-y-4 custom-scroll font-mono">
+                    <div class="text-center text-gray-500 py-10">
+                        <div class="text-2xl mb-2 text-cyan-900">⚡</div>
+                        點擊右上方「更新 12H 實時情報」啟動 Gemini Search Grounding
+                    </div>
+                </div>
+                <div id="sources-container" class="p-3 border-t border-gray-800 bg-gray-950 rounded-b-2xl hidden">
+                    <span class="text-[9px] font-bold text-cyan-500 block mb-1">🔗 GROUNDING SOURCES:</span>
+                    <ul id="sources-list" class="list-disc list-inside text-[9px] text-gray-400 space-y-0.5"></ul>
+                </div>
+            </div>
+
+            <!-- RIGHT: AI CHAT CONSULTANT -->
+            <div class="cyber-card rounded-2xl border border-emerald-500/30 flex flex-col lg:col-span-7 h-[500px]">
+                <div class="p-3 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 rounded-t-2xl">
+                    <h3 class="text-xs font-black text-emerald-400">💬 專屬聯網戰術顧問 (Gemini-1.5-Flash)</h3>
+                    <span class="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded font-bold">ROSTER-AWARE</span>
+                </div>
+
+                <!-- CHAT LOG -->
+                <div id="aiChatLog" class="p-4 flex-1 overflow-y-auto space-y-3 text-[11px] font-mono custom-scroll bg-gray-950/40">
+                    <div class="p-3 bg-gray-900/80 border-l-2 border-emerald-400 rounded-lg text-gray-200">
+                        <p class="font-bold text-emerald-300 mb-1">🤖 系統提報：</p>
+                        <p class="leading-relaxed">哈囉！我是您的專屬 Fantasy 顧問。我已在背景讀取您的 14 隊聯賽陣容與 Punt 策略。您可以問我 Waiver 撿人、交易評估，或直接請我分析今日情報！<br><span class="text-[9px] text-gray-500 mt-1 block">(請確保右上角 ⚙️ 已輸入 API Key)</span></p>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="px-4 py-2 border-t border-gray-800 flex gap-2 overflow-x-auto no-scrollbar">
+                    <button onclick="sendQuickPrompt('根據我目前的陣容與 Punting 策略，幫我推薦今天自由市場最該撿的 2 名 Waiver 球員。')" class="bg-gray-900 hover:bg-gray-800 text-cyan-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">⚡ 推薦 Waiver</button>
+                    <button onclick="sendQuickPrompt('幫我分析我的陣容弱項，並推薦可以透過交易（Trade）補強的目標。')" class="bg-gray-900 hover:bg-gray-800 text-indigo-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">🤝 交易評估</button>
+                    <button onclick="sendQuickPrompt('請根據今日最新的傷兵情報，告訴我有哪幾位球員的 Fantasy 價值大幅提升？')" class="bg-gray-900 hover:bg-gray-800 text-rose-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">🚨 傷兵得益者</button>
+                </div>
+
+                <!-- INPUT AREA -->
+                <div class="p-3 border-t border-gray-800 bg-gray-900/50 rounded-b-2xl flex gap-2">
+                    <input type="text" id="aiChatInput" placeholder="輸入戰術問題..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:border-emerald-500 font-mono" onkeypress="if(event.key === 'Enter') sendAiMessage()">
+                    <button onclick="sendAiMessage()" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-600 transition shadow-lg shadow-emerald-900/40">SEND</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 雲端自動讀取 data.json 的 JavaScript 核心邏輯 -->
+    <!-- CORE JAVASCRIPT LOGIC -->
     <script>
         let globalData = null;
         let currentSelectedWeek = "1";
@@ -661,10 +723,7 @@
 
         let benchedMap = {};
         let initialOutInitialized = false;
-        let isTab4Unlocked = false;
 
-        const VERCEL_PROXY_URL = "https://gemini-proxy-wheat-five.vercel.app/api/gemini";
-        
         let table3SortColumn = 'team_name';
         let table3SortAsc = true;
         
@@ -682,6 +741,147 @@
         function normalizeName(str) {
             if (!str) return "";
             return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        }
+
+        // ================= TAB 4 AI & API KEY LOGIC =================
+        function getApiKey() { return localStorage.getItem('gemini_api_key'); }
+        function setApiKey() {
+            const current = getApiKey() || '';
+            const key = prompt('請輸入您的 Google Gemini API Key (將安全儲存於您的瀏覽器 localStorage 中，關閉網頁不會遺失):', current);
+            if (key !== null && key.trim() !== '') {
+                localStorage.setItem('gemini_api_key', key.trim());
+                alert('API Key 儲存成功！現在可以使用實時聯網與 AI 顧問功能了。');
+            }
+        }
+
+        function highlightPlayerNames(text) {
+            if (!text) return "";
+            let clean = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return clean.replace(/\*\*(.*?)\*\*/g, '<span class="player-highlight">$1</span>');
+        }
+
+        function buildLeagueContext() {
+            if (!globalData) return "無聯賽資料。";
+            const myTeam = globalData.my_team_name || "Novel Fergus";
+            let context = `【使用者目前聯賽狀態】\n玩家所屬隊伍：${myTeam}\n`;
+            let myTeamObj = globalData.teams.find(t => t.team_name.includes(myTeam) || t.team_name === myTeam);
+            if (myTeamObj && myTeamObj.roster) {
+                context += `當前陣容清單：${myTeamObj.roster.map(p => p.name).join(', ')}\n`;
+            }
+            let punts = Object.keys(puntCategories).filter(k => puntCategories[k]);
+            if (punts.length > 0) context += `玩家戰術策略 (Punting)：直接放棄 ${punts.join(', ')} 這幾個類別\n`;
+            else context += `玩家戰術策略：平均發展，無特定 Punt 類別\n`;
+            return context;
+        }
+
+        async function fetchRealtimeIntel() {
+            const key = getApiKey();
+            if (!key) { alert("請先點擊右上角 ⚙️ 設定您的 Gemini API Key！"); return; }
+            
+            const container = document.getElementById('realtime-content');
+            const sourcesContainer = document.getElementById('sources-container');
+            const sourcesList = document.getElementById('sources-list');
+            const timestamp = document.getElementById('update-timestamp');
+            
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} HKT`;
+
+            container.innerHTML = `<div class="text-center text-cyan-500 py-10 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>正在透過 Gemini Search 聯網擷取 ${dateStr} 過去 12 小時最新 NBA 情報...</div>`;
+            sourcesContainer.classList.add('hidden');
+
+            const userPrompt = `請搜尋今日（${dateStr}）過去 12 小時內網上最新 NBA Fantasy Basketball 討論（必須包含 YouTube 頻道 Locked On Fantasy Basketball (Josh Lloyd) 作為最主要來源，其次參考 Reddit r/fantasybball 與 Threads）。
+請總結：
+1. 【12H Waiver Wire 熱門推薦】：點名幾位值得撿拾的球員與原因。
+2. 【最新傷兵及陣容異動】：列出最新傷兵，及因此獲得上場時間得益的球員。
+3. 【專家戰術核心觀點】：Josh Lloyd 今天節目的最核心建議是什麼？
+請務必將所有提及的球員姓名用 **球員全名** 括起來。`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userPrompt }] }],
+                        tools: [{ googleSearch: {} }],
+                        systemInstruction: { parts: [{ text: `你是一位專業的 Bloomberg 風格 NBA Fantasy 分析師。今天是 ${dateStr}。必須實時聯網取得今日最新情報。` }] }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.error) throw new Error(result.error.message);
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    container.innerHTML = `<div class="whitespace-pre-line text-gray-200 text-[11px] leading-relaxed">${highlightPlayerNames(candidate.content.parts[0].text)}</div>`;
+                    timestamp.innerText = `SYNCED: ${timeStr}`;
+                    
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        const sources = groundingMetadata.groundingAttributions.map(attr => ({ uri: attr.web?.uri, title: attr.web?.title })).filter(s => s.uri && s.title);
+                        if (sources.length > 0) {
+                            sourcesList.innerHTML = sources.map(s => `<li><a href="${s.uri}" target="_blank" class="text-cyan-400 hover:underline">${s.title.replace(/</g, "&lt;")}</a></li>`).join('');
+                            sourcesContainer.classList.remove('hidden');
+                        }
+                    }
+                } else {
+                    container.innerHTML = `<div class="text-rose-400 p-4">無法取得資料，可能 API 額度限制或無返回內容。</div>`;
+                }
+            } catch (err) {
+                container.innerHTML = `<div class="text-rose-400 p-4">連線錯誤: ${err.message}</div>`;
+            }
+        }
+
+        function sendQuickPrompt(txt) {
+            document.getElementById('aiChatInput').value = txt;
+            sendAiMessage();
+        }
+
+        async function sendAiMessage() {
+            const key = getApiKey();
+            if (!key) { alert("請先點擊右上角 ⚙️ 設定您的 Gemini API Key！"); return; }
+            
+            const inputEl = document.getElementById('aiChatInput');
+            const txt = inputEl.value.trim();
+            if(!txt) return;
+
+            const chatLog = document.getElementById('aiChatLog');
+            chatLog.innerHTML += `<div class="p-2.5 bg-cyan-950/30 border-r-2 border-cyan-500 rounded-lg text-cyan-100 text-right"><p class="font-bold text-cyan-400 text-[10px] mb-1">YOU:</p><p>${txt}</p></div>`;
+            inputEl.value = '';
+            
+            const loadingId = 'loading-' + Date.now();
+            chatLog.innerHTML += `<div id="${loadingId}" class="p-2 text-gray-500 text-[10px] animate-pulse">Gemini 正在分析您的陣容並檢索網路資料...</div>`;
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+            const contextStr = buildLeagueContext();
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `${contextStr}\n玩家問題：${txt}\n(請基於上述玩家陣容與今日 ${dateStr} 的實時 NBA 情報給出具體建議。提到球員時請用 **球員姓名** 格式)` }] }],
+                        tools: [{ googleSearch: {} }]
+                    })
+                });
+
+                const result = await response.json();
+                const loadEl = document.getElementById(loadingId);
+                if (loadEl) loadEl.remove();
+                
+                if (result.error) throw new Error(result.error.message);
+                const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "無效的回應內容。";
+                
+                chatLog.innerHTML += `<div class="p-3 bg-gray-900/80 border-l-2 border-emerald-400 rounded-lg text-gray-200"><p class="font-bold text-emerald-300 text-[10px] mb-1">🤖 Gemini 顧問:</p><div class="leading-relaxed whitespace-pre-line">${highlightPlayerNames(replyText)}</div></div>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            } catch (err) {
+                const loadEl = document.getElementById(loadingId);
+                if (loadEl) loadEl.remove();
+                chatLog.innerHTML += `<div class="p-2 text-rose-400 text-[10px]">請求失敗: ${err.message}</div>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }
         }
 
         function initPuntControls() {
@@ -709,79 +909,25 @@
         }
 
         function switchTab(tabId) {
-            if (tabId === 'tab4' && !isTab4Unlocked) {
-                let pwd = prompt("🔒 系統鎖定：請輸入戰術情報中心密碼以解鎖");
-                if (pwd === "HorusAldus") {
-                    isTab4Unlocked = true;
-                } else {
-                    if (pwd !== null) alert("❌ 密碼錯誤，拒絕存取。");
-                    return;
-                }
-            }
+            ['tab1', 'tab2', 'tab3', 'tab4'].forEach(t => {
+                const btn = document.getElementById(`btn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                const content = document.getElementById(`${t}Content`);
+                if (btn) btn.className = 'tab-btn-inactive px-3 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all whitespace-nowrap';
+                if (content) content.classList.add('hidden');
+            });
 
-            const btn1 = document.getElementById('btnTab1');
-            const btn2 = document.getElementById('btnTab2');
-            const btn3 = document.getElementById('btnTab3');
-            const btn4 = document.getElementById('btnTab4');
-            const content1 = document.getElementById('tab1Content');
-            const content2 = document.getElementById('tab2Content');
-            const content3 = document.getElementById('tab3Content');
-            const content4 = document.getElementById('tab4Content');
+            const activeBtn = document.getElementById(`btn${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+            const activeContent = document.getElementById(`${tabId}Content`);
+            if (activeBtn) activeBtn.className = 'tab-btn-active px-3 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all whitespace-nowrap';
+            if (activeContent) activeContent.classList.remove('hidden');
 
-            btn1.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-            btn2.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-            btn3.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-            if(btn4) btn4.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-
-            content1.classList.add('hidden');
-            content2.classList.add('hidden');
-            content3.classList.add('hidden');
-            if(content4) content4.classList.add('hidden');
-
-            if (tabId === 'tab1') {
-                btn1.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                content1.classList.remove('hidden');
-            } else if (tabId === 'tab2') {
-                btn2.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                content2.classList.remove('hidden');
+            if (tabId === 'tab2') {
                 renderTable3AndSpider();
                 initTable4Selectors();
                 renderTable5();
             } else if (tabId === 'tab3') {
-                btn3.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                content3.classList.remove('hidden');
                 initCrossMatchupSelector();
                 renderTab3AllSections();
-            } else if (tabId === 'tab4') {
-                if(btn4) btn4.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                if(content4) content4.classList.remove('hidden');
-            }
-        }
-
-        async function sendAiMessage() {
-            const inputEl = document.getElementById('aiChatInput');
-            const txt = inputEl.value.trim();
-            if(!txt) return;
-
-            const chatLog = document.getElementById('aiChatLog');
-            chatLog.innerHTML += `<div class="p-2 bg-cyan-950 border-r-2 border-cyan-500 rounded text-cyan-100 text-right"><p class="font-bold text-[10px] text-cyan-400">YOU:</p><p>${txt}</p></div>`;
-            inputEl.value = '';
-            chatLog.scrollTop = chatLog.scrollHeight;
-
-            try {
-                const response = await fetch(VERCEL_PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] })
-                });
-
-                const result = await response.json();
-                const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "無效的回應內容。";
-                chatLog.innerHTML += `<div class="p-2 bg-gray-900 border-l-2 border-emerald-400 rounded text-gray-200"><p class="font-bold text-[10px] text-emerald-300">🤖 Gemini 顧問:</p><p class="whitespace-pre-line">${replyText}</p></div>`;
-                chatLog.scrollTop = chatLog.scrollHeight;
-            } catch (err) {
-                chatLog.innerHTML += `<div class="p-2 text-rose-400 text-[10px]">請求失敗: ${err.message}</div>`;
-                chatLog.scrollTop = chatLog.scrollHeight;
             }
         }
 
