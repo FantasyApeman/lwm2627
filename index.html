@@ -479,29 +479,91 @@
             </div>
         </div>
 
-        <!-- LEAGUE-WIDE CROSS MATCHUP LEADERBOARD -->
-        <div class="space-y-3">
-            <div class="flex justify-between items-center border-l-4 border-cyan-400 pl-2">
-                <div>
-                    <h2 class="text-base font-black text-cyan-400">⚡ LEAGUE-WIDE CROSS MATCHUP LEADERBOARD</h2>
-                    <p class="text-[9px] text-gray-400 font-bold">全聯盟 14 隊各自與其餘 13 隊進行模擬 9-Cat 對決後的總勝負積分榜（類似綜合實力天梯）</p>
+        <!-- 3-COLUMN SIDE-BY-SIDE GRID: LEADERBOARD, TOTAL ROTO, PER-GAME ROTO -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <!-- 1. LEAGUE-WIDE CROSS MATCHUP LEADERBOARD -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center border-l-4 border-cyan-400 pl-2">
+                    <div>
+                        <h2 class="text-sm font-black text-cyan-400">⚡ CROSS MATCHUP LEADERBOARD</h2>
+                        <p class="text-[8px] text-gray-400 font-bold">全聯盟對決總勝負積分天梯</p>
+                    </div>
+                </div>
+                <div class="cyber-card p-3 rounded-2xl border border-cyan-500/30 overflow-x-auto">
+                    <table class="w-full text-left text-[11px] font-mono leading-tight">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                                <th class="py-1.5 px-1">RNK</th>
+                                <th class="py-1.5 px-1.5">SQUAD</th>
+                                <th class="py-1.5 px-1 text-center">OVERALL (VS 13)</th>
+                                <th class="py-1.5 px-1 text-center">WIN %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leagueCrossLeaderboardTbody" class="divide-y divide-gray-800/40"></tbody>
+                    </table>
                 </div>
             </div>
-            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-                <table class="w-full text-left text-[11px] font-mono leading-tight">
-                    <thead>
-                        <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                            <th class="py-1.5 px-1">RANK</th>
-                            <th class="py-1.5 px-1.5">SQUAD</th>
-                            <th class="py-1.5 px-1 text-center">OVERALL RECORD (VS 13 TEAMS)</th>
-                            <th class="py-1.5 px-1 text-center text-cyan-300 font-bold">WINS</th>
-                            <th class="py-1.5 px-1 text-center text-rose-300 font-bold">LOSSES</th>
-                            <th class="py-1.5 px-1 text-center text-amber-300 font-bold">TIES</th>
-                            <th class="py-1.5 px-1 text-center">WIN RATE</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leagueCrossLeaderboardTbody" class="divide-y divide-gray-800/40"></tbody>
-                </table>
+
+            <!-- 2. ANALYSIS #2: TOTAL ROTO RANK -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center border-l-4 border-amber-400 pl-2">
+                    <div>
+                        <h2 class="text-sm font-black text-amber-400">🏆 ANALYSIS #2: TOTAL ROTO RANK</h2>
+                        <p class="text-[8px] text-gray-400 font-bold">以全隊累計總數據進行 14 隊 Roto 排名</p>
+                    </div>
+                </div>
+                <div class="cyber-card p-3 rounded-2xl border border-amber-500/30 overflow-x-auto">
+                    <table class="w-full text-left text-[11px] font-mono leading-tight">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                                <th class="py-1.5 px-1">RNK</th>
+                                <th class="py-1.5 px-1.5">SQUAD</th>
+                                <th class="py-1.5 px-1 text-center text-amber-300 font-bold">PTS</th>
+                                <th class="py-1.5 px-1 text-center">FG%</th>
+                                <th class="py-1.5 px-1 text-center">FT%</th>
+                                <th class="py-1.5 px-1 text-center">3PT</th>
+                                <th class="py-1.5 px-1 text-center">PTS</th>
+                                <th class="py-1.5 px-1 text-center">REB</th>
+                                <th class="py-1.5 px-1 text-center">AST</th>
+                                <th class="py-1.5 px-1 text-center">STL</th>
+                                <th class="py-1.5 px-1 text-center">BLK</th>
+                                <th class="py-1.5 px-1 text-center">TO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="totalRotoTbody" class="divide-y divide-gray-800/40"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. ANALYSIS #3: PER-GAME ROTO RANK -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center border-l-4 border-purple-400 pl-2">
+                    <div>
+                        <h2 class="text-sm font-black text-purple-400">🎯 ANALYSIS #3: PER-GAME ROTO RANK</h2>
+                        <p class="text-[8px] text-gray-400 font-bold">將數據除以 GP 計算純粹場均效率</p>
+                    </div>
+                </div>
+                <div class="cyber-card p-3 rounded-2xl border border-purple-500/30 overflow-x-auto">
+                    <table class="w-full text-left text-[11px] font-mono leading-tight">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                                <th class="py-1.5 px-1">RNK</th>
+                                <th class="py-1.5 px-1.5">SQUAD</th>
+                                <th class="py-1.5 px-1 text-center text-purple-300 font-bold">PTS</th>
+                                <th class="py-1.5 px-1 text-center">FG%</th>
+                                <th class="py-1.5 px-1 text-center">FT%</th>
+                                <th class="py-1.5 px-1 text-center">3PT</th>
+                                <th class="py-1.5 px-1 text-center">PTS</th>
+                                <th class="py-1.5 px-1 text-center">REB</th>
+                                <th class="py-1.5 px-1 text-center">AST</th>
+                                <th class="py-1.5 px-1 text-center">STL</th>
+                                <th class="py-1.5 px-1 text-center">BLK</th>
+                                <th class="py-1.5 px-1 text-center">TO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perGameRotoTbody" class="divide-y divide-gray-800/40"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -570,71 +632,6 @@
                     </thead>
                     <tbody id="crossMatchupTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
-            </div>
-        </div>
-
-        <!-- SECTION 3 & 4: ROTO RANKINGS (TOTAL VS PER-GAME) -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <!-- ANALYSIS #2: TOTAL ROTO RANK -->
-            <div class="space-y-3">
-                <div class="flex justify-between items-center border-l-4 border-amber-400 pl-2">
-                    <div>
-                        <h2 class="text-sm font-black text-amber-400">🏆 ANALYSIS #2: WEEKLY TOTAL ROTO RANK</h2>
-                        <p class="text-[9px] text-gray-400 font-bold">以全隊累計總數據進行 14 隊 Roto 排名與積分加總（高 GP 優勢）</p>
-                    </div>
-                </div>
-                <div class="cyber-card p-3.5 rounded-2xl border border-amber-500/30 overflow-x-auto">
-                    <table class="w-full text-left text-[11px] font-mono leading-tight">
-                        <thead>
-                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                <th class="py-1.5 px-1">RANK</th>
-                                <th class="py-1.5 px-1.5">SQUAD</th>
-                                <th class="py-1.5 px-1 text-center text-amber-300 font-bold">TOTAL PTS</th>
-                                <th class="py-1.5 px-1 text-center">FG%</th>
-                                <th class="py-1.5 px-1 text-center">FT%</th>
-                                <th class="py-1.5 px-1 text-center">3PTM</th>
-                                <th class="py-1.5 px-1 text-center">PTS</th>
-                                <th class="py-1.5 px-1 text-center">REB</th>
-                                <th class="py-1.5 px-1 text-center">AST</th>
-                                <th class="py-1.5 px-1 text-center">STL</th>
-                                <th class="py-1.5 px-1 text-center">BLK</th>
-                                <th class="py-1.5 px-1 text-center">TO</th>
-                            </tr>
-                        </thead>
-                        <tbody id="totalRotoTbody" class="divide-y divide-gray-800/40"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ANALYSIS #3: PER-GAME ROTO RANK -->
-            <div class="space-y-3">
-                <div class="flex justify-between items-center border-l-4 border-purple-400 pl-2">
-                    <div>
-                        <h2 class="text-sm font-black text-purple-400">🎯 ANALYSIS #3: PER-GAME AVERAGE ROTO RANK</h2>
-                        <p class="text-[9px] text-gray-400 font-bold">將數據除以 GP 計算純粹場均效率（排除場數多寡干擾，真實戰力）</p>
-                    </div>
-                </div>
-                <div class="cyber-card p-3.5 rounded-2xl border border-purple-500/30 overflow-x-auto">
-                    <table class="w-full text-left text-[11px] font-mono leading-tight">
-                        <thead>
-                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                <th class="py-1.5 px-1">RANK</th>
-                                <th class="py-1.5 px-1.5">SQUAD</th>
-                                <th class="py-1.5 px-1 text-center text-purple-300 font-bold">TOTAL PTS</th>
-                                <th class="py-1.5 px-1 text-center">FG%</th>
-                                <th class="py-1.5 px-1 text-center">FT%</th>
-                                <th class="py-1.5 px-1 text-center">3PTM</th>
-                                <th class="py-1.5 px-1 text-center">PTS</th>
-                                <th class="py-1.5 px-1 text-center">REB</th>
-                                <th class="py-1.5 px-1 text-center">AST</th>
-                                <th class="py-1.5 px-1 text-center">STL</th>
-                                <th class="py-1.5 px-1 text-center">BLK</th>
-                                <th class="py-1.5 px-1 text-center">TO</th>
-                            </tr>
-                        </thead>
-                        <tbody id="perGameRotoTbody" class="divide-y divide-gray-800/40"></tbody>
-                    </table>
-                </div>
             </div>
         </div>
     </div>
@@ -1952,7 +1949,7 @@
             renderPerGameRotoRank(statsMap);
         }
 
-        // 新增：全聯盟交叉對戰總勝負排行榜
+        // 優化：全聯盟交叉對戰總勝負排行榜（移除獨立 W/L/T 欄位，精簡顯示）
         function renderLeagueCrossLeaderboard(statsMap) {
             const tbody = document.getElementById('leagueCrossLeaderboardTbody');
             if(!tbody) return;
@@ -1988,7 +1985,7 @@
                 });
 
                 let totalGames = wins + losses + ties;
-                let winRate = totalGames > 0 ? (wins / 13) * 100 : 0; // 對戰其餘 13 隊
+                let winRate = totalGames > 0 ? (wins / 13) * 100 : 0;
 
                 leaderboardData.push({
                     team_name: teamA,
@@ -2000,7 +1997,6 @@
                 });
             });
 
-            // 按勝場與積分排序
             leaderboardData.sort((a, b) => b.scoreMetric - a.scoreMetric);
             const myTeamName = globalData.my_team_name || "Novel Fergus";
 
@@ -2011,12 +2007,9 @@
 
                 tr.innerHTML = `
                     <td class="py-1 px-1 text-center font-bold text-cyan-400">#${idx+1}</td>
-                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(item.team_name)} ${isMyTeam ? '⭐' : ''}</td>
-                    <td class="py-1 px-1 text-center font-bold text-cyan-300 font-mono">${item.wins} WIN - ${item.losses} LOSS - ${item.ties} TIE</td>
-                    <td class="py-1 px-1 text-center font-bold text-emerald-400">${item.wins}</td>
-                    <td class="py-1 px-1 text-center font-bold text-rose-400">${item.losses}</td>
-                    <td class="py-1 px-1 text-center font-bold text-amber-400">${item.ties}</td>
-                    <td class="py-1 px-1 text-center font-bold text-cyan-200">${item.winRate.toFixed(1)}%</td>
+                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[90px]">${cleanName(item.team_name)} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-1 text-center font-bold text-cyan-300 font-mono">${item.wins}-${item.losses}-${item.ties}</td>
+                    <td class="py-1 px-1 text-center font-bold text-cyan-200">${item.winRate.toFixed(0)}%</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -2146,23 +2139,22 @@
 
             rankedTeams.forEach((tName, rankIdx) => {
                 let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus");
-                let st = statsMap[tName];
                 let roto = teamRotoScores[tName];
 
                 let catTds = cats.map(c => {
-                    if(puntCategories[c]) return `<td class="py-1 px-1 text-center text-gray-600 line-through">-</td>`;
+                    if(puntCategories[c]) return `<td class="py-1 px-0.5 text-center text-gray-600 line-through">-</td>`;
                     let pts = roto.catPoints[c] || 0;
-                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-cyan-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
-                    return `<td class="py-1 px-1 text-center ${color}">${pts}</td>`;
+                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-amber-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
+                    return `<td class="py-1 px-0.5 text-center ${color}">${pts}</td>`;
                 }).join('');
 
                 let tr = document.createElement('tr');
                 if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
 
                 tr.innerHTML = `
-                    <td class="py-1 px-1 text-center font-bold text-amber-400">#${rankIdx+1}</td>
-                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
-                    <td class="py-1 px-1 text-center font-black text-amber-300">${roto.total}</td>
+                    <td class="py-1 px-0.5 text-center font-bold text-amber-400">#${rankIdx+1}</td>
+                    <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[80px]">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-0.5 text-center font-black text-amber-300">${roto.total}</td>
                     ${catTds}
                 `;
                 tbody.appendChild(tr);
@@ -2210,19 +2202,19 @@
                 let roto = teamRotoScores[tName];
 
                 let catTds = cats.map(c => {
-                    if(puntCategories[c]) return `<td class="py-1 px-1 text-center text-gray-600 line-through">-</td>`;
+                    if(puntCategories[c]) return `<td class="py-1 px-0.5 text-center text-gray-600 line-through">-</td>`;
                     let pts = roto.catPoints[c] || 0;
                     let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-purple-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
-                    return `<td class="py-1 px-1 text-center ${color}">${pts}</td>`;
+                    return `<td class="py-1 px-0.5 text-center ${color}">${pts}</td>`;
                 }).join('');
 
                 let tr = document.createElement('tr');
                 if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
 
                 tr.innerHTML = `
-                    <td class="py-1 px-1 text-center font-bold text-purple-400">#${rankIdx+1}</td>
-                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
-                    <td class="py-1 px-1 text-center font-black text-purple-300">${roto.total}</td>
+                    <td class="py-1 px-0.5 text-center font-bold text-purple-400">#${rankIdx+1}</td>
+                    <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[80px]">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-0.5 text-center font-black text-purple-300">${roto.total}</td>
                     ${catTds}
                 `;
                 tbody.appendChild(tr);
