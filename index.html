@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Expert Dashboard • Cyber Command Center (Cloud)</title>
+    <title>Fantasy Expert Dashboard • Cyber Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -94,6 +94,7 @@
         <div class="flex items-center space-x-2">
             <button onclick="switchTab('tab1')" id="btnTab1" class="tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">⚡ Matchup Command</button>
             <button onclick="switchTab('tab2')" id="btnTab2" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">📊 League Analytics</button>
+            <button onclick="switchTab('tab3')" id="btnTab3" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">🏆 Weekly Roto & Cross Matchup</button>
         </div>
     </header>
 
@@ -405,7 +406,6 @@
                 </button>
             </div>
 
-            <!-- TRADE IMPACT RESULTS BANNER -->
             <div id="tradeImpactResult" class="hidden cyber-card p-3 rounded-xl border border-indigo-500/40 bg-indigo-950/30 text-xs space-y-1"></div>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -464,6 +464,142 @@
         </div>
     </div>
 
+    <!-- ================= TAB 3: WEEKLY ROTO & CROSS MATCHUP ================= -->
+    <div id="tab3Content" class="space-y-6 hidden">
+        <!-- SECTION 1: ALL TEAMS WEEKLY 9-CAT RESULTS SUMMARY -->
+        <div class="space-y-3">
+            <div class="flex justify-between items-center border-l-4 border-emerald-400 pl-2">
+                <div>
+                    <h2 class="text-base font-black text-emerald-400">📊 ALL TEAMS WEEKLY STATS SUMMARY</h2>
+                    <p class="text-[9px] text-gray-400 font-bold">該週全聯盟所有隊伍的真實/預測 9 類別累計數據與出場場次 (GP)</p>
+                </div>
+            </div>
+            <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30 overflow-x-auto">
+                <table class="w-full text-left text-[11px] font-mono leading-tight">
+                    <thead>
+                        <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                            <th class="py-1.5 px-1.5">SQUAD</th>
+                            <th class="py-1.5 px-1 text-center">GP</th>
+                            <th class="py-1.5 px-1 text-center">FG%</th>
+                            <th class="py-1.5 px-1 text-center">FT%</th>
+                            <th class="py-1.5 px-1 text-center">3PTM</th>
+                            <th class="py-1.5 px-1 text-center">PTS</th>
+                            <th class="py-1.5 px-1 text-center">REB</th>
+                            <th class="py-1.5 px-1 text-center">AST</th>
+                            <th class="py-1.5 px-1 text-center">STL</th>
+                            <th class="py-1.5 px-1 text-center">BLK</th>
+                            <th class="py-1.5 px-1 text-center">TO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tab3WeeklyStatsTbody" class="divide-y divide-gray-800/40"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 2: 1-VS-ALL CROSS MATCHUP MATRIX (ANALYSIS #1) -->
+        <div class="space-y-3">
+            <div class="flex justify-between items-center border-l-4 border-cyan-400 pl-2">
+                <div>
+                    <h2 class="text-base font-black text-cyan-400">⚔️ ANALYSIS #1: 1-VS-ALL CROSS MATCHUP SIMULATOR</h2>
+                    <p class="text-[9px] text-gray-400 font-bold">選擇任意隊伍，系統會即時拿它的數據與其餘 13 隊逐一對決，算出該週橫掃全聯盟的勝負戰績！</p>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1 rounded-lg border border-cyan-500/40">
+                    <span class="text-[10px] text-cyan-400 font-bold">SELECT TEAM:</span>
+                    <select id="crossMatchupTeamSelect" onchange="renderCrossMatchup()" class="bg-gray-900 text-xs text-cyan-300 font-black px-2 py-1 rounded border border-cyan-500/40 focus:outline-none"></select>
+                </div>
+            </div>
+
+            <div id="crossMatchupHeaderBanner" class="cyber-card p-3.5 rounded-xl border border-cyan-500/40 bg-cyan-950/20 text-xs flex justify-between items-center"></div>
+
+            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 overflow-x-auto">
+                <table class="w-full text-left text-[11px] font-mono leading-tight">
+                    <thead>
+                        <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                            <th class="py-1.5 px-1.5">OPPONENT SQUAD</th>
+                            <th class="py-1.5 px-1 text-center">SCORE</th>
+                            <th class="py-1.5 px-1 text-center">RESULT</th>
+                            <th class="py-1.5 px-1 text-center">FG%</th>
+                            <th class="py-1.5 px-1 text-center">FT%</th>
+                            <th class="py-1.5 px-1 text-center">3PTM</th>
+                            <th class="py-1.5 px-1 text-center">PTS</th>
+                            <th class="py-1.5 px-1 text-center">REB</th>
+                            <th class="py-1.5 px-1 text-center">AST</th>
+                            <th class="py-1.5 px-1 text-center">STL</th>
+                            <th class="py-1.5 px-1 text-center">BLK</th>
+                            <th class="py-1.5 px-1 text-center">TO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crossMatchupTbody" class="divide-y divide-gray-800/40"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 3 & 4: ROTO RANKINGS (TOTAL VS PER-GAME) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- ANALYSIS #2: TOTAL ROTO RANK -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center border-l-4 border-amber-400 pl-2">
+                    <div>
+                        <h2 class="text-sm font-black text-amber-400">🏆 ANALYSIS #2: WEEKLY TOTAL ROTO RANK</h2>
+                        <p class="text-[9px] text-gray-400 font-bold">以全隊累計總數據進行 14 隊 Roto 排名與積分加總（高 GP 優勢）</p>
+                    </div>
+                </div>
+                <div class="cyber-card p-3.5 rounded-2xl border border-amber-500/30 overflow-x-auto">
+                    <table class="w-full text-left text-[11px] font-mono leading-tight">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                                <th class="py-1.5 px-1">RANK</th>
+                                <th class="py-1.5 px-1.5">SQUAD</th>
+                                <th class="py-1.5 px-1 text-center text-amber-300 font-bold">TOTAL PTS</th>
+                                <th class="py-1.5 px-1 text-center">FG%</th>
+                                <th class="py-1.5 px-1 text-center">FT%</th>
+                                <th class="py-1.5 px-1 text-center">3PTM</th>
+                                <th class="py-1.5 px-1 text-center">PTS</th>
+                                <th class="py-1.5 px-1 text-center">REB</th>
+                                <th class="py-1.5 px-1 text-center">AST</th>
+                                <th class="py-1.5 px-1 text-center">STL</th>
+                                <th class="py-1.5 px-1 text-center">BLK</th>
+                                <th class="py-1.5 px-1 text-center">TO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="totalRotoTbody" class="divide-y divide-gray-800/40"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ANALYSIS #3: PER-GAME ROTO RANK -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center border-l-4 border-purple-400 pl-2">
+                    <div>
+                        <h2 class="text-sm font-black text-purple-400">🎯 ANALYSIS #3: PER-GAME AVERAGE ROTO RANK</h2>
+                        <p class="text-[9px] text-gray-400 font-bold">將數據除以 GP 計算純粹場均效率（排除場數多寡干擾，真實戰力）</p>
+                    </div>
+                </div>
+                <div class="cyber-card p-3.5 rounded-2xl border border-purple-500/30 overflow-x-auto">
+                    <table class="w-full text-left text-[11px] font-mono leading-tight">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                                <th class="py-1.5 px-1">RANK</th>
+                                <th class="py-1.5 px-1.5">SQUAD</th>
+                                <th class="py-1.5 px-1 text-center text-purple-300 font-bold">TOTAL PTS</th>
+                                <th class="py-1.5 px-1 text-center">FG%</th>
+                                <th class="py-1.5 px-1 text-center">FT%</th>
+                                <th class="py-1.5 px-1 text-center">3PTM</th>
+                                <th class="py-1.5 px-1 text-center">PTS</th>
+                                <th class="py-1.5 px-1 text-center">REB</th>
+                                <th class="py-1.5 px-1 text-center">AST</th>
+                                <th class="py-1.5 px-1 text-center">STL</th>
+                                <th class="py-1.5 px-1 text-center">BLK</th>
+                                <th class="py-1.5 px-1 text-center">TO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perGameRotoTbody" class="divide-y divide-gray-800/40"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 雲端自動讀取 data.json 的 JavaScript 核心邏輯 -->
     <script>
         let globalData = null;
@@ -513,28 +649,64 @@
                 renderTable4();
                 renderTable5();
             }
+            if (!document.getElementById('tab3Content').classList.contains('hidden')) {
+                renderTab3AllSections();
+            }
         }
 
         function switchTab(tabId) {
             const btn1 = document.getElementById('btnTab1');
             const btn2 = document.getElementById('btnTab2');
+            const btn3 = document.getElementById('btnTab3');
             const content1 = document.getElementById('tab1Content');
             const content2 = document.getElementById('tab2Content');
+            const content3 = document.getElementById('tab3Content');
+
+            btn1.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
+            btn2.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
+            btn3.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
+            
+            content1.classList.add('hidden');
+            content2.classList.add('hidden');
+            content3.classList.add('hidden');
 
             if (tabId === 'tab1') {
                 btn1.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                btn2.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
                 content1.classList.remove('hidden');
-                content2.classList.add('hidden');
-            } else {
+            } else if (tabId === 'tab2') {
                 btn2.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                btn1.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
                 content2.classList.remove('hidden');
-                content1.classList.add('hidden');
                 renderTable3AndSpider();
                 initTable4Selectors();
                 renderTable5();
+            } else if (tabId === 'tab3') {
+                btn3.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
+                content3.classList.remove('hidden');
+                initCrossMatchupSelector();
+                renderTab3AllSections();
             }
+        }
+
+        // 自動根據今日日期預設選取當前週次 (Default Week to Today's Date)
+        function getDefaultWeekByDate() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            let matchedWeek = "1";
+            
+            if (globalData && globalData.weeks_config) {
+                for (let w = 1; w <= 23; w++) {
+                    let wStr = String(w);
+                    let wConf = globalData.weeks_config[wStr];
+                    if (wConf && wConf.days && wConf.days.length > 0) {
+                        let startDate = wConf.days[0].iso_date;
+                        let endDate = wConf.days[wConf.days.length - 1].iso_date;
+                        if (todayStr >= startDate && todayStr <= endDate) {
+                            matchedWeek = wStr;
+                            break;
+                        }
+                    }
+                }
+            }
+            return matchedWeek;
         }
 
         async function initCloudDashboard() {
@@ -563,6 +735,11 @@
                 }
 
                 document.getElementById('leagueTitle').innerText = globalData.league_info.name;
+
+                // 預設選擇今日所在的週次
+                let todayWeek = getDefaultWeekByDate();
+                dropdown.value = todayWeek;
+                currentSelectedWeek = todayWeek;
 
                 initPuntControls();
                 onWeekChange();
@@ -750,6 +927,10 @@
             
             buildMatchupButtons();
             renderDashboard(selectedMatchupIndex);
+            
+            if (!document.getElementById('tab3Content').classList.contains('hidden')) {
+                renderTab3AllSections();
+            }
         }
 
         function buildMatchupButtons() {
@@ -1626,6 +1807,295 @@
                     responsive: true, maintainAspectRatio: false,
                     scales: { r: { min: 0, max: 100, ticks: { display: false }, grid: { color: 'rgba(255,255,255,0.1)' } } }
                 }
+            });
+        }
+
+        // =========================================================================
+        // 🏆 TAB 3: WEEKLY ROTO & 1-VS-ALL CROSS MATCHUP LOGIC
+        // =========================================================================
+
+        function getWeeklyTeamStatsMap() {
+            let statsMap = {};
+            const daysList = globalData.weeks_config[currentSelectedWeek].days || [];
+            const todayIso = new Date().toISOString().split('T')[0];
+
+            globalData.teams.forEach(tObj => {
+                let tName = tObj.team_name;
+                const weekActuals = (globalData.actual_stats_by_team || {})[currentSelectedWeek] || {};
+                let act = weekActuals[tName] || { "PTS": 0, "REB": 0, "AST": 0, "3PTM": 0, "STL": 0, "BLK": 0, "TO": 0, "FG%": 0, "FT%": 0, "GP": 0, "FGM": 0, "FGA": 0, "FTM": 0, "FTA": 0 };
+
+                let totalFgm = act.FGM || 0, totalFga = act.FGA || 0;
+                let totalFtm = act.FTM || 0, totalFta = act.FTA || 0;
+                let pts = act.PTS || 0, reb = act.REB || 0, ast = act.AST || 0;
+                let tpt = act["3PTM"] || 0, stl = act.STL || 0, blk = act.BLK || 0, to = act.TO || 0;
+                let totalGP = act.GP || 0;
+
+                if (tObj.roster) {
+                    tObj.roster.forEach(p => {
+                        let s = p.stats || {};
+                        let sched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
+                        let remGp = 0;
+
+                        daysList.forEach(dObj => {
+                            if (dObj.iso_date >= todayIso && sched[dObj.day_name] && isGameActive(p.name, dObj.day_name)) {
+                                remGp++;
+                            }
+                        });
+
+                        totalGP += remGp;
+                        pts += (s.PTS || 0) * remGp;
+                        reb += (s.REB || s.TREB || 0) * remGp;
+                        ast += (s.AST || 0) * remGp;
+                        tpt += (s["3PTM"] || 0) * remGp;
+                        stl += (s.STL || 0) * remGp;
+                        blk += (s.BLK || 0) * remGp;
+                        to  += (s.TO || 0) * remGp;
+                        totalFgm += (s.FGM || 4) * remGp;
+                        totalFga += (s.FGA || 9) * remGp;
+                        totalFtm += (s.FTM || 2.5) * remGp;
+                        totalFta += (s.FTA || 3.3) * remGp;
+                    });
+                }
+
+                let fgPct = totalFga > 0 ? totalFgm / totalFga : 0;
+                let ftPct = totalFta > 0 ? totalFtm / totalFta : 0;
+
+                statsMap[tName] = {
+                    team_name: tName,
+                    GP: totalGP,
+                    "FG%": fgPct, "FT%": ftPct,
+                    "3PTM": tpt, "PTS": pts, "REB": reb, "AST": ast, "STL": stl, "BLK": blk, "TO": to
+                };
+            });
+
+            return statsMap;
+        }
+
+        function initCrossMatchupSelector() {
+            const sel = document.getElementById('crossMatchupTeamSelect');
+            if(!sel) return;
+            if(sel.options.length === 0) {
+                const myTeamName = globalData.my_team_name || "Novel Fergus";
+                globalData.teams.forEach(t => {
+                    sel.add(new Option(cleanName(t.team_name), t.team_name));
+                });
+                let myObj = globalData.teams.find(t => t.team_name === myTeamName || t.team_name.includes("Novel Fergus"));
+                sel.value = myObj ? myObj.team_name : globalData.teams[0].team_name;
+            }
+        }
+
+        function renderTab3AllSections() {
+            let statsMap = getWeeklyTeamStatsMap();
+            renderWeeklyStatsSummary(statsMap);
+            renderCrossMatchup(statsMap);
+            renderTotalRotoRank(statsMap);
+            renderPerGameRotoRank(statsMap);
+        }
+
+        function renderWeeklyStatsSummary(statsMap) {
+            const tbody = document.getElementById('tab3WeeklyStatsTbody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            const myTeamName = globalData.my_team_name || "Novel Fergus";
+
+            globalData.teams.forEach(tObj => {
+                let st = statsMap[tObj.team_name];
+                if(!st) return;
+                let isMyTeam = tObj.team_name === myTeamName || tObj.team_name.includes("Novel Fergus");
+
+                let tr = document.createElement('tr');
+                if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
+
+                let fmtPct = (v) => v <= 0 ? '.000' : (v >= 0.9999 ? '1.000' : v.toFixed(3).replace(/^0/, ''));
+
+                tr.innerHTML = `
+                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(tObj.team_name)} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-1 text-center text-cyan-300 font-bold">${st.GP}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('FG%', st['FG%'])}">${fmtPct(st['FG%'])}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('FT%', st['FT%'])}">${fmtPct(st['FT%'])}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('3PTM', st['3PTM'])}">${Math.round(st['3PTM'])}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('PTS', st.PTS)}">${Math.round(st.PTS)}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('REB', st.REB)}">${Math.round(st.REB)}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('AST', st.AST)}">${Math.round(st.AST)}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('STL', st.STL)}">${Math.round(st.STL)}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('BLK', st.BLK)}">${Math.round(st.BLK)}</td>
+                    <td class="py-1 px-1 text-center ${getZClass('TO', st.TO)}">${Math.round(st.TO)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderCrossMatchup(passedStatsMap) {
+            let statsMap = passedStatsMap || getWeeklyTeamStatsMap();
+            const targetTeam = document.getElementById('crossMatchupTeamSelect').value;
+            const targetStats = statsMap[targetTeam];
+            if(!targetStats) return;
+
+            const tbody = document.getElementById('crossMatchupTbody');
+            tbody.innerHTML = '';
+
+            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
+            let totalWins = 0, totalLosses = 0, totalTies = 0;
+
+            globalData.teams.forEach(oppObj => {
+                let oppName = oppObj.team_name;
+                if(oppName === targetTeam) return;
+
+                let oppStats = statsMap[oppName];
+                let w = 0, l = 0, t = 0;
+
+                let catBadges = cats.map(c => {
+                    let isPunted = puntCategories[c];
+                    let tVal = targetStats[c], oVal = oppStats[c];
+                    let isWin = c === 'TO' ? tVal < oVal : tVal > oVal;
+                    let isTie = Math.abs(tVal - oVal) < 0.0001;
+
+                    if(!isPunted) {
+                        if(isTie) t++;
+                        else if(isWin) w++;
+                        else l++;
+                    }
+
+                    if(isPunted) return `<td class="py-1 px-1 text-center text-gray-600 line-through">PUNT</td>`;
+                    if(isTie) return `<td class="py-1 px-1 text-center text-amber-400 font-bold">D</td>`;
+                    return isWin ? `<td class="py-1 px-1 text-center text-emerald-400 font-bold">W</td>` : `<td class="py-1 px-1 text-center text-rose-400 font-bold">L</td>`;
+                }).join('');
+
+                if(w > l) totalWins++;
+                else if(l > w) totalLosses++;
+                else totalTies++;
+
+                let resBadge = w > l ? `<span class="badge-win px-2 py-0.5 rounded font-bold">WIN</span>` : (l > w ? `<span class="badge-loss px-2 py-0.5 rounded font-bold">LOSS</span>` : `<span class="badge-tie px-2 py-0.5 rounded font-bold">TIE</span>`);
+
+                let tr = document.createElement('tr');
+                tr.className = "hover:bg-cyan-950/20 transition-all";
+                tr.innerHTML = `
+                    <td class="py-1 px-1.5 font-bold text-gray-200">vs ${cleanName(oppName)}</td>
+                    <td class="py-1 px-1 text-center font-bold text-cyan-300 font-mono">${w} - ${l} - ${t}</td>
+                    <td class="py-1 px-1 text-center">${resBadge}</td>
+                    ${catBadges}
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('crossMatchupHeaderBanner').innerHTML = `
+                <div>
+                    <span class="text-gray-400 font-bold uppercase block text-[9px]">CROSS-MATCHUP SUMMARY FOR</span>
+                    <span class="text-sm font-black text-cyan-300">${cleanName(targetTeam).toUpperCase()}</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-gray-400 font-bold block text-[9px]">OVERALL WEEKLY RECORD VS ALL 13 TEAMS</span>
+                    <span class="text-base font-black text-emerald-400">${totalWins} WIN - ${totalLosses} LOSS - ${totalTies} TIE</span>
+                </div>
+            `;
+        }
+
+        function renderTotalRotoRank(passedStatsMap) {
+            let statsMap = passedStatsMap || getWeeklyTeamStatsMap();
+            const tbody = document.getElementById('totalRotoTbody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
+            let teamsList = globalData.teams.map(t => t.team_name);
+            let teamRotoScores = {};
+            teamsList.forEach(t => teamRotoScores[t] = { total: 0, catPoints: {} });
+
+            cats.forEach(c => {
+                if(puntCategories[c]) return;
+                let sorted = [...teamsList].sort((a,b) => c === 'TO' ? statsMap[a][c] - statsMap[b][c] : statsMap[b][c] - statsMap[a][c]);
+                sorted.forEach((tName, idx) => {
+                    let pts = 14 - idx;
+                    teamRotoScores[tName].catPoints[c] = pts;
+                    teamRotoScores[tName].total += pts;
+                });
+            });
+
+            let rankedTeams = [...teamsList].sort((a,b) => teamRotoScores[b].total - teamRotoScores[a].total);
+            const myTeamName = globalData.my_team_name || "Novel Fergus";
+
+            rankedTeams.forEach((tName, rankIdx) => {
+                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus");
+                let st = statsMap[tName];
+                let roto = teamRotoScores[tName];
+
+                let catTds = cats.map(c => {
+                    if(puntCategories[c]) return `<td class="py-1 px-1 text-center text-gray-600 line-through">-</td>`;
+                    let pts = roto.catPoints[c] || 0;
+                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-cyan-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
+                    return `<td class="py-1 px-1 text-center ${color}">${pts}</td>`;
+                }).join('');
+
+                let tr = document.createElement('tr');
+                if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
+
+                tr.innerHTML = `
+                    <td class="py-1 px-1 text-center font-bold text-amber-400">#${rankIdx+1}</td>
+                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-1 text-center font-black text-amber-300">${roto.total}</td>
+                    ${catTds}
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPerGameRotoRank(passedStatsMap) {
+            let statsMap = passedStatsMap || getWeeklyTeamStatsMap();
+            const tbody = document.getElementById('perGameRotoTbody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
+            let teamsList = globalData.teams.map(t => t.team_name);
+
+            let perGameMap = {};
+            teamsList.forEach(tName => {
+                let st = statsMap[tName];
+                let gp = Math.max(1, st.GP);
+                perGameMap[tName] = {
+                    "FG%": st["FG%"], "FT%": st["FT%"],
+                    "3PTM": st["3PTM"] / gp, "PTS": st.PTS / gp, "REB": st.REB / gp,
+                    "AST": st.AST / gp, "STL": st.STL / gp, "BLK": st.BLK / gp, "TO": st.TO / gp
+                };
+            });
+
+            let teamRotoScores = {};
+            teamsList.forEach(t => teamRotoScores[t] = { total: 0, catPoints: {} });
+
+            cats.forEach(c => {
+                if(puntCategories[c]) return;
+                let sorted = [...teamsList].sort((a,b) => c === 'TO' ? perGameMap[a][c] - perGameMap[b][c] : perGameMap[b][c] - perGameMap[a][c]);
+                sorted.forEach((tName, idx) => {
+                    let pts = 14 - idx;
+                    teamRotoScores[tName].catPoints[c] = pts;
+                    teamRotoScores[tName].total += pts;
+                });
+            });
+
+            let rankedTeams = [...teamsList].sort((a,b) => teamRotoScores[b].total - teamRotoScores[a].total);
+            const myTeamName = globalData.my_team_name || "Novel Fergus";
+
+            rankedTeams.forEach((tName, rankIdx) => {
+                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus");
+                let roto = teamRotoScores[tName];
+
+                let catTds = cats.map(c => {
+                    if(puntCategories[c]) return `<td class="py-1 px-1 text-center text-gray-600 line-through">-</td>`;
+                    let pts = roto.catPoints[c] || 0;
+                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-purple-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
+                    return `<td class="py-1 px-1 text-center ${color}">${pts}</td>`;
+                }).join('');
+
+                let tr = document.createElement('tr');
+                if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
+
+                tr.innerHTML = `
+                    <td class="py-1 px-1 text-center font-bold text-purple-400">#${rankIdx+1}</td>
+                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-1 text-center font-black text-purple-300">${roto.total}</td>
+                    ${catTds}
+                `;
+                tbody.appendChild(tr);
             });
         }
 
