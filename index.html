@@ -95,6 +95,7 @@
             <button onclick="switchTab('tab1')" id="btnTab1" class="tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">⚡ Matchup Command</button>
             <button onclick="switchTab('tab2')" id="btnTab2" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">📊 League Analytics</button>
             <button onclick="switchTab('tab3')" id="btnTab3" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">🏆 Weekly Roto & Cross Matchup</button>
+            <button onclick="switchTab('tab4')" id="btnTab4" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">🔒 AI Hub</button>
         </div>
     </header>
 
@@ -636,6 +637,20 @@
         </div>
     </div>
 
+    <!-- ================= TAB 4: AI HUB ================= -->
+    <div id="tab4Content" class="space-y-6 hidden">
+        <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30">
+            <h3 class="text-xs font-black text-emerald-400 mb-2">💬 專屬聯網戰術顧問 (Gemini via Vercel)</h3>
+            <div id="aiChatLog" class="p-4 h-[350px] overflow-y-auto space-y-3 text-[11px] font-mono bg-gray-950/40 rounded-lg border border-gray-800">
+                <div class="p-2.5 bg-gray-900 border-l-2 border-emerald-400 rounded text-emerald-300">哈囉！我是您的專屬 Fantasy 顧問。已讀取您的聯賽陣容。你可以問我 Waiver 撿人、交易評估，或對戰策略！</div>
+            </div>
+            <div class="mt-3 flex gap-2">
+                <input type="text" id="aiChatInput" placeholder="輸入戰術問題..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700 font-mono focus:outline-none focus:border-emerald-500" onkeypress="if(event.key === 'Enter') sendAiMessage()">
+                <button onclick="sendAiMessage()" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-600 transition">SEND</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 雲端自動讀取 data.json 的 JavaScript 核心邏輯 -->
     <script>
         let globalData = null;
@@ -646,6 +661,9 @@
 
         let benchedMap = {};
         let initialOutInitialized = false;
+        let isTab4Unlocked = false;
+
+        const VERCEL_PROXY_URL = "https://gemini-proxy-wheat-five.vercel.app/api/gemini";
         
         let table3SortColumn = 'team_name';
         let table3SortAsc = true;
@@ -691,20 +709,34 @@
         }
 
         function switchTab(tabId) {
+            if (tabId === 'tab4' && !isTab4Unlocked) {
+                let pwd = prompt("🔒 系統鎖定：請輸入戰術情報中心密碼以解鎖");
+                if (pwd === "HorusAldus") {
+                    isTab4Unlocked = true;
+                } else {
+                    if (pwd !== null) alert("❌ 密碼錯誤，拒絕存取。");
+                    return;
+                }
+            }
+
             const btn1 = document.getElementById('btnTab1');
             const btn2 = document.getElementById('btnTab2');
             const btn3 = document.getElementById('btnTab3');
+            const btn4 = document.getElementById('btnTab4');
             const content1 = document.getElementById('tab1Content');
             const content2 = document.getElementById('tab2Content');
             const content3 = document.getElementById('tab3Content');
+            const content4 = document.getElementById('tab4Content');
 
             btn1.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
             btn2.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
             btn3.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-            
+            if(btn4) btn4.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
+
             content1.classList.add('hidden');
             content2.classList.add('hidden');
             content3.classList.add('hidden');
+            if(content4) content4.classList.add('hidden');
 
             if (tabId === 'tab1') {
                 btn1.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
@@ -720,6 +752,36 @@
                 content3.classList.remove('hidden');
                 initCrossMatchupSelector();
                 renderTab3AllSections();
+            } else if (tabId === 'tab4') {
+                if(btn4) btn4.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
+                if(content4) content4.classList.remove('hidden');
+            }
+        }
+
+        async function sendAiMessage() {
+            const inputEl = document.getElementById('aiChatInput');
+            const txt = inputEl.value.trim();
+            if(!txt) return;
+
+            const chatLog = document.getElementById('aiChatLog');
+            chatLog.innerHTML += `<div class="p-2 bg-cyan-950 border-r-2 border-cyan-500 rounded text-cyan-100 text-right"><p class="font-bold text-[10px] text-cyan-400">YOU:</p><p>${txt}</p></div>`;
+            inputEl.value = '';
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            try {
+                const response = await fetch(VERCEL_PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] })
+                });
+
+                const result = await response.json();
+                const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "無效的回應內容。";
+                chatLog.innerHTML += `<div class="p-2 bg-gray-900 border-l-2 border-emerald-400 rounded text-gray-200"><p class="font-bold text-[10px] text-emerald-300">🤖 Gemini 顧問:</p><p class="whitespace-pre-line">${replyText}</p></div>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            } catch (err) {
+                chatLog.innerHTML += `<div class="p-2 text-rose-400 text-[10px]">請求失敗: ${err.message}</div>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
             }
         }
 
@@ -1064,7 +1126,6 @@
             return 'z-punt';
         }
 
-        // 專門用於當週數據摘要的動態 Z-Score 計算
         function getWeeklyDynamicZClass(cat, val, statsMap) {
             if(puntCategories[cat]) return 'z-avg opacity-40 line-through';
             let values = globalData.teams.map(t => statsMap[t.team_name][cat]);
@@ -1073,7 +1134,7 @@
             let std = Math.sqrt(variance);
 
             let z = std > 0 ? (val - mean) / std : 0;
-            if (cat === 'TO') z = -z; // TO 越低越好
+            if (cat === 'TO') z = -z;
 
             if (z >= 0.8) return 'z-elite';
             if (z >= 0.25) return 'z-good';
@@ -2032,7 +2093,6 @@
             });
         }
 
-        // 優化：使用當週動態 Z-Score 重新計算 ALL TEAMS WEEKLY STATS SUMMARY 的熱力標籤顏色
         function renderWeeklyStatsSummary(statsMap) {
             const tbody = document.getElementById('tab3WeeklyStatsTbody');
             if(!tbody) return;
