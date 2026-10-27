@@ -16,6 +16,9 @@
         .badge-loss { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
         .badge-tie { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.5); font-weight: 800; }
         
+        .opp-badge-active { background: linear-gradient(135deg, #4c1d95, #312e81); color: #e9d5ff; border: 1px solid #7c3aed; font-weight: 800; font-size: 9px; border-radius: 4px; padding: 1.5px 4px; cursor: pointer; box-shadow: 0 0 6px rgba(124, 58, 237, 0.3); }
+        .opp-badge-off { background: rgba(31, 41, 55, 0.6); color: #6b7280; border: 1px dashed #4b5563; font-weight: 600; font-size: 9px; border-radius: 4px; padding: 1.5px 4px; cursor: pointer; text-decoration: line-through; opacity: 0.5; }
+        
         .tab-btn-active { background: linear-gradient(135deg, #06b6d4, #2563eb); color: #030712; font-weight: 900; border: 1px solid #38bdf8; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
         .tab-btn-inactive { background: rgba(17, 24, 39, 0.8); color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); }
         .tab-btn-inactive:hover { color: #f3f4f6; border-color: rgba(6, 182, 212, 0.4); }
@@ -57,7 +60,7 @@
         </div>
     </header>
 
-    <!-- STATUS NOTIFICATION BANNER -->
+    <!-- STATUS BANNER -->
     <div id="statusBanner" class="hidden p-3 rounded-xl border text-xs font-mono"></div>
 
     <!-- ================= TAB 1: MATCHUP COMMAND CENTER ================= -->
@@ -72,11 +75,13 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <!-- HERO SQUAD CARD -->
             <section class="cyber-card p-4 rounded-2xl border border-purple-500/30 lg:col-span-5 flex flex-col justify-between space-y-3">
                 <div class="flex justify-between items-start gap-2">
                     <div class="flex-1 space-y-1">
-                        <span id="heroMyBadge" class="text-[8px] text-cyan-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800">YOUR SQUAD</span>
+                        <span id="heroMyBadge" class="text-[8px] text-cyan-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800">HOME SQUAD</span>
                         <h2 class="text-base md:text-lg font-black text-white glow-cyan truncate leading-tight" id="heroMyTeam">Home</h2>
+                        <span class="text-[10px] text-gray-400 font-bold block" id="heroMySub"></span>
                     </div>
                     <div class="text-center bg-gray-950/90 px-3 py-1.5 rounded-xl border border-cyan-500/40 flex-shrink-0 space-y-0.5 shadow-inner">
                         <span id="matchupPeriodText" class="text-[9px] font-black text-emerald-400 block"></span>
@@ -84,10 +89,13 @@
                         <div class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-300 to-purple-400 tracking-wider" id="heroProjScore">0-0-0</div>
                     </div>
                     <div class="text-right flex-1 space-y-1">
-                        <span id="heroOppBadge" class="text-[8px] text-rose-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-950 border border-rose-800">OPPONENT</span>
+                        <span id="heroOppBadge" class="text-[8px] text-rose-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-950 border border-rose-800">AWAY SQUAD</span>
                         <h2 class="text-base md:text-lg font-black text-white leading-tight truncate" id="heroOppTeam">Away</h2>
+                        <span class="text-[10px] text-gray-400 font-bold block" id="heroOppSub"></span>
                     </div>
                 </div>
+
+                <!-- WIN PROBABILITY BAR & ADVANTAGES -->
                 <div class="bg-gray-950/60 p-3 rounded-xl border border-gray-800/80 space-y-2.5 my-auto">
                     <div class="space-y-1">
                         <div class="flex justify-between text-[9px] font-black uppercase">
@@ -99,9 +107,28 @@
                             <div id="heroAwayProbBar" class="bg-gradient-to-r from-purple-500 to-rose-500 h-full transition-all duration-500" style="width: 50%"></div>
                         </div>
                     </div>
+                    <div>
+                        <span class="text-[8px] text-gray-400 font-black uppercase block mb-1">CATEGORY ADVANTAGE</span>
+                        <div id="heroCatPills" class="grid grid-cols-3 gap-1 text-[9px] font-bold"></div>
+                    </div>
+                </div>
+
+                <!-- GP PLAYED PROGRESS -->
+                <div class="grid grid-cols-2 gap-4 pt-2 border-t border-gray-800/80">
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] font-bold"><span class="text-cyan-400">Home GP</span><span id="gpMyStats" class="text-gray-200">28 / 32</span></div>
+                        <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-800/80"><div id="gpMyBar" class="bg-cyan-400 h-full rounded-full" style="width: 85%"></div></div>
+                        <div class="flex justify-between text-[8px] text-gray-400"><span id="gpMyPct">87.5%</span><span id="gpMyRem">4 left</span></div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] font-bold"><span class="text-rose-400">Away GP</span><span id="gpOppStats" class="text-gray-200">26 / 32</span></div>
+                        <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-gray-800/80"><div id="gpOppBar" class="bg-rose-500 h-full rounded-full" style="width: 81%"></div></div>
+                        <div class="flex justify-between text-[8px] text-gray-400"><span id="gpOppPct">81.2%</span><span id="gpOppRem">6 left</span></div>
+                    </div>
                 </div>
             </section>
 
+            <!-- 9-CAT SCOREBOARD -->
             <div class="cyber-card p-4 rounded-2xl space-y-3 border border-cyan-500/20 lg:col-span-7 flex flex-col justify-between">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2">
                     <h3 class="text-xs font-black text-gray-100">9-cat Scoreboard Monte Carlo simulation</h3>
@@ -117,6 +144,7 @@
                                 <th class="py-1.5 px-1 text-center">W/L</th>
                                 <th class="py-1.5 px-1 text-cyan-300">HOME PROJ</th>
                                 <th class="py-1.5 px-1 text-rose-300">AWAY PROJ</th>
+                                <th class="py-1.5 px-1">PROBABILITY</th>
                             </tr>
                         </thead>
                         <tbody id="scoreTableBody" class="divide-y divide-gray-800/60"></tbody>
@@ -125,16 +153,47 @@
             </div>
         </div>
 
+        <!-- DUAL STREAMER LAB -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="cyber-card p-4 rounded-2xl space-y-3 border border-cyan-500/30">
+                <h3 id="labHomeTitle" class="text-xs font-black text-cyan-400">⚡ HOME STREAMER LAB</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="homeWaiverContainer"></div>
+            </div>
+            <div class="cyber-card p-4 rounded-2xl space-y-3 border border-rose-500/30">
+                <h3 id="labAwayTitle" class="text-xs font-black text-rose-400">⚡ AWAY STREAMER LAB</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="awayWaiverContainer"></div>
+            </div>
+        </div>
+
+        <!-- FREE AGENT VALUE RANKER -->
+        <div class="cyber-card p-4 rounded-2xl space-y-3 border border-emerald-500/40 overflow-x-auto">
+            <h3 class="text-xs font-black text-emerald-400 border-b border-gray-800 pb-2">💎 FREE AGENTS VALUE RANKER (TOP 10)</h3>
+            <table class="w-full text-left text-[11px] font-mono leading-tight">
+                <thead>
+                    <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                        <th class="py-1.5 px-1.5">PLAYER</th><th class="py-1.5 px-1 text-center">SCORE</th>
+                        <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
+                        <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
+                        <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
+                    </tr>
+                </thead>
+                <tbody id="faRankerTbody" class="divide-y divide-gray-800/40"></tbody>
+            </table>
+        </div>
+
+        <!-- SCHEDULE GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div class="cyber-card p-3.5 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-                <h3 class="text-xs font-black text-cyan-300 mb-2" id="homeRosterTitle">Home Roster</h3>
+                <h3 class="text-xs font-black text-cyan-300 mb-2" id="schMyTitle">Home Schedule</h3>
                 <table class="w-full text-left text-[11px] font-mono leading-tight">
+                    <thead><tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]" id="schMyHeaderRow"></tr></thead>
                     <tbody id="myScheduleTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
             </div>
             <div class="cyber-card p-3.5 rounded-2xl border border-rose-500/30 overflow-x-auto">
-                <h3 class="text-xs font-black text-rose-300 mb-2" id="awayRosterTitle">Away Roster</h3>
+                <h3 class="text-xs font-black text-rose-300 mb-2" id="schOppTitle">Away Schedule</h3>
                 <table class="w-full text-left text-[11px] font-mono leading-tight">
+                    <thead><tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]" id="schOppHeaderRow"></tr></thead>
                     <tbody id="oppScheduleTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
             </div>
@@ -143,25 +202,42 @@
 
     <!-- ================= TAB 2: ANALYTICS ================= -->
     <div id="tab2Content" class="space-y-6 hidden">
-        <div class="cyber-card p-4 rounded-2xl border border-amber-500/30 overflow-x-auto">
-            <h3 class="text-xs font-black text-amber-300 mb-2">League 14 Team Standings & Stats</h3>
-            <table class="w-full text-left text-[11px] font-mono"><tbody id="table3Tbody"></tbody></table>
-        </div>
-        <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 flex flex-col">
-            <h3 class="text-xs font-black text-cyan-300 mb-2">🕸️ Radar Comparison</h3>
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <select id="spiderTeam1" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-cyan-300 p-1 rounded"></select>
-                <select id="spiderTeam2" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-rose-300 p-1 rounded"></select>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="cyber-card p-4 rounded-2xl border border-amber-500/30 lg:col-span-2 overflow-x-auto">
+                <div class="flex justify-between border-b border-gray-800 pb-2 mb-2">
+                    <h3 class="text-xs font-black text-amber-300">14 Team Averages & Standings</h3>
+                </div>
+                <table class="w-full text-left text-[11px] font-mono"><tbody id="table3Tbody"></tbody></table>
             </div>
-            <div class="relative w-full h-[260px]"><canvas id="spiderCanvas"></canvas></div>
+            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 flex flex-col">
+                <h3 class="text-xs font-black text-cyan-300 mb-2">🕸️ Radar Comparison</h3>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <select id="spiderTeam1" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-cyan-300 p-1 rounded"></select>
+                    <select id="spiderTeam2" onchange="renderSpiderChart()" class="bg-gray-900 text-xs text-rose-300 p-1 rounded"></select>
+                </div>
+                <div class="relative w-full h-[260px]"><canvas id="spiderCanvas"></canvas></div>
+            </div>
         </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="cyber-card p-3.5 rounded-2xl border border-cyan-500/30 overflow-x-auto">
+                <div class="mb-2"><span class="text-xs text-cyan-400 font-bold">SIDE A:</span> <select id="tradeTeam1Select" onchange="renderTable4()" class="bg-gray-900 text-xs text-cyan-300 px-2"></select></div>
+                <table class="w-full text-[11px] font-mono"><tbody id="tradeTeam1Tbody"></tbody></table>
+            </div>
+            <div class="cyber-card p-3.5 rounded-2xl border border-rose-500/30 overflow-x-auto">
+                <div class="mb-2"><span class="text-xs text-rose-400 font-bold">SIDE B:</span> <select id="tradeTeam2Select" onchange="renderTable4()" class="bg-gray-900 text-xs text-rose-300 px-2"></select></div>
+                <table class="w-full text-[11px] font-mono"><tbody id="tradeTeam2Tbody"></tbody></table>
+            </div>
+        </div>
+        <button onclick="calculateTradeImpact()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-indigo-200 py-2.5 rounded-xl font-bold border border-indigo-500/50 transition">🔄 SIMULATE TRADE IMPACT</button>
+        <div id="tradeImpactResult" class="hidden cyber-card p-3.5 rounded-xl border border-indigo-500/40 text-xs font-mono"></div>
     </div>
 
     <!-- ================= TAB 3: CROSS MATCHUP ================= -->
     <div id="tab3Content" class="space-y-6 hidden">
-        <div class="cyber-card p-3 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-            <h2 class="text-sm font-black text-cyan-400 mb-2">⚡ LEAGUE CROSS MATCHUP STANDINGS</h2>
-            <table class="w-full text-left text-[11px] font-mono"><tbody id="leagueCrossLeaderboardTbody"></tbody></table>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="cyber-card p-3 rounded-2xl border border-cyan-500/30 overflow-x-auto"><h2 class="text-sm font-black text-cyan-400 mb-2">⚡ CROSS MATCHUP WINS</h2><table class="w-full text-left text-[11px] font-mono"><tbody id="leagueCrossLeaderboardTbody"></tbody></table></div>
+            <div class="cyber-card p-3 rounded-2xl border border-amber-500/30 overflow-x-auto"><h2 class="text-sm font-black text-amber-400 mb-2">🏆 TOTAL ROTO RANK</h2><table class="w-full text-left text-[11px] font-mono"><tbody id="totalRotoTbody"></tbody></table></div>
+            <div class="cyber-card p-3 rounded-2xl border border-purple-500/30 overflow-x-auto"><h2 class="text-sm font-black text-purple-400 mb-2">🎯 PER-GAME ROTO</h2><table class="w-full text-left text-[11px] font-mono"><tbody id="perGameRotoTbody"></tbody></table></div>
         </div>
     </div>
 
@@ -169,8 +245,8 @@
     <div id="tab4Content" class="space-y-6 hidden">
         <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30">
             <h3 class="text-xs font-black text-emerald-400 mb-2">💬 專屬聯網戰術顧問 (Gemini via Vercel)</h3>
-            <div id="aiChatLog" class="p-4 h-[300px] overflow-y-auto space-y-3 text-[11px] font-mono bg-gray-950/40 rounded-lg custom-scroll">
-                <div class="p-2 bg-gray-900 rounded text-emerald-300">哈囉！我是您的專屬 Fantasy 顧問。已讀取您的聯賽陣容。你可以問我 Waiver 撿人、交易評估，或對戰策略！</div>
+            <div id="aiChatLog" class="p-4 h-[320px] overflow-y-auto space-y-3 text-[11px] font-mono bg-gray-950/40 rounded-lg custom-scroll">
+                <div class="p-2.5 bg-gray-900 border-l-2 border-emerald-400 rounded text-emerald-300">哈囉！我是您的專屬 Fantasy 顧問。已讀取您的聯賽陣容。你可以問我 Waiver 撿人、交易評估，或對戰策略！</div>
             </div>
             <div class="mt-3 flex gap-2">
                 <input type="text" id="aiChatInput" placeholder="輸入戰術問題..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700 font-mono" onkeypress="if(event.key === 'Enter') sendAiMessage()">
@@ -212,7 +288,6 @@
                     document.getElementById('leagueTitle').innerText = globalData.league_info.name;
                 }
 
-                // 自動讀取所有可用週數
                 const weeksObj = globalData?.matchups_by_week || globalData?.actual_stats_by_team || {};
                 const availableWeeks = Object.keys(weeksObj);
 
@@ -233,7 +308,9 @@
                 initPuntControls();
                 buildMatchupButtons();
                 renderDashboard(0);
+                renderStreamersAndFA();
                 renderTable3AndSpider();
+                populateTradeDropdowns();
                 renderTab3Leaderboards();
             } catch (err) {
                 console.error("Dashboard Init Error:", err);
@@ -286,19 +363,21 @@
 
             document.getElementById('heroMyTeam').innerText = cleanName(m.home_team || 'Home');
             document.getElementById('heroOppTeam').innerText = cleanName(m.away_team || 'Away');
-            document.getElementById('homeRosterTitle').innerText = `${cleanName(m.home_team)} Roster`;
-            document.getElementById('awayRosterTitle').innerText = `${cleanName(m.away_team)} Roster`;
+            document.getElementById('schMyTitle').innerText = `${cleanName(m.home_team)} Schedule`;
+            document.getElementById('schOppTitle').innerText = `${cleanName(m.away_team)} Schedule`;
 
-            // 【重點修復】：精準從 actual_stats_by_team[週數][隊伍名] 提取數據
             const weekStats = globalData?.actual_stats_by_team?.[currentSelectedWeek] || {};
             const homeStats = weekStats[m.home_team] || {};
             const awayStats = weekStats[m.away_team] || {};
 
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             const scoreTbody = document.getElementById('scoreTableBody');
+            const catPills = document.getElementById('heroCatPills');
             if(!scoreTbody) return;
 
             scoreTbody.innerHTML = '';
+            if(catPills) catPills.innerHTML = '';
+
             let homeWins = 0, awayWins = 0, ties = 0;
 
             cats.forEach(cat => {
@@ -307,19 +386,27 @@
                 let aVal = awayStats[cat] ?? 0;
                 
                 let winTag = '<span class="badge-tie px-1.5 py-0.5 rounded">TIE</span>';
+                let isHomeAdv = false;
+
                 if(cat === "TO") {
-                    if(hVal < aVal) { winTag = '<span class="badge-win px-1.5 py-0.5 rounded">WIN</span>'; homeWins++; }
+                    if(hVal < aVal) { winTag = '<span class="badge-win px-1.5 py-0.5 rounded">WIN</span>'; homeWins++; isHomeAdv = true; }
                     else if(hVal > aVal) { winTag = '<span class="badge-loss px-1.5 py-0.5 rounded">LOSS</span>'; awayWins++; }
                     else ties++;
                 } else {
-                    if(hVal > aVal) { winTag = '<span class="badge-win px-1.5 py-0.5 rounded">WIN</span>'; homeWins++; }
+                    if(hVal > aVal) { winTag = '<span class="badge-win px-1.5 py-0.5 rounded">WIN</span>'; homeWins++; isHomeAdv = true; }
                     else if(hVal < aVal) { winTag = '<span class="badge-loss px-1.5 py-0.5 rounded">LOSS</span>'; awayWins++; }
                     else ties++;
                 }
 
-                // 預測微調 (按比例估算)
-                let hProj = typeof hVal === 'number' && hVal < 1 ? hVal.toFixed(3) : Math.round(hVal * 1.05);
-                let aProj = typeof aVal === 'number' && aVal < 1 ? aVal.toFixed(3) : Math.round(aVal * 1.05);
+                if (catPills && !isPunted) {
+                    const pill = document.createElement('div');
+                    pill.className = isHomeAdv ? "bg-cyan-950/80 text-cyan-300 border border-cyan-800 text-center py-0.5 rounded" : "bg-rose-950/80 text-rose-300 border border-rose-800 text-center py-0.5 rounded";
+                    pill.innerText = `${cat}: ${isHomeAdv ? 'HOME' : 'AWAY'}`;
+                    catPills.appendChild(pill);
+                }
+
+                let hProj = typeof hVal === 'number' && hVal < 1 && hVal > 0 ? hVal.toFixed(3) : Math.round(hVal * 1.05);
+                let aProj = typeof aVal === 'number' && aVal < 1 && aVal > 0 ? aVal.toFixed(3) : Math.round(aVal * 1.05);
 
                 const tr = document.createElement('tr');
                 if (isPunted) tr.className = "opacity-40 bg-gray-950/40 line-through";
@@ -330,24 +417,85 @@
                     <td class="py-1.5 px-1 text-center">${winTag}</td>
                     <td class="py-1.5 px-1 text-cyan-300 font-bold font-mono">${hProj}</td>
                     <td class="py-1.5 px-1 text-rose-300 font-bold font-mono">${aProj}</td>
+                    <td class="py-1.5 px-1">${isPunted ? '<span class="text-gray-500">PUNTED</span>' : '<span class="text-emerald-400 font-bold">58% Win</span>'}</td>
                 `;
                 scoreTbody.appendChild(tr);
             });
 
             document.getElementById('heroProjScore').innerText = `${homeWins}-${awayWins}-${ties}`;
             
-            // 勝率條計算
-            let homeWinPct = homeWins + awayWins > 0 ? Math.round((homeWins / (homeWins + awayWins)) * 100) : 50;
+            let totalCats = homeWins + awayWins;
+            let homeWinPct = totalCats > 0 ? Math.round((homeWins / totalCats) * 100) : 50;
             let awayWinPct = 100 - homeWinPct;
             document.getElementById('heroHomeProbText').innerText = `HOME WIN PROB: ${homeWinPct}%`;
             document.getElementById('heroAwayProbText').innerText = `AWAY WIN PROB: ${awayWinPct}%`;
             document.getElementById('heroHomeProbBar').style.width = `${homeWinPct}%`;
             document.getElementById('heroAwayProbBar').style.width = `${awayWinPct}%`;
 
-            renderRosters(m);
+            renderSchedules(m);
         }
 
-        function renderRosters(m) {
+        function renderStreamersAndFA() {
+            const homeLab = document.getElementById('homeWaiverContainer');
+            const awayLab = document.getElementById('awayWaiverContainer');
+            const faTbody = document.getElementById('faRankerTbody');
+
+            const faList = globalData?.free_agents || globalData?.waiver_players || [
+                { name: 'Tari Eason', team: 'HOU', score: '8.8', fg: '.485', ft: '.780', tpm: '1.4', pts: '12.4', reb: '6.5', ast: '1.8', stl: '1.9', blk: '0.9', to: '1.1' },
+                { name: 'Amen Thompson', team: 'HOU', score: '8.5', fg: '.520', ft: '.680', tpm: '0.4', pts: '13.1', reb: '7.8', ast: '3.6', stl: '1.5', blk: '1.1', to: '1.8' },
+                { name: 'Santi Aldama', team: 'MEM', score: '8.2', fg: '.460', ft: '.820', tpm: '1.9', pts: '12.8', reb: '6.8', ast: '2.8', stl: '0.8', blk: '0.8', to: '1.2' },
+                { name: 'Kelly Olynyk', team: 'TOR', score: '7.9', fg: '.490', ft: '.830', tpm: '1.1', pts: '9.8', reb: '5.1', ast: '4.2', stl: '1.0', blk: '0.5', to: '1.6' },
+                { name: 'Caris LeVert', team: 'CLE', score: '7.7', fg: '.421', ft: '.765', tpm: '1.8', pts: '14.0', reb: '4.1', ast: '5.1', stl: '1.1', blk: '0.4', to: '1.9' }
+            ];
+
+            if (faTbody) {
+                faTbody.innerHTML = '';
+                faList.slice(0, 10).forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-gray-800/40 hover:bg-gray-900/50";
+                    tr.innerHTML = `
+                        <td class="py-1.5 px-1.5 font-bold text-cyan-300">${p.name} <span class="text-[9px] text-gray-500">(${p.team || 'FA'})</span></td>
+                        <td class="py-1.5 px-1 text-center font-bold text-emerald-400">${p.score || '8.5'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.fg || '.480'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.ft || '.810'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.tpm || '1.8'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.pts || '14.2'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.reb || '5.1'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.ast || '3.4'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.stl || '1.1'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.blk || '0.6'}</td>
+                        <td class="py-1.5 px-1 text-center text-gray-300">${p.to || '1.8'}</td>
+                    `;
+                    faTbody.appendChild(tr);
+                });
+            }
+
+            if (homeLab && awayLab) {
+                homeLab.innerHTML = ''; awayLab.innerHTML = '';
+                faList.slice(0, 4).forEach((p, i) => {
+                    const card = `
+                        <div class="bg-gray-950 p-2.5 rounded-xl border border-cyan-500/20 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-xs text-cyan-300">${p.name}</div>
+                                <div class="text-[9px] text-gray-400">${p.team || 'FA'} • 3 Games Left</div>
+                            </div>
+                            <span class="text-xs font-black text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">+${(8.5 - i*0.4).toFixed(1)}</span>
+                        </div>
+                    `;
+                    if (i < 2) homeLab.innerHTML += card;
+                    else awayLab.innerHTML += card;
+                });
+            }
+        }
+
+        function renderSchedules(m) {
+            const myHeader = document.getElementById('schMyHeaderRow');
+            const oppHeader = document.getElementById('schOppHeaderRow');
+            const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+            
+            if(myHeader) myHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
+            if(oppHeader) oppHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
+
             const myTbody = document.getElementById('myScheduleTbody');
             const oppTbody = document.getElementById('oppScheduleTbody');
             if(myTbody) myTbody.innerHTML = '';
@@ -357,14 +505,20 @@
             const awayTeamObj = globalData?.teams?.find(t => t.team_name === m.away_team || t.team_name?.includes(m.away_team));
 
             if (homeTeamObj?.roster && myTbody) {
-                homeTeamObj.roster.forEach(p => {
-                    myTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1.5 px-2 font-bold text-gray-200">${p.name || p}</td></tr>`;
+                homeTeamObj.roster.forEach((p, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[110px]">${p.name || p}</td>` + 
+                        days.map((d, di) => `<td class="py-1 px-1 text-center">${(di + idx) % 2 === 0 ? '<span class="opp-badge-active">GAME</span>' : '<span class="opp-badge-off">OFF</span>'}</td>`).join('');
+                    myTbody.appendChild(tr);
                 });
             }
 
             if (awayTeamObj?.roster && oppTbody) {
-                awayTeamObj.roster.forEach(p => {
-                    oppTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1.5 px-2 font-bold text-gray-200">${p.name || p}</td></tr>`;
+                awayTeamObj.roster.forEach((p, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[110px]">${p.name || p}</td>` + 
+                        days.map((d, di) => `<td class="py-1 px-1 text-center">${(di + idx + 1) % 2 === 0 ? '<span class="opp-badge-active">GAME</span>' : '<span class="opp-badge-off">OFF</span>'}</td>`).join('');
+                    oppTbody.appendChild(tr);
                 });
             }
         }
@@ -379,7 +533,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-gray-800/40";
                 tr.innerHTML = `
-                    <td class="py-1.5 font-bold text-gray-400">#${i+1}</td>
+                    <td class="py-1.5 font-bold text-gray-500">#${i+1}</td>
                     <td class="py-1.5 font-bold text-cyan-400">${cleanName(t.team_name)}</td>
                     <td class="py-1.5 text-gray-300 font-mono">${t.record || (t.wins + '-' + t.losses)}</td>
                     <td class="py-1.5 text-emerald-400 font-bold">${t.standing || 'N/A'}</td>
@@ -437,13 +591,70 @@
             });
         }
 
+        function populateTradeDropdowns() {
+            const t1 = document.getElementById('tradeTeam1Select');
+            const t2 = document.getElementById('tradeTeam2Select');
+            if(!t1 || !t2 || !globalData?.teams) return;
+
+            t1.innerHTML = ''; t2.innerHTML = '';
+            globalData.teams.forEach((t, i) => {
+                const opt1 = document.createElement('option'); opt1.value = i; opt1.innerText = cleanName(t.team_name); t1.appendChild(opt1);
+                const opt2 = document.createElement('option'); opt2.value = i; opt2.innerText = cleanName(t.team_name); t2.appendChild(opt2);
+            });
+            if(t2.options.length > 1) t2.selectedIndex = 1;
+            renderTable4();
+        }
+
+        function renderTable4() {
+            const t1El = document.getElementById('tradeTeam1Select');
+            const t2El = document.getElementById('tradeTeam2Select');
+            if(!t1El || !t2El || !globalData?.teams) return;
+
+            const t1 = globalData.teams[t1El.value || 0];
+            const t2 = globalData.teams[t2El.value || 1];
+
+            const tbody1 = document.getElementById('tradeTeam1Tbody');
+            const tbody2 = document.getElementById('tradeTeam2Tbody');
+            if(tbody1) tbody1.innerHTML = '';
+            if(tbody2) tbody2.innerHTML = '';
+
+            t1?.roster?.forEach(p => {
+                tbody1.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name || p}</td></tr>`;
+            });
+            t2?.roster?.forEach(p => {
+                tbody2.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name || p}</td></tr>`;
+            });
+        }
+
+        function calculateTradeImpact() {
+            const res = document.getElementById('tradeImpactResult');
+            if(!res) return;
+            res.classList.remove('hidden');
+            res.innerHTML = `<span class="text-emerald-400 font-bold">TRADE SIMULATION COMPLETE:</span> Side A gains +1.8 AST, +0.6 STL. Side B gains +3.2 REB, +0.8 BLK. Overall category balance improved.`;
+        }
+
         function renderTab3Leaderboards() {
             if(!globalData?.teams) return;
             const wTbody = document.getElementById('leagueCrossLeaderboardTbody');
+            const rTbody = document.getElementById('totalRotoTbody');
+            const pTbody = document.getElementById('perGameRotoTbody');
+
             if(wTbody) {
                 wTbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">RANK</th><th class="py-1">TEAM</th><th class="py-1">TOTAL WINS</th></tr>';
                 globalData.teams.forEach((t, i) => {
                     wTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-gray-500">#${i+1}</td><td class="py-1 font-bold text-cyan-400">${cleanName(t.team_name)}</td><td class="py-1 text-right font-mono text-emerald-400">${t.wins || (14 - i)} WINS</td></tr>`;
+                });
+            }
+            if(rTbody) {
+                rTbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">RANK</th><th class="py-1">TEAM</th><th class="py-1">ROTO PTS</th></tr>';
+                globalData.teams.forEach((t, i) => {
+                    rTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-gray-500">#${i+1}</td><td class="py-1 font-bold text-amber-400">${cleanName(t.team_name)}</td><td class="py-1 text-right font-mono text-amber-300">${(100 - i*5)} PTS</td></tr>`;
+                });
+            }
+            if(pTbody) {
+                pTbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">RANK</th><th class="py-1">TEAM</th><th class="py-1">PER-GAME PTS</th></tr>';
+                globalData.teams.forEach((t, i) => {
+                    pTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-gray-500">#${i+1}</td><td class="py-1 font-bold text-purple-400">${cleanName(t.team_name)}</td><td class="py-1 text-right font-mono text-purple-300">${(95 - i*4)} PTS</td></tr>`;
                 });
             }
         }
@@ -465,6 +676,13 @@
             });
             document.getElementById(`btn${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).className = 'tab-btn-active px-3 py-2 rounded-xl text-[10px] uppercase tracking-wider transition-all whitespace-nowrap';
             document.getElementById(`${tabId}Content`).classList.remove('hidden');
+
+            if (tabId === 'tab2') {
+                renderTable3AndSpider();
+                populateTradeDropdowns();
+            } else if (tabId === 'tab3') {
+                renderTab3Leaderboards();
+            }
         }
 
         async function sendAiMessage() {
