@@ -479,6 +479,32 @@
             </div>
         </div>
 
+        <!-- LEAGUE-WIDE CROSS MATCHUP LEADERBOARD -->
+        <div class="space-y-3">
+            <div class="flex justify-between items-center border-l-4 border-cyan-400 pl-2">
+                <div>
+                    <h2 class="text-base font-black text-cyan-400">⚡ LEAGUE-WIDE CROSS MATCHUP LEADERBOARD</h2>
+                    <p class="text-[9px] text-gray-400 font-bold">全聯盟 14 隊各自與其餘 13 隊進行模擬 9-Cat 對決後的總勝負積分榜（類似綜合實力天梯）</p>
+                </div>
+            </div>
+            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 overflow-x-auto">
+                <table class="w-full text-left text-[11px] font-mono leading-tight">
+                    <thead>
+                        <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
+                            <th class="py-1.5 px-1">RANK</th>
+                            <th class="py-1.5 px-1.5">SQUAD</th>
+                            <th class="py-1.5 px-1 text-center">OVERALL RECORD (VS 13 TEAMS)</th>
+                            <th class="py-1.5 px-1 text-center text-cyan-300 font-bold">WINS</th>
+                            <th class="py-1.5 px-1 text-center text-rose-300 font-bold">LOSSES</th>
+                            <th class="py-1.5 px-1 text-center text-amber-300 font-bold">TIES</th>
+                            <th class="py-1.5 px-1 text-center">WIN RATE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leagueCrossLeaderboardTbody" class="divide-y divide-gray-800/40"></tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- SECTION 1: ALL TEAMS WEEKLY 9-CAT RESULTS SUMMARY -->
         <div class="space-y-3">
             <div class="flex justify-between items-center border-l-4 border-emerald-400 pl-2">
@@ -700,7 +726,6 @@
             }
         }
 
-        // 自動根據今日日期預設選取當前週次 (Default Week to Today's Date)
         function getDefaultWeekByDate() {
             const todayStr = new Date().toISOString().split('T')[0];
             let matchedWeek = "1";
@@ -749,7 +774,6 @@
 
                 document.getElementById('leagueTitle').innerText = globalData.league_info.name;
 
-                // 預設選擇今日所在的週次
                 let todayWeek = getDefaultWeekByDate();
                 dropdown.value = todayWeek;
                 currentSelectedWeek = todayWeek;
@@ -1824,11 +1848,10 @@
         }
 
         // =========================================================================
-        // 🏆 TAB 3: WEEKLY ROTO & 1-VS-ALL CROSS MATCHUP LOGIC
+        // 🏆 TAB 3: WEEKLY ROTO & CROSS MATCHUP LOGIC
         // =========================================================================
 
         function initCrossMatchupSelector() {
-            // 初始化 Tab 3 的 Week 下拉選單（只允許選擇過去週次 + 當前週次）
             const tab3Dropdown = document.getElementById('tab3WeekDropdown');
             if (tab3Dropdown && tab3Dropdown.options.length === 0) {
                 tab3Dropdown.innerHTML = '';
@@ -1922,10 +1945,81 @@
 
         function renderTab3AllSections() {
             let statsMap = getWeeklyTeamStatsMap();
+            renderLeagueCrossLeaderboard(statsMap);
             renderWeeklyStatsSummary(statsMap);
             renderCrossMatchup(statsMap);
             renderTotalRotoRank(statsMap);
             renderPerGameRotoRank(statsMap);
+        }
+
+        // 新增：全聯盟交叉對戰總勝負排行榜
+        function renderLeagueCrossLeaderboard(statsMap) {
+            const tbody = document.getElementById('leagueCrossLeaderboardTbody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
+            let teamsList = globalData.teams.map(t => t.team_name);
+            let leaderboardData = [];
+
+            teamsList.forEach(teamA => {
+                let statsA = statsMap[teamA];
+                let wins = 0, losses = 0, ties = 0;
+
+                teamsList.forEach(teamB => {
+                    if(teamA === teamB) return;
+                    let statsB = statsMap[teamB];
+                    let w = 0, l = 0, t = 0;
+
+                    cats.forEach(c => {
+                        if(puntCategories[c]) return;
+                        let valA = statsA[c], valB = statsB[c];
+                        let isWin = c === 'TO' ? valA < valB : valA > valB;
+                        let isTie = Math.abs(valA - valB) < 0.0001;
+
+                        if(isTie) t++;
+                        else if(isWin) w++;
+                        else l++;
+                    });
+
+                    if(w > l) wins++;
+                    else if(l > w) losses++;
+                    else ties++;
+                });
+
+                let totalGames = wins + losses + ties;
+                let winRate = totalGames > 0 ? (wins / 13) * 100 : 0; // 對戰其餘 13 隊
+
+                leaderboardData.push({
+                    team_name: teamA,
+                    wins: wins,
+                    losses: losses,
+                    ties: ties,
+                    winRate: winRate,
+                    scoreMetric: wins * 3 + ties
+                });
+            });
+
+            // 按勝場與積分排序
+            leaderboardData.sort((a, b) => b.scoreMetric - a.scoreMetric);
+            const myTeamName = globalData.my_team_name || "Novel Fergus";
+
+            leaderboardData.forEach((item, idx) => {
+                let isMyTeam = item.team_name === myTeamName || item.team_name.includes("Novel Fergus");
+                let tr = document.createElement('tr');
+                if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
+
+                tr.innerHTML = `
+                    <td class="py-1 px-1 text-center font-bold text-cyan-400">#${idx+1}</td>
+                    <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(item.team_name)} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-1 text-center font-bold text-cyan-300 font-mono">${item.wins} WIN - ${item.losses} LOSS - ${item.ties} TIE</td>
+                    <td class="py-1 px-1 text-center font-bold text-emerald-400">${item.wins}</td>
+                    <td class="py-1 px-1 text-center font-bold text-rose-400">${item.losses}</td>
+                    <td class="py-1 px-1 text-center font-bold text-amber-400">${item.ties}</td>
+                    <td class="py-1 px-1 text-center font-bold text-cyan-200">${item.winRate.toFixed(1)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         function renderWeeklyStatsSummary(statsMap) {
@@ -2135,7 +2229,6 @@
             });
         }
 
-        // 頁面載入時自動執行雲端讀取
         initCloudDashboard();
     </script>
 </body>
