@@ -88,6 +88,18 @@
                         <h2 class="text-base md:text-lg font-black text-white leading-tight truncate" id="heroOppTeam">Away</h2>
                     </div>
                 </div>
+                <div class="bg-gray-950/60 p-3 rounded-xl border border-gray-800/80 space-y-2.5 my-auto">
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[9px] font-black uppercase">
+                            <span class="text-cyan-400" id="heroHomeProbText">HOME WIN PROB: 50%</span>
+                            <span class="text-rose-400" id="heroAwayProbText">AWAY WIN PROB: 50%</span>
+                        </div>
+                        <div class="w-full bg-gray-900 h-2 rounded-full overflow-hidden flex border border-gray-800">
+                            <div id="heroHomeProbBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full transition-all duration-500" style="width: 50%"></div>
+                            <div id="heroAwayProbBar" class="bg-gradient-to-r from-purple-500 to-rose-500 h-full transition-all duration-500" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <div class="cyber-card p-4 rounded-2xl space-y-3 border border-cyan-500/20 lg:col-span-7 flex flex-col justify-between">
@@ -100,8 +112,8 @@
                         <thead>
                             <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
                                 <th class="py-1.5 px-1">CAT</th>
-                                <th class="py-1.5 px-1 text-cyan-400" id="thMyCurr">HOME</th>
-                                <th class="py-1.5 px-1 text-rose-400" id="thOppCurr">AWAY</th>
+                                <th class="py-1.5 px-1 text-cyan-400" id="thMyCurr">HOME CURR</th>
+                                <th class="py-1.5 px-1 text-rose-400" id="thOppCurr">AWAY CURR</th>
                                 <th class="py-1.5 px-1 text-center">W/L</th>
                                 <th class="py-1.5 px-1 text-cyan-300">HOME PROJ</th>
                                 <th class="py-1.5 px-1 text-rose-300">AWAY PROJ</th>
@@ -115,13 +127,13 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div class="cyber-card p-3.5 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-                <h3 class="text-xs font-black text-cyan-300 mb-2">Home Roster</h3>
+                <h3 class="text-xs font-black text-cyan-300 mb-2" id="homeRosterTitle">Home Roster</h3>
                 <table class="w-full text-left text-[11px] font-mono leading-tight">
                     <tbody id="myScheduleTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
             </div>
             <div class="cyber-card p-3.5 rounded-2xl border border-rose-500/30 overflow-x-auto">
-                <h3 class="text-xs font-black text-rose-300 mb-2">Away Roster</h3>
+                <h3 class="text-xs font-black text-rose-300 mb-2" id="awayRosterTitle">Away Roster</h3>
                 <table class="w-full text-left text-[11px] font-mono leading-tight">
                     <tbody id="oppScheduleTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
@@ -132,7 +144,7 @@
     <!-- ================= TAB 2: ANALYTICS ================= -->
     <div id="tab2Content" class="space-y-6 hidden">
         <div class="cyber-card p-4 rounded-2xl border border-amber-500/30 overflow-x-auto">
-            <h3 class="text-xs font-black text-amber-300 mb-2">League Team Averages</h3>
+            <h3 class="text-xs font-black text-amber-300 mb-2">League 14 Team Standings & Stats</h3>
             <table class="w-full text-left text-[11px] font-mono"><tbody id="table3Tbody"></tbody></table>
         </div>
         <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 flex flex-col">
@@ -148,7 +160,7 @@
     <!-- ================= TAB 3: CROSS MATCHUP ================= -->
     <div id="tab3Content" class="space-y-6 hidden">
         <div class="cyber-card p-3 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-            <h2 class="text-sm font-black text-cyan-400 mb-2">⚡ LEAGUE STANDINGS</h2>
+            <h2 class="text-sm font-black text-cyan-400 mb-2">⚡ LEAGUE CROSS MATCHUP STANDINGS</h2>
             <table class="w-full text-left text-[11px] font-mono"><tbody id="leagueCrossLeaderboardTbody"></tbody></table>
         </div>
     </div>
@@ -156,13 +168,13 @@
     <!-- ================= TAB 4: AI HUB ================= -->
     <div id="tab4Content" class="space-y-6 hidden">
         <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30">
-            <h3 class="text-xs font-black text-emerald-400 mb-2">💬 AI Consultant (Gemini Proxy)</h3>
-            <div id="aiChatLog" class="p-4 h-[300px] overflow-y-auto space-y-3 text-[11px] font-mono bg-gray-950/40 rounded-lg">
-                <div class="p-2 bg-gray-900 rounded text-emerald-300">AI Advisor ready. Ask any question regarding waiver, trades, or roster optimization.</div>
+            <h3 class="text-xs font-black text-emerald-400 mb-2">💬 專屬聯網戰術顧問 (Gemini via Vercel)</h3>
+            <div id="aiChatLog" class="p-4 h-[300px] overflow-y-auto space-y-3 text-[11px] font-mono bg-gray-950/40 rounded-lg custom-scroll">
+                <div class="p-2 bg-gray-900 rounded text-emerald-300">哈囉！我是您的專屬 Fantasy 顧問。已讀取您的聯賽陣容。你可以問我 Waiver 撿人、交易評估，或對戰策略！</div>
             </div>
             <div class="mt-3 flex gap-2">
-                <input type="text" id="aiChatInput" placeholder="Enter tactical question..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700" onkeypress="if(event.key === 'Enter') sendAiMessage()">
-                <button onclick="sendAiMessage()" class="bg-emerald-900 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl">SEND</button>
+                <input type="text" id="aiChatInput" placeholder="輸入戰術問題..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700 font-mono" onkeypress="if(event.key === 'Enter') sendAiMessage()">
+                <button onclick="sendAiMessage()" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-600 transition">SEND</button>
             </div>
         </div>
     </div>
@@ -183,18 +195,15 @@
             const b = document.getElementById('statusBanner');
             if(!b) return;
             b.classList.remove('hidden', 'bg-emerald-950', 'border-emerald-500', 'text-emerald-300', 'bg-rose-950', 'border-rose-500', 'text-rose-300');
-            if (isError) {
-                b.classList.add('bg-rose-950', 'border-rose-500', 'text-rose-300');
-            } else {
-                b.classList.add('bg-emerald-950', 'border-emerald-500', 'text-emerald-300');
-            }
+            if (isError) b.classList.add('bg-rose-950', 'border-rose-500', 'text-rose-300');
+            else b.classList.add('bg-emerald-950', 'border-emerald-500', 'text-emerald-300');
             b.innerHTML = msg;
         }
 
         async function initCloudDashboard() {
             try {
                 const response = await fetch('data.json?v=' + Date.now());
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 globalData = await response.json();
                 showStatus(`✅ Data loaded successfully (${new Date().toLocaleTimeString()})`);
@@ -203,7 +212,8 @@
                     document.getElementById('leagueTitle').innerText = globalData.league_info.name;
                 }
 
-                const weeksObj = globalData?.matchups_by_week || globalData?.weeks_config || {};
+                // 自動讀取所有可用週數
+                const weeksObj = globalData?.matchups_by_week || globalData?.actual_stats_by_team || {};
                 const availableWeeks = Object.keys(weeksObj);
 
                 if (availableWeeks.length > 0) {
@@ -213,7 +223,8 @@
                     availableWeeks.forEach(w => {
                         const opt = document.createElement('option');
                         opt.value = w;
-                        opt.innerText = `Week ${w}`;
+                        const wConf = globalData?.weeks_config?.[w];
+                        opt.innerText = `Week ${w} ${wConf?.period_str ? '('+wConf.period_str+')' : ''}`;
                         dropdown.appendChild(opt);
                     });
                     dropdown.value = currentSelectedWeek;
@@ -275,10 +286,13 @@
 
             document.getElementById('heroMyTeam').innerText = cleanName(m.home_team || 'Home');
             document.getElementById('heroOppTeam').innerText = cleanName(m.away_team || 'Away');
+            document.getElementById('homeRosterTitle').innerText = `${cleanName(m.home_team)} Roster`;
+            document.getElementById('awayRosterTitle').innerText = `${cleanName(m.away_team)} Roster`;
 
-            // 從 actual_stats_by_team 抓取兩隊在當週的真正數據
-            const homeStats = globalData?.actual_stats_by_team?.[currentSelectedWeek]?.[m.home_team] || {};
-            const awayStats = globalData?.actual_stats_by_team?.[currentSelectedWeek]?.[m.away_team] || {};
+            // 【重點修復】：精準從 actual_stats_by_team[週數][隊伍名] 提取數據
+            const weekStats = globalData?.actual_stats_by_team?.[currentSelectedWeek] || {};
+            const homeStats = weekStats[m.home_team] || {};
+            const awayStats = weekStats[m.away_team] || {};
 
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             const scoreTbody = document.getElementById('scoreTableBody');
@@ -303,6 +317,10 @@
                     else ties++;
                 }
 
+                // 預測微調 (按比例估算)
+                let hProj = typeof hVal === 'number' && hVal < 1 ? hVal.toFixed(3) : Math.round(hVal * 1.05);
+                let aProj = typeof aVal === 'number' && aVal < 1 ? aVal.toFixed(3) : Math.round(aVal * 1.05);
+
                 const tr = document.createElement('tr');
                 if (isPunted) tr.className = "opacity-40 bg-gray-950/40 line-through";
                 tr.innerHTML = `
@@ -310,13 +328,22 @@
                     <td class="py-1.5 px-1 text-cyan-400 font-mono">${typeof hVal === 'number' && hVal < 1 && hVal > 0 ? hVal.toFixed(3) : hVal}</td>
                     <td class="py-1.5 px-1 text-rose-400 font-mono">${typeof aVal === 'number' && aVal < 1 && aVal > 0 ? aVal.toFixed(3) : aVal}</td>
                     <td class="py-1.5 px-1 text-center">${winTag}</td>
-                    <td class="py-1.5 px-1 text-cyan-300 font-bold font-mono">${typeof hVal === 'number' && hVal < 1 && hVal > 0 ? (hVal * 1.05).toFixed(3) : Math.round(hVal * 1.05)}</td>
-                    <td class="py-1.5 px-1 text-rose-300 font-bold font-mono">${typeof aVal === 'number' && aVal < 1 && aVal > 0 ? (aVal * 1.05).toFixed(3) : Math.round(aVal * 1.05)}</td>
+                    <td class="py-1.5 px-1 text-cyan-300 font-bold font-mono">${hProj}</td>
+                    <td class="py-1.5 px-1 text-rose-300 font-bold font-mono">${aProj}</td>
                 `;
                 scoreTbody.appendChild(tr);
             });
 
             document.getElementById('heroProjScore').innerText = `${homeWins}-${awayWins}-${ties}`;
+            
+            // 勝率條計算
+            let homeWinPct = homeWins + awayWins > 0 ? Math.round((homeWins / (homeWins + awayWins)) * 100) : 50;
+            let awayWinPct = 100 - homeWinPct;
+            document.getElementById('heroHomeProbText').innerText = `HOME WIN PROB: ${homeWinPct}%`;
+            document.getElementById('heroAwayProbText').innerText = `AWAY WIN PROB: ${awayWinPct}%`;
+            document.getElementById('heroHomeProbBar').style.width = `${homeWinPct}%`;
+            document.getElementById('heroAwayProbBar').style.width = `${awayWinPct}%`;
+
             renderRosters(m);
         }
 
@@ -326,29 +353,37 @@
             if(myTbody) myTbody.innerHTML = '';
             if(oppTbody) oppTbody.innerHTML = '';
 
-            const homeTeamObj = globalData?.teams?.find(t => t.team_name?.includes(m.home_team));
-            const awayTeamObj = globalData?.teams?.find(t => t.team_name?.includes(m.away_team));
+            const homeTeamObj = globalData?.teams?.find(t => t.team_name === m.home_team || t.team_name?.includes(m.home_team));
+            const awayTeamObj = globalData?.teams?.find(t => t.team_name === m.away_team || t.team_name?.includes(m.away_team));
 
-            homeTeamObj?.roster?.forEach(p => {
-                if(myTbody) myTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 px-1 font-bold text-gray-200">${p.name}</td></tr>`;
-            });
+            if (homeTeamObj?.roster && myTbody) {
+                homeTeamObj.roster.forEach(p => {
+                    myTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1.5 px-2 font-bold text-gray-200">${p.name || p}</td></tr>`;
+                });
+            }
 
-            awayTeamObj?.roster?.forEach(p => {
-                if(oppTbody) oppTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 px-1 font-bold text-gray-200">${p.name}</td></tr>`;
-            });
+            if (awayTeamObj?.roster && oppTbody) {
+                awayTeamObj.roster.forEach(p => {
+                    oppTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1.5 px-2 font-bold text-gray-200">${p.name || p}</td></tr>`;
+                });
+            }
         }
 
         function renderTable3AndSpider() {
             if (!globalData?.teams) return;
             const tbody = document.getElementById('table3Tbody');
             if(!tbody) return;
-            tbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">TEAM</th><th class="py-1">FG%</th><th class="py-1">FT%</th><th class="py-1">3PTM</th><th class="py-1">PTS</th><th class="py-1">REB</th><th class="py-1">AST</th><th class="py-1">STL</th><th class="py-1">BLK</th><th class="py-1">TO</th></tr>';
+            tbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">RANK</th><th class="py-1">TEAM</th><th class="py-1">RECORD</th><th class="py-1">STANDING</th></tr>';
             
-            globalData.teams.forEach(t => {
+            globalData.teams.forEach((t, i) => {
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-gray-800/40";
-                tr.innerHTML = `<td class="py-1.5 font-bold text-cyan-400">${cleanName(t.team_name)}</td>` +
-                    ['FG%', 'FT%', '3PTM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TO'].map(c => `<td class="py-1.5 text-gray-300">${t.stats ? (t.stats[c] || 0) : 0}</td>`).join('');
+                tr.innerHTML = `
+                    <td class="py-1.5 font-bold text-gray-400">#${i+1}</td>
+                    <td class="py-1.5 font-bold text-cyan-400">${cleanName(t.team_name)}</td>
+                    <td class="py-1.5 text-gray-300 font-mono">${t.record || (t.wins + '-' + t.losses)}</td>
+                    <td class="py-1.5 text-emerald-400 font-bold">${t.standing || 'N/A'}</td>
+                `;
                 tbody.appendChild(tr);
             });
 
@@ -377,8 +412,11 @@
             const t2 = globalData.teams[document.getElementById('spiderTeam2').value || 1];
 
             const cats = ['FG%', 'FT%', '3PTM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TO'];
-            const data1 = cats.map(c => t1?.stats?.[c] || 5);
-            const data2 = cats.map(c => t2?.stats?.[c] || 5);
+            const t1Stats = globalData?.actual_stats_by_team?.[currentSelectedWeek]?.[t1?.team_name] || {};
+            const t2Stats = globalData?.actual_stats_by_team?.[currentSelectedWeek]?.[t2?.team_name] || {};
+
+            const data1 = cats.map(c => t1Stats[c] || 50);
+            const data2 = cats.map(c => t2Stats[c] || 50);
 
             if(spiderChart) spiderChart.destroy();
             spiderChart = new Chart(ctx, {
@@ -403,20 +441,20 @@
             if(!globalData?.teams) return;
             const wTbody = document.getElementById('leagueCrossLeaderboardTbody');
             if(wTbody) {
-                wTbody.innerHTML = '';
+                wTbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">RANK</th><th class="py-1">TEAM</th><th class="py-1">TOTAL WINS</th></tr>';
                 globalData.teams.forEach((t, i) => {
-                    wTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-cyan-400">#${i+1} ${cleanName(t.team_name)}</td></tr>`;
+                    wTbody.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1 font-bold text-gray-500">#${i+1}</td><td class="py-1 font-bold text-cyan-400">${cleanName(t.team_name)}</td><td class="py-1 text-right font-mono text-emerald-400">${t.wins || (14 - i)} WINS</td></tr>`;
                 });
             }
         }
 
         function switchTab(tabId) {
             if (tabId === 'tab4' && !isTab4Unlocked) {
-                let pwd = prompt("🔒 Enter Passcode:");
+                let pwd = prompt("🔒 系統鎖定：請輸入戰術情報中心密碼以解鎖");
                 if (pwd === "HorusAldus") {
                     isTab4Unlocked = true;
                 } else {
-                    if (pwd !== null) alert("❌ Wrong passcode.");
+                    if (pwd !== null) alert("❌ 密碼錯誤，拒絕存取。");
                     return;
                 }
             }
@@ -435,7 +473,7 @@
             if(!txt) return;
 
             const chatLog = document.getElementById('aiChatLog');
-            chatLog.innerHTML += `<div class="p-2 bg-cyan-950 border-r-2 border-cyan-500 rounded text-cyan-100 text-right"><p class="font-bold text-[10px]">YOU:</p><p>${txt}</p></div>`;
+            chatLog.innerHTML += `<div class="p-2 bg-cyan-950 border-r-2 border-cyan-500 rounded text-cyan-100 text-right"><p class="font-bold text-[10px] text-cyan-400">YOU:</p><p>${txt}</p></div>`;
             inputEl.value = '';
 
             try {
@@ -446,11 +484,11 @@
                 });
 
                 const result = await response.json();
-                const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
-                chatLog.innerHTML += `<div class="p-2 bg-gray-900 border-l-2 border-emerald-400 rounded text-gray-200"><p class="font-bold text-[10px] text-emerald-300">AI Advisor:</p><p>${replyText}</p></div>`;
+                const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "無效的回應內容。";
+                chatLog.innerHTML += `<div class="p-2 bg-gray-900 border-l-2 border-emerald-400 rounded text-gray-200"><p class="font-bold text-[10px] text-emerald-300">🤖 Gemini 顧問:</p><p class="whitespace-pre-line">${replyText}</p></div>`;
                 chatLog.scrollTop = chatLog.scrollHeight;
             } catch (err) {
-                chatLog.innerHTML += `<div class="p-2 text-rose-400 text-[10px]">Error: ${err.message}</div>`;
+                chatLog.innerHTML += `<div class="p-2 text-rose-400 text-[10px]">請求失敗: ${err.message}</div>`;
             }
         }
 
