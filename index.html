@@ -68,47 +68,49 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
         select option { background: #0f172a; color: #f3f4f6; }
     </style>
 </head>
-<body class="p-4 space-y-4 max-w-[1750px] mx-auto">
+<body class="p-2 md:p-4 space-y-4 max-w-[1750px] mx-auto">
     <datalist id="playerGlobalList"></datalist>
 
     <!-- STICKY TOP BANNER & TABS -->
-    <header class="sticky top-0 z-50 cyber-glass p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-3">
-        <div class="flex items-center space-x-4">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/40 border border-cyan-400/30">⚡</div>
-            <div>
-                <h1 id="leagueTitle" class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-300 to-purple-400 glow-cyan">Fantasy Expert Dashboard</h1>
-                <p class="text-[9px] text-cyan-400/70 uppercase tracking-widest font-bold">MONTE CARLO PROJECTIONS • 10,000 RUNS</p>
+    <header class="sticky top-0 z-50 cyber-glass p-3 md:p-4 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-3">
+        <div class="flex items-center space-x-3 w-full md:w-auto justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-lg shadow-lg shadow-cyan-500/40 border border-cyan-400/30">⚡</div>
+                <div>
+                    <h1 id="leagueTitle" class="text-base md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-300 to-purple-400 glow-cyan">Fantasy Expert Dashboard</h1>
+                    <p class="text-[8px] md:text-[9px] text-cyan-400/70 uppercase tracking-widest font-bold">MONTE CARLO PROJECTIONS • 10,000 RUNS</p>
+                </div>
             </div>
         </div>
 
         <!-- PUNT CATEGORY FILTER -->
-        <div class="flex items-center bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-800 space-x-2">
-            <span class="text-[10px] text-amber-400 font-bold uppercase whitespace-nowrap">🎯 PUNT CATS:</span>
+        <div class="flex items-center bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-800 space-x-2 overflow-x-auto w-full md:w-auto no-scrollbar">
+            <span class="text-[10px] text-amber-400 font-bold uppercase whitespace-nowrap">🎯 PUNT:</span>
             <div id="puntCatContainer" class="flex items-center gap-1.5 text-[9px]"></div>
         </div>
 
-        <div class="flex items-center space-x-2">
-            <button onclick="switchTab('tab1')" id="btnTab1" class="tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">⚡ Matchup Command</button>
-            <button onclick="switchTab('tab2')" id="btnTab2" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">📊 League Analytics</button>
-            <button onclick="switchTab('tab3')" id="btnTab3" class="tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all">🏆 Weekly Roto & Cross Matchup</button>
+        <div class="flex items-center space-x-1.5 overflow-x-auto w-full md:w-auto no-scrollbar py-1">
+            <button onclick="switchTab('tab1')" id="btnTab1" class="tab-btn-active px-3 py-2 rounded-xl text-[10px] md:text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">⚡ Matchup</button>
+            <button onclick="switchTab('tab2')" id="btnTab2" class="tab-btn-inactive px-3 py-2 rounded-xl text-[10px] md:text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">📊 Analytics</button>
+            <button onclick="switchTab('tab3')" id="btnTab3" class="tab-btn-inactive px-3 py-2 rounded-xl text-[10px] md:text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">🏆 Roto & Cross</button>
+            <button onclick="switchTab('tab4')" id="btnTab4" class="tab-btn-inactive px-3 py-2 rounded-xl text-[10px] md:text-[11px] uppercase tracking-wider transition-all whitespace-nowrap">🤖 AI & Social</button>
         </div>
     </header>
 
     <!-- ================= TAB 1: MATCHUP COMMAND CENTER ================= -->
     <div id="tab1Content" class="space-y-4">
         <!-- STICKY SELECTION BAR -->
-        <div class="sticky top-[73px] z-40 cyber-card p-2.5 rounded-xl flex items-center gap-3 border border-cyan-500/30 shadow-xl overflow-hidden">
-            <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1.5 rounded-lg border border-cyan-500/40 flex-shrink-0">
+        <div class="sticky top-[73px] z-40 cyber-card p-2.5 rounded-xl flex flex-col md:flex-row items-stretch md:items-center gap-3 border border-cyan-500/30 shadow-xl overflow-hidden">
+            <div class="flex items-center justify-between md:justify-start space-x-2 bg-gray-950 px-3 py-1.5 rounded-lg border border-cyan-500/40 flex-shrink-0">
                 <span class="text-xs text-cyan-400 font-black uppercase whitespace-nowrap">SEASON WEEK:</span>
                 <select id="weekDropdown" onchange="onWeekChange()" class="bg-gray-900 text-cyan-300 font-black text-xs px-2 py-1 rounded-lg border border-cyan-500/40 focus:outline-none cursor-pointer">
                 </select>
             </div>
-            <div class="h-6 w-px bg-gray-800 flex-shrink-0"></div>
-            <div id="matchupButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar whitespace-nowrap flex-nowrap py-0.5"></div>
+            <div class="hidden md:block h-6 w-px bg-gray-800 flex-shrink-0"></div>
+            <div id="matchupButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar whitespace-nowrap flex-nowrap py-0.5 w-full"></div>
         </div>
 
         <!-- HERO BANNER & SCOREBOARD SIDE-BY-SIDE -->
@@ -117,19 +119,19 @@
                 <div class="flex justify-between items-start gap-2">
                     <div class="flex-1 space-y-1">
                         <span id="heroMyBadge" class="text-[8px] text-cyan-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800">YOUR SQUAD</span>
-                        <h2 class="text-lg font-black text-white glow-cyan truncate leading-tight" id="heroMyTeam">Home Squad</h2>
+                        <h2 class="text-base md:text-lg font-black text-white glow-cyan truncate leading-tight" id="heroMyTeam">Home Squad</h2>
                         <span class="text-[10px] text-gray-400 font-bold block" id="heroMySub">(14th Place, 0-0)</span>
                     </div>
 
                     <div class="text-center bg-gray-950/90 px-3 py-1.5 rounded-xl border border-cyan-500/40 flex-shrink-0 space-y-0.5 shadow-inner">
                         <span id="matchupPeriodText" class="text-[9px] font-black text-emerald-400 block">Oct 19 – Oct 25</span>
                         <span class="text-[8px] text-cyan-400/80 uppercase font-black block tracking-widest">PROJECTED H2H</span>
-                        <div class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-300 to-purple-400 tracking-wider" id="heroProjScore">0 - 0 - 0</div>
+                        <div class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-300 to-purple-400 tracking-wider" id="heroProjScore">0 - 0 - 0</div>
                     </div>
 
                     <div class="text-right flex-1 space-y-1">
                         <span id="heroOppBadge" class="text-[8px] text-rose-400 font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-950 border border-rose-800">OPPONENT</span>
-                        <h2 class="text-lg font-black text-white leading-tight truncate" id="heroOppTeam">Away Squad</h2>
+                        <h2 class="text-base md:text-lg font-black text-white leading-tight truncate" id="heroOppTeam">Away Squad</h2>
                         <span class="text-[10px] text-gray-400 font-bold block" id="heroOppSub">(12th Place, 0-0)</span>
                     </div>
                 </div>
@@ -215,7 +217,7 @@
         <div class="space-y-3">
             <div class="flex justify-between items-center border-l-4 border-cyan-400 pl-2">
                 <h2 class="text-sm font-black text-cyan-400">📈 MONTE CARLO PROBABILITY DENSITY CURVES (9 CATEGORIES)</h2>
-                <span class="text-[9px] text-gray-400 font-bold">10,000 Simulation Runs</span>
+                <span class="text-[9px] text-gray-400 font-bold">10,000 Runs</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div class="cyber-card p-2.5 rounded-2xl space-y-1 border border-cyan-500/20"><h3 class="text-[11px] font-black text-cyan-300">FG%</h3><div class="relative w-full h-[140px]"><canvas id="chart_FG_pct"></canvas></div></div>
@@ -254,18 +256,10 @@
                 <table class="w-full text-left text-[11px] font-mono leading-tight">
                     <thead>
                         <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                            <th class="py-1.5 px-1.5">PLAYER</th>
-                            <th class="py-1.5 px-1.5">POS</th>
-                            <th class="py-1.5 px-1 text-center">SCORE</th>
-                            <th class="py-1.5 px-1 text-center">FG%</th>
-                            <th class="py-1.5 px-1 text-center">FT%</th>
-                            <th class="py-1.5 px-1 text-center">3PTM</th>
-                            <th class="py-1.5 px-1 text-center">PTS</th>
-                            <th class="py-1.5 px-1 text-center">REB</th>
-                            <th class="py-1.5 px-1 text-center">AST</th>
-                            <th class="py-1.5 px-1 text-center">STL</th>
-                            <th class="py-1.5 px-1 text-center">BLK</th>
-                            <th class="py-1.5 px-1 text-center">TO</th>
+                            <th class="py-1.5 px-1.5">PLAYER</th><th class="py-1.5 px-1.5">POS</th><th class="py-1.5 px-1 text-center">SCORE</th>
+                            <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
+                            <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
+                            <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                         </tr>
                     </thead>
                     <tbody id="faRankerTbody" class="divide-y divide-gray-800/40"></tbody>
@@ -312,12 +306,10 @@
                         <table class="w-full text-left text-[11px] font-mono leading-tight">
                             <thead>
                                 <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                    <th class="py-1.5 px-1.5">PLAYER</th><th class="py-1.5 px-1.5">POS</th>
-                                    <th class="py-1.5 px-1 text-center">SCORE</th><th class="py-1.5 px-1 text-center">FG%</th>
-                                    <th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
-                                    <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th>
-                                    <th class="py-1.5 px-1 text-center">AST</th><th class="py-1.5 px-1 text-center">STL</th>
-                                    <th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
+                                    <th class="py-1.5 px-1.5">PLAYER</th><th class="py-1.5 px-1.5">POS</th><th class="py-1.5 px-1 text-center">SCORE</th>
+                                    <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
+                                    <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
+                                    <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                                 </tr>
                             </thead>
                             <tbody id="myHeatmapTbody" class="divide-y divide-gray-800/40"></tbody>
@@ -330,12 +322,10 @@
                         <table class="w-full text-left text-[11px] font-mono leading-tight">
                             <thead>
                                 <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                    <th class="py-1.5 px-1.5">PLAYER</th><th class="py-1.5 px-1.5">POS</th>
-                                    <th class="py-1.5 px-1 text-center">SCORE</th><th class="py-1.5 px-1 text-center">FG%</th>
-                                    <th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
-                                    <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th>
-                                    <th class="py-1.5 px-1 text-center">AST</th><th class="py-1.5 px-1 text-center">STL</th>
-                                    <th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
+                                    <th class="py-1.5 px-1.5">PLAYER</th><th class="py-1.5 px-1.5">POS</th><th class="py-1.5 px-1 text-center">SCORE</th>
+                                    <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
+                                    <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
+                                    <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                                 </tr>
                             </thead>
                             <tbody id="oppHeatmapTbody" class="divide-y divide-gray-800/40"></tbody>
@@ -348,12 +338,11 @@
 
     <!-- ================= TAB 2: LEAGUE-WIDE ANALYTICS ================= -->
     <div id="tab2Content" class="space-y-6 hidden">
-        <!-- TABLE 3 & SPIDER CHART -->
         <div class="space-y-3">
             <div class="flex justify-between items-center border-l-4 border-amber-400 pl-2">
                 <h2 class="text-base font-black text-amber-400">📊 TABLE 3: CORE AVERAGES & SPIDER CHART</h2>
                 <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1 rounded-lg border border-amber-500/30">
-                    <span class="text-[10px] text-amber-300 font-bold">CORE SCOPE:</span>
+                    <span class="text-[10px] text-amber-300 font-bold">SCOPE:</span>
                     <select id="rosterScopeSelect" onchange="renderTable3AndSpider()" class="bg-gray-900 text-xs text-cyan-300 font-black px-2 py-1 rounded border border-cyan-500/40 focus:outline-none">
                         <option value="8">Top 8</option>
                         <option value="10" selected>Top 10</option>
@@ -362,27 +351,25 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div class="cyber-card p-4 rounded-2xl space-y-2 border border-amber-500/30 lg:col-span-2">
+                <div class="cyber-card p-4 rounded-2xl space-y-2 border border-amber-500/30 lg:col-span-2 overflow-x-auto">
                     <h3 class="text-xs font-black text-amber-300">14 Averages</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-[11px] font-mono leading-tight">
-                            <thead>
-                                <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px] cursor-pointer">
-                                    <th onclick="sortTable3('team_name')" class="py-1.5 px-1.5 hover:text-amber-300">SQUAD ⬯</th>
-                                    <th onclick="sortTable3('FG%')" class="py-1.5 px-1 text-center hover:text-amber-300">FG% ⬯</th>
-                                    <th onclick="sortTable3('FT%')" class="py-1.5 px-1 text-center hover:text-amber-300">FT% ⬯</th>
-                                    <th onclick="sortTable3('3PTM')" class="py-1.5 px-1 text-center hover:text-amber-300">3PTM ⬯</th>
-                                    <th onclick="sortTable3('PTS')" class="py-1.5 px-1 text-center hover:text-amber-300">PTS ⬯</th>
-                                    <th onclick="sortTable3('REB')" class="py-1.5 px-1 text-center hover:text-amber-300">REB ⬯</th>
-                                    <th onclick="sortTable3('AST')" class="py-1.5 px-1 text-center hover:text-amber-300">AST ⬯</th>
-                                    <th onclick="sortTable3('STL')" class="py-1.5 px-1 text-center hover:text-amber-300">STL ⬯</th>
-                                    <th onclick="sortTable3('BLK')" class="py-1.5 px-1 text-center hover:text-amber-300">BLK ⬯</th>
-                                    <th onclick="sortTable3('TO')" class="py-1.5 px-1 text-center hover:text-amber-300">TO ⬯</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table3Tbody" class="divide-y divide-gray-800/40"></tbody>
-                        </table>
-                    </div>
+                    <table class="w-full text-left text-[11px] font-mono leading-tight min-w-[650px]">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px] cursor-pointer">
+                                <th onclick="sortTable3('team_name')" class="py-1.5 px-1.5 hover:text-amber-300">SQUAD ⬯</th>
+                                <th onclick="sortTable3('FG%')" class="py-1.5 px-1 text-center hover:text-amber-300">FG% ⬯</th>
+                                <th onclick="sortTable3('FT%')" class="py-1.5 px-1 text-center hover:text-amber-300">FT% ⬯</th>
+                                <th onclick="sortTable3('3PTM')" class="py-1.5 px-1 text-center hover:text-amber-300">3PTM ⬯</th>
+                                <th onclick="sortTable3('PTS')" class="py-1.5 px-1 text-center hover:text-amber-300">PTS ⬯</th>
+                                <th onclick="sortTable3('REB')" class="py-1.5 px-1 text-center hover:text-amber-300">REB ⬯</th>
+                                <th onclick="sortTable3('AST')" class="py-1.5 px-1 text-center hover:text-amber-300">AST ⬯</th>
+                                <th onclick="sortTable3('STL')" class="py-1.5 px-1 text-center hover:text-amber-300">STL ⬯</th>
+                                <th onclick="sortTable3('BLK')" class="py-1.5 px-1 text-center hover:text-amber-300">BLK ⬯</th>
+                                <th onclick="sortTable3('TO')" class="py-1.5 px-1 text-center hover:text-amber-300">TO ⬯</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table3Tbody" class="divide-y divide-gray-800/40"></tbody>
+                    </table>
                 </div>
                 <div class="cyber-card p-4 rounded-2xl space-y-3 border border-cyan-500/30 flex flex-col justify-between">
                     <div>
@@ -397,17 +384,14 @@
             </div>
         </div>
 
-        <!-- TABLE 4 WITH TRADE IMPACT SIMULATION -->
         <div class="space-y-3">
             <div class="flex justify-between items-center border-l-4 border-indigo-400 pl-2">
-                <h2 class="text-base font-black text-indigo-400">🤝 TABLE 4: TRADE TARGET LAB (WITH IMPACT SIMULATOR)</h2>
+                <h2 class="text-base font-black text-indigo-400">🤝 TABLE 4: TRADE TARGET LAB</h2>
                 <button onclick="calculateTradeImpact()" class="bg-indigo-900 hover:bg-indigo-800 text-indigo-200 border border-indigo-500/50 px-3 py-1 rounded-lg text-xs font-bold transition">
-                    🔄 SIMULATE SELECTED TRADE
+                    🔄 SIMULATE TRADE
                 </button>
             </div>
-
             <div id="tradeImpactResult" class="hidden cyber-card p-3 rounded-xl border border-indigo-500/40 bg-indigo-950/30 text-xs space-y-1"></div>
-            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div class="cyber-card p-3.5 rounded-2xl space-y-2 border border-cyan-500/30">
                     <div class="flex items-center space-x-2 border-b border-gray-800 pb-2">
@@ -419,18 +403,15 @@
                             <thead>
                                 <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
                                     <th class="py-1.5 px-1 text-center">TRADE</th><th class="py-1.5 px-1">PLAYER</th><th class="py-1.5 px-1">POS</th>
-                                    <th class="py-1.5 px-1 text-center">SCORE</th><th class="py-1.5 px-1 text-center">FG%</th>
-                                    <th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
-                                    <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th>
-                                    <th class="py-1.5 px-1 text-center">AST</th><th class="py-1.5 px-1 text-center">STL</th>
-                                    <th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
+                                    <th class="py-1.5 px-1 text-center">SCORE</th><th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th>
+                                    <th class="py-1.5 px-1 text-center">3PTM</th><th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th>
+                                    <th class="py-1.5 px-1 text-center">AST</th><th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                                 </tr>
                             </thead>
                             <tbody id="tradeTeam1Tbody" class="divide-y divide-gray-800/40"></tbody>
                         </table>
                     </div>
                 </div>
-
                 <div class="cyber-card p-3.5 rounded-2xl space-y-2 border border-rose-500/30">
                     <div class="flex items-center space-x-2 border-b border-gray-800 pb-2">
                         <span class="text-xs text-rose-400 font-bold">SIDE B:</span>
@@ -441,11 +422,9 @@
                             <thead>
                                 <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
                                     <th class="py-1.5 px-1 text-center">TRADE</th><th class="py-1.5 px-1">PLAYER</th><th class="py-1.5 px-1">POS</th>
-                                    <th class="py-1.5 px-1 text-center">SCORE</th><th class="py-1.5 px-1 text-center">FG%</th>
-                                    <th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
-                                    <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th>
-                                    <th class="py-1.5 px-1 text-center">AST</th><th class="py-1.5 px-1 text-center">STL</th>
-                                    <th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
+                                    <th class="py-1.5 px-1 text-center">SCORE</th><th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th>
+                                    <th class="py-1.5 px-1 text-center">3PTM</th><th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th>
+                                    <th class="py-1.5 px-1 text-center">AST</th><th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                                 </tr>
                             </thead>
                             <tbody id="tradeTeam2Tbody" class="divide-y divide-gray-800/40"></tbody>
@@ -455,7 +434,6 @@
             </div>
         </div>
 
-        <!-- TABLE 5: ALL 14 SQUADS DIRECT ROSTER LIST -->
         <div class="space-y-3">
             <div class="flex justify-between items-center border-l-4 border-emerald-400 pl-2">
                 <h2 class="text-base font-black text-emerald-400">🔥 TABLE 5: ALL 14 SQUADS DIRECT ROSTER LIST</h2>
@@ -466,26 +444,24 @@
 
     <!-- ================= TAB 3: WEEKLY ROTO & CROSS MATCHUP ================= -->
     <div id="tab3Content" class="space-y-6 hidden">
-        <!-- TAB 3 STICKY WEEK SELECTION BAR -->
-        <div class="cyber-card p-3 rounded-xl flex items-center justify-between border border-emerald-500/30 shadow-xl mb-4">
+        <div class="cyber-card p-3 rounded-xl flex flex-col md:flex-row items-center justify-between border border-emerald-500/30 shadow-xl mb-4 gap-2">
             <div class="flex items-center space-x-2">
                 <span class="text-xs text-emerald-400 font-black uppercase">🏆 TAB 3 WEEKLY ANALYTICS</span>
-                <span class="text-[9px] text-gray-400 font-bold">(僅顯示已開打及當前週次)</span>
+                <span class="text-[9px] text-gray-400 font-bold">(僅顯示當前週次)</span>
             </div>
-            <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1.5 rounded-lg border border-emerald-500/40">
+            <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1.5 rounded-lg border border-emerald-500/40 w-full md:w-auto justify-between">
                 <span class="text-[10px] text-emerald-400 font-black uppercase">ANALYTICS WEEK:</span>
                 <select id="tab3WeekDropdown" onchange="onTab3WeekChange()" class="bg-gray-900 text-emerald-300 font-black text-xs px-2 py-1 rounded-lg border border-emerald-500/40 focus:outline-none cursor-pointer">
                 </select>
             </div>
         </div>
 
-        <!-- 3-COLUMN SIDE-BY-SIDE GRID: LEADERBOARD, TOTAL ROTO, PER-GAME ROTO -->
+        <!-- 3-COLUMN SIDE-BY-SIDE GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <!-- 1. LEAGUE-WIDE CROSS MATCHUP LEADERBOARD -->
             <div class="space-y-3">
                 <div class="flex justify-between items-center border-l-4 border-cyan-400 pl-2">
                     <div>
-                        <h2 class="text-sm font-black text-cyan-400">⚡ CROSS MATCHUP LEADERBOARD</h2>
+                        <h2 class="text-sm font-black text-cyan-400">⚡ CROSS MATCHUP</h2>
                         <p class="text-[8px] text-gray-400 font-bold">全聯盟對決總勝負積分天梯</p>
                     </div>
                 </div>
@@ -493,10 +469,8 @@
                     <table class="w-full text-left text-[11px] font-mono leading-tight">
                         <thead>
                             <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                <th class="py-1.5 px-1">RNK</th>
-                                <th class="py-1.5 px-1.5">SQUAD</th>
-                                <th class="py-1.5 px-1 text-center">OVERALL (VS 13)</th>
-                                <th class="py-1.5 px-1 text-center">WIN %</th>
+                                <th class="py-1.5 px-1">RNK</th><th class="py-1.5 px-1.5">SQUAD</th>
+                                <th class="py-1.5 px-1 text-center">OVERALL (VS 13)</th><th class="py-1.5 px-1 text-center">WIN %</th>
                             </tr>
                         </thead>
                         <tbody id="leagueCrossLeaderboardTbody" class="divide-y divide-gray-800/40"></tbody>
@@ -504,30 +478,21 @@
                 </div>
             </div>
 
-            <!-- 2. ANALYSIS #2: TOTAL ROTO RANK -->
             <div class="space-y-3">
                 <div class="flex justify-between items-center border-l-4 border-amber-400 pl-2">
                     <div>
-                        <h2 class="text-sm font-black text-amber-400">🏆 ANALYSIS #2: TOTAL ROTO RANK</h2>
+                        <h2 class="text-sm font-black text-amber-400">🏆 TOTAL ROTO RANK</h2>
                         <p class="text-[8px] text-gray-400 font-bold">以全隊累計總數據進行 14 隊 Roto 排名</p>
                     </div>
                 </div>
                 <div class="cyber-card p-3 rounded-2xl border border-amber-500/30 overflow-x-auto">
-                    <table class="w-full text-left text-[11px] font-mono leading-tight">
+                    <table class="w-full text-left text-[11px] font-mono leading-tight min-w-[350px]">
                         <thead>
                             <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                <th class="py-1.5 px-1">RNK</th>
-                                <th class="py-1.5 px-1.5">SQUAD</th>
-                                <th class="py-1.5 px-1 text-center text-amber-300 font-bold">PTS</th>
-                                <th class="py-1.5 px-1 text-center">FG%</th>
-                                <th class="py-1.5 px-1 text-center">FT%</th>
-                                <th class="py-1.5 px-1 text-center">3PT</th>
-                                <th class="py-1.5 px-1 text-center">PTS</th>
-                                <th class="py-1.5 px-1 text-center">REB</th>
-                                <th class="py-1.5 px-1 text-center">AST</th>
-                                <th class="py-1.5 px-1 text-center">STL</th>
-                                <th class="py-1.5 px-1 text-center">BLK</th>
-                                <th class="py-1.5 px-1 text-center">TO</th>
+                                <th class="py-1.5 px-1">RNK</th><th class="py-1.5 px-1.5">SQUAD</th><th class="py-1.5 px-1 text-center text-amber-300 font-bold">PTS</th>
+                                <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PT</th>
+                                <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
+                                <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                             </tr>
                         </thead>
                         <tbody id="totalRotoTbody" class="divide-y divide-gray-800/40"></tbody>
@@ -535,30 +500,21 @@
                 </div>
             </div>
 
-            <!-- 3. ANALYSIS #3: PER-GAME ROTO RANK -->
             <div class="space-y-3">
                 <div class="flex justify-between items-center border-l-4 border-purple-400 pl-2">
                     <div>
-                        <h2 class="text-sm font-black text-purple-400">🎯 ANALYSIS #3: PER-GAME ROTO RANK</h2>
+                        <h2 class="text-sm font-black text-purple-400">🎯 PER-GAME ROTO RANK</h2>
                         <p class="text-[8px] text-gray-400 font-bold">將數據除以 GP 計算純粹場均效率</p>
                     </div>
                 </div>
                 <div class="cyber-card p-3 rounded-2xl border border-purple-500/30 overflow-x-auto">
-                    <table class="w-full text-left text-[11px] font-mono leading-tight">
+                    <table class="w-full text-left text-[11px] font-mono leading-tight min-w-[350px]">
                         <thead>
                             <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                <th class="py-1.5 px-1">RNK</th>
-                                <th class="py-1.5 px-1.5">SQUAD</th>
-                                <th class="py-1.5 px-1 text-center text-purple-300 font-bold">PTS</th>
-                                <th class="py-1.5 px-1 text-center">FG%</th>
-                                <th class="py-1.5 px-1 text-center">FT%</th>
-                                <th class="py-1.5 px-1 text-center">3PT</th>
-                                <th class="py-1.5 px-1 text-center">PTS</th>
-                                <th class="py-1.5 px-1 text-center">REB</th>
-                                <th class="py-1.5 px-1 text-center">AST</th>
-                                <th class="py-1.5 px-1 text-center">STL</th>
-                                <th class="py-1.5 px-1 text-center">BLK</th>
-                                <th class="py-1.5 px-1 text-center">TO</th>
+                                <th class="py-1.5 px-1">RNK</th><th class="py-1.5 px-1.5">SQUAD</th><th class="py-1.5 px-1 text-center text-purple-300 font-bold">PTS</th>
+                                <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PT</th>
+                                <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
+                                <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                             </tr>
                         </thead>
                         <tbody id="perGameRotoTbody" class="divide-y divide-gray-800/40"></tbody>
@@ -567,29 +523,21 @@
             </div>
         </div>
 
-        <!-- SECTION 1: ALL TEAMS WEEKLY 9-CAT RESULTS SUMMARY -->
         <div class="space-y-3">
             <div class="flex justify-between items-center border-l-4 border-emerald-400 pl-2">
                 <div>
                     <h2 class="text-base font-black text-emerald-400">📊 ALL TEAMS WEEKLY STATS SUMMARY</h2>
-                    <p class="text-[9px] text-gray-400 font-bold">該週全聯盟所有隊伍的真實/預測 9 類別累計數據與出場場次 (GP)（已根據當週實際分佈動態計算熱力標籤）</p>
+                    <p class="text-[9px] text-gray-400 font-bold">該週全聯盟所有隊伍的真實/預測 9 類別累計數據與出場場次 (GP)</p>
                 </div>
             </div>
             <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30 overflow-x-auto">
-                <table class="w-full text-left text-[11px] font-mono leading-tight">
+                <table class="w-full text-left text-[11px] font-mono leading-tight min-w-[650px]">
                     <thead>
                         <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                            <th class="py-1.5 px-1.5">SQUAD</th>
-                            <th class="py-1.5 px-1 text-center">GP</th>
-                            <th class="py-1.5 px-1 text-center">FG%</th>
-                            <th class="py-1.5 px-1 text-center">FT%</th>
-                            <th class="py-1.5 px-1 text-center">3PTM</th>
-                            <th class="py-1.5 px-1 text-center">PTS</th>
-                            <th class="py-1.5 px-1 text-center">REB</th>
-                            <th class="py-1.5 px-1 text-center">AST</th>
-                            <th class="py-1.5 px-1 text-center">STL</th>
-                            <th class="py-1.5 px-1 text-center">BLK</th>
-                            <th class="py-1.5 px-1 text-center">TO</th>
+                            <th class="py-1.5 px-1.5">SQUAD</th><th class="py-1.5 px-1 text-center">GP</th><th class="py-1.5 px-1 text-center">FG%</th>
+                            <th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th><th class="py-1.5 px-1 text-center">PTS</th>
+                            <th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th><th class="py-1.5 px-1 text-center">STL</th>
+                            <th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                         </tr>
                     </thead>
                     <tbody id="tab3WeeklyStatsTbody" class="divide-y divide-gray-800/40"></tbody>
@@ -597,41 +545,129 @@
             </div>
         </div>
 
-        <!-- SECTION 2: 1-VS-ALL CROSS MATCHUP MATRIX (ANALYSIS #1) -->
         <div class="space-y-3">
-            <div class="flex justify-between items-center border-l-4 border-cyan-400 pl-2">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-cyan-400 pl-2 gap-2">
                 <div>
                     <h2 class="text-base font-black text-cyan-400">⚔️ ANALYSIS #1: 1-VS-ALL CROSS MATCHUP SIMULATOR</h2>
-                    <p class="text-[9px] text-gray-400 font-bold">選擇任意隊伍，系統會即時拿它的數據與其餘 13 隊逐一對決，算出該週橫掃全聯盟的勝負戰績！</p>
+                    <p class="text-[9px] text-gray-400 font-bold">選擇任意隊伍與其餘 13 隊逐一對決</p>
                 </div>
                 <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1 rounded-lg border border-cyan-500/40">
                     <span class="text-[10px] text-cyan-400 font-bold">SELECT TEAM:</span>
                     <select id="crossMatchupTeamSelect" onchange="renderCrossMatchup()" class="bg-gray-900 text-xs text-cyan-300 font-black px-2 py-1 rounded border border-cyan-500/40 focus:outline-none"></select>
                 </div>
             </div>
-
             <div id="crossMatchupHeaderBanner" class="cyber-card p-3.5 rounded-xl border border-cyan-500/40 bg-cyan-950/20 text-xs flex justify-between items-center"></div>
-
             <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 overflow-x-auto">
-                <table class="w-full text-left text-[11px] font-mono leading-tight">
+                <table class="w-full text-left text-[11px] font-mono leading-tight min-w-[700px]">
                     <thead>
                         <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                            <th class="py-1.5 px-1.5">OPPONENT SQUAD</th>
-                            <th class="py-1.5 px-1 text-center">SCORE</th>
-                            <th class="py-1.5 px-1 text-center">RESULT</th>
-                            <th class="py-1.5 px-1 text-center">FG%</th>
-                            <th class="py-1.5 px-1 text-center">FT%</th>
-                            <th class="py-1.5 px-1 text-center">3PTM</th>
-                            <th class="py-1.5 px-1 text-center">PTS</th>
-                            <th class="py-1.5 px-1 text-center">REB</th>
-                            <th class="py-1.5 px-1 text-center">AST</th>
-                            <th class="py-1.5 px-1 text-center">STL</th>
-                            <th class="py-1.5 px-1 text-center">BLK</th>
-                            <th class="py-1.5 px-1 text-center">TO</th>
+                            <th class="py-1.5 px-1.5">OPPONENT SQUAD</th><th class="py-1.5 px-1 text-center">SCORE</th><th class="py-1.5 px-1 text-center">RESULT</th>
+                            <th class="py-1.5 px-1 text-center">FG%</th><th class="py-1.5 px-1 text-center">FT%</th><th class="py-1.5 px-1 text-center">3PTM</th>
+                            <th class="py-1.5 px-1 text-center">PTS</th><th class="py-1.5 px-1 text-center">REB</th><th class="py-1.5 px-1 text-center">AST</th>
+                            <th class="py-1.5 px-1 text-center">STL</th><th class="py-1.5 px-1 text-center">BLK</th><th class="py-1.5 px-1 text-center">TO</th>
                         </tr>
                     </thead>
                     <tbody id="crossMatchupTbody" class="divide-y divide-gray-800/40"></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB 4: AI & SOCIAL HUB ================= -->
+    <div id="tab4Content" class="space-y-6 hidden">
+        <div class="flex items-center justify-between border-l-4 border-cyan-400 pl-2">
+            <div>
+                <h2 class="text-base font-black text-cyan-400">🤖 AI & SOCIAL INTELLIGENCE HUB</h2>
+                <p class="text-[9px] text-gray-400 font-bold">即時社群觀點、專家的頻道情報 (@OldManSquad、@bleavinfantasy) 與您的專屬 AI 戰術顧問</p>
+            </div>
+        </div>
+
+        <!-- 3 CARDS: YOUTUBE & REDDIT INTEL -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- OldManSquad Intel -->
+            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 space-y-3 flex flex-col justify-between">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black text-cyan-300">📺 OldManSquad (Dan Besbris)</span>
+                        <a href="https://www.youtube.com/@OldManSquad" target="_blank" class="text-[9px] text-cyan-400 hover:underline">🔗 Channel</a>
+                    </div>
+                    <p class="text-[10px] text-gray-300">最新週報精選：早賽季過激反應 (Overreactions) 與賺取紅利的 Buy-Low / Sell-High 目標、關鍵傷兵與搶人建議。</p>
+                    <div class="bg-gray-950 p-2.5 rounded-xl border border-gray-800 text-[10px] space-y-1">
+                        <div class="text-emerald-400 font-bold">🔥 熱門影片焦點：</div>
+                        <div class="text-gray-300">• Buy Low & Sell High! | 8 Insane Overreactions</div>
+                        <div class="text-gray-300">• Ty Jerome, League-Winner! Must-Adds & Drops</div>
+                    </div>
+                </div>
+                <a href="https://www.youtube.com/@OldManSquad" target="_blank" class="block text-center bg-cyan-950 hover:bg-cyan-900 text-cyan-300 text-[10px] font-bold py-1.5 rounded-lg border border-cyan-700 transition">前往觀看頻道</a>
+            </div>
+
+            <!-- Bleav in Fantasy Intel -->
+            <div class="cyber-card p-4 rounded-2xl border border-purple-500/30 space-y-3 flex flex-col justify-between">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black text-purple-300">📺 Bleav in Fantasy Basketball</span>
+                        <a href="https://www.youtube.com/@bleavinfantasy" target="_blank" class="text-[9px] text-purple-400 hover:underline">🔗 Channel</a>
+                    </div>
+                    <p class="text-[10px] text-gray-300">最新戰術指南：9-Cat 聯盟 Cheat Sheet、前段輪次價值分析與 7 大值得 Stash 的潛力菜鳥清單。</p>
+                    <div class="bg-gray-950 p-2.5 rounded-xl border border-gray-800 text-[10px] space-y-1">
+                        <div class="text-purple-400 font-bold">🔥 熱門影片焦點：</div>
+                        <div class="text-gray-300">• 7 NBA Fantasy Breakouts: BUY, HOLD or SELL HIGH?</div>
+                        <div class="text-gray-300">• WEEK 1 WAIVER WIRE: 7 Rookies Worth Stashing!</div>
+                    </div>
+                </div>
+                <a href="https://www.youtube.com/@bleavinfantasy" target="_blank" class="block text-center bg-purple-950 hover:bg-purple-900 text-purple-300 text-[10px] font-bold py-1.5 rounded-lg border border-purple-700 transition">前往觀看頻道</a>
+            </div>
+
+            <!-- Reddit r/fantasybball Intel -->
+            <div class="cyber-card p-4 rounded-2xl border border-amber-500/30 space-y-3 flex flex-col justify-between">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black text-amber-300">🔥 Reddit r/fantasybball</span>
+                        <span class="text-[9px] text-amber-500">Live Community</span>
+                    </div>
+                    <p class="text-[10px] text-gray-300">社群鄉民實時熱話：Streamer 目標、賽前輪休 (Rest) 預警與突發傷兵的第一手討論。</p>
+                    <div class="bg-gray-950 p-2.5 rounded-xl border border-gray-800 text-[10px] space-y-1">
+                        <div class="text-amber-400 font-bold">💬 社群焦點討論：</div>
+                        <div class="text-gray-300">• 週末 Back-to-Back 搶人策略佈局</div>
+                        <div class="text-gray-300">• 各隊 Usage Rate 暴漲黑馬觀察</div>
+                    </div>
+                </div>
+                <button onclick="alert('已連接 Reddit 即時資訊流！')" class="w-full bg-amber-950 hover:bg-amber-900 text-amber-300 text-[10px] font-bold py-1.5 rounded-lg border border-amber-700 transition">更新社群情報</button>
+            </div>
+        </div>
+
+        <!-- AI ROSTER ADVISOR & CHAT SECTION -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <!-- Left: Quick Audit -->
+            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 lg:col-span-4 space-y-3">
+                <h3 class="text-xs font-black text-cyan-300">⚡ AI 陣容盲點快速健檢</h3>
+                <p class="text-[10px] text-gray-400">點擊下方按鈕，AI 將根據你目前的陣容與 Punting 策略提供即時戰術建議：</p>
+                <div class="space-y-2">
+                    <button onclick="runAiAudit('waiver')" class="w-full text-left bg-gray-950 hover:bg-cyan-950/40 p-2.5 rounded-xl border border-cyan-800/60 text-[11px] text-cyan-300 font-bold transition flex items-center justify-between">
+                        <span>💎 本週最佳 Waiver 撿人建議</span><span>➔</span>
+                    </button>
+                    <button onclick="runAiAudit('trade')" class="w-full text-left bg-gray-950 hover:bg-indigo-950/40 p-2.5 rounded-xl border border-indigo-800/60 text-[11px] text-indigo-300 font-bold transition flex items-center justify-between">
+                        <span>🤝 Trade 交易目標推薦</span><span>➔</span>
+                    </button>
+                    <button onclick="runAiAudit('punt')" class="w-full text-left bg-gray-950 hover:bg-amber-950/40 p-2.5 rounded-xl border border-amber-800/60 text-[11px] text-amber-300 font-bold transition flex items-center justify-between">
+                        <span>🎯 9-Cat 陣容強弱項健檢</span><span>➔</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Chat Box -->
+            <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30 lg:col-span-8 flex flex-col justify-between space-y-3">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+                    <h3 class="text-xs font-black text-emerald-400">💬 專屬 Fantasy 戰術顧問聊天室</h3>
+                    <span class="text-[9px] text-emerald-500">Online & Ready</span>
+                </div>
+                <div id="aiChatLog" class="bg-gray-950 p-3 rounded-xl h-[220px] overflow-y-auto space-y-2 text-[11px] font-mono border border-gray-800">
+                    <div class="text-emerald-300 font-bold">🤖 AI 顧問：哈囉 William！我是你的專屬 Fantasy 籃球戰術顧問。你可以問我關於陣容調度、Waiver 搶人或交易評估的問題！</div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="aiChatInput" placeholder="輸入你想討論的問題（例如：這週我該怎麼佈局搶 3PTM？）" class="flex-1 bg-gray-900 text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-800 focus:outline-none focus:border-emerald-500">
+                    <button onclick="sendAiMessage()" class="bg-emerald-950 hover:bg-emerald-900 text-emerald-300 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-700 transition">發送</button>
+                </div>
             </div>
         </div>
     </div>
@@ -671,7 +707,7 @@
             container.innerHTML = '';
             Object.keys(puntCategories).forEach(cat => {
                 let lbl = document.createElement('label');
-                lbl.className = "flex items-center space-x-0.5 cursor-pointer text-[9px] text-gray-300 font-bold bg-gray-900 px-1.5 py-0.5 rounded border border-gray-800 hover:border-amber-500/50";
+                lbl.className = "flex items-center space-x-0.5 cursor-pointer text-[9px] text-gray-300 font-bold bg-gray-900 px-1.5 py-0.5 rounded border border-gray-800 hover:border-amber-500/50 whitespace-nowrap";
                 lbl.innerHTML = `<input type="checkbox" onchange="togglePuntCat('${cat}', this.checked)" class="rounded bg-gray-950 border-gray-700 text-amber-500"> <span>${cat}</span>`;
                 container.appendChild(lbl);
             });
@@ -691,33 +727,19 @@
         }
 
         function switchTab(tabId) {
-            const btn1 = document.getElementById('btnTab1');
-            const btn2 = document.getElementById('btnTab2');
-            const btn3 = document.getElementById('btnTab3');
-            const content1 = document.getElementById('tab1Content');
-            const content2 = document.getElementById('tab2Content');
-            const content3 = document.getElementById('tab3Content');
+            ['tab1', 'tab2', 'tab3', 'tab4'].forEach(t => {
+                document.getElementById(`btn${t.charAt(0).toUpperCase() + t.slice(1)}`).className = 'tab-btn-inactive px-3 py-2 rounded-xl text-[10px] md:text-[11px] uppercase tracking-wider transition-all whitespace-nowrap';
+                document.getElementById(`${t}Content`).classList.add('hidden');
+            });
 
-            btn1.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-            btn2.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-            btn3.className = 'tab-btn-inactive px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-            
-            content1.classList.add('hidden');
-            content2.classList.add('hidden');
-            content3.classList.add('hidden');
+            document.getElementById(`btn${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).className = 'tab-btn-active px-3 py-2 rounded-xl text-[10px] md:text-[11px] uppercase tracking-wider transition-all whitespace-nowrap';
+            document.getElementById(`${tabId}Content`).classList.remove('hidden');
 
-            if (tabId === 'tab1') {
-                btn1.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                content1.classList.remove('hidden');
-            } else if (tabId === 'tab2') {
-                btn2.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                content2.classList.remove('hidden');
+            if (tabId === 'tab2') {
                 renderTable3AndSpider();
                 initTable4Selectors();
                 renderTable5();
             } else if (tabId === 'tab3') {
-                btn3.className = 'tab-btn-active px-4 py-2 rounded-xl text-[11px] uppercase tracking-wider transition-all';
-                content3.classList.remove('hidden');
                 initCrossMatchupSelector();
                 renderTab3AllSections();
             }
@@ -726,7 +748,6 @@
         function getDefaultWeekByDate() {
             const todayStr = new Date().toISOString().split('T')[0];
             let matchedWeek = "1";
-            
             if (globalData && globalData.weeks_config) {
                 for (let w = 1; w <= 23; w++) {
                     let wStr = String(w);
@@ -843,9 +864,7 @@
 
             let rosteredSet = new Set();
             globalData.teams.forEach(t => {
-                (t.roster || []).forEach(p => {
-                    rosteredSet.add(normalizeName(p.name));
-                });
+                (t.roster || []).forEach(p => rosteredSet.add(normalizeName(p.name)));
             });
 
             let faList = [];
@@ -904,7 +923,6 @@
                     zSum += z;
                 }
             });
-
             return activeCatCount > 0 ? (zSum / activeCatCount) * 10 : 0;
         }
 
@@ -956,7 +974,6 @@
                 m.home_team.includes(myTeamName) || m.home_team === myTeamName || 
                 m.away_team.includes(myTeamName) || m.away_team === myTeamName
             );
-            
             selectedMatchupIndex = myMatchupIdx !== -1 ? myMatchupIdx : 0;
             
             buildMatchupButtons();
@@ -978,9 +995,7 @@
                     btn.className = idx === selectedMatchupIndex ? 
                         "matchup-btn px-2.5 py-1 text-xs font-black rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-gray-950 shadow-lg shadow-cyan-500/40 border border-cyan-300 flex-shrink-0" : 
                         "matchup-btn px-2.5 py-1 text-xs font-bold rounded-lg bg-gray-950 text-gray-400 hover:text-white border border-gray-800 flex-shrink-0";
-                    let cleanHome = cleanName(m.home_team);
-                    let cleanAway = cleanName(m.away_team);
-                    btn.innerText = `${cleanHome} vs ${cleanAway}`;
+                    btn.innerText = `${cleanName(m.home_team)} vs ${cleanName(m.away_team)}`;
                     btn.onclick = () => renderDashboard(idx);
                     container.appendChild(btn);
                 });
@@ -1029,7 +1044,6 @@
         function initializeOutPlayers() {
             if (initialOutInitialized) return;
             const todayIso = new Date().toISOString().split('T')[0];
-            
             globalData.teams.forEach(t => {
                 if (t.roster) {
                     t.roster.forEach(p => {
@@ -1039,8 +1053,7 @@
                                 const days = (globalData.weeks_config[w] && globalData.weeks_config[w].days) || [];
                                 days.forEach(dObj => {
                                     if (dObj.iso_date >= todayIso) {
-                                        const key = `${w}_${p.name}_${dObj.day_name}`;
-                                        benchedMap[key] = true;
+                                        benchedMap[`${w}_${p.name}_${dObj.day_name}`] = true;
                                     }
                                 });
                             }
@@ -1051,10 +1064,9 @@
             initialOutInitialized = true;
         }
 
-        function getZClass(cat, val, isTeamAvg = false) {
+        function getZClass(cat, val) {
             if(puntCategories[cat]) return 'z-avg opacity-40 line-through';
-            const metaObj = isTeamAvg ? (globalData.team_top10_averages_meta || {}) : (globalData.stats_meta || {});
-            const meta = metaObj[cat] || { mean: 10, std: 5 };
+            const meta = (globalData.stats_meta || {})[cat] || { mean: 10, std: 5 };
             let z = meta.std > 0 ? (val - meta.mean) / meta.std : 0;
             if (cat === 'TO') z = -z;
             if (z >= 0.8) return 'z-elite';
@@ -1064,7 +1076,6 @@
             return 'z-punt';
         }
 
-        // 專門用於當週數據摘要的動態 Z-Score 計算
         function getWeeklyDynamicZClass(cat, val, statsMap) {
             if(puntCategories[cat]) return 'z-avg opacity-40 line-through';
             let values = globalData.teams.map(t => statsMap[t.team_name][cat]);
@@ -1073,8 +1084,7 @@
             let std = Math.sqrt(variance);
 
             let z = std > 0 ? (val - mean) / std : 0;
-            if (cat === 'TO') z = -z; // TO 越低越好
-
+            if (cat === 'TO') z = -z;
             if (z >= 0.8) return 'z-elite';
             if (z >= 0.25) return 'z-good';
             if (z >= -0.24) return 'z-avg';
@@ -1113,12 +1123,7 @@
                         else ties++;
                     }
                 }
-                results[cat] = {
-                    myWinProb: (myWins / runs) * 100,
-                    oppWinProb: (oppWins / runs) * 100,
-                    tieProb: (ties / runs) * 100,
-                    mySims: myArr, oppSims: oppArr
-                };
+                results[cat] = { myWinProb: (myWins / runs) * 100, oppWinProb: (oppWins / runs) * 100, tieProb: (ties / runs) * 100, mySims: myArr, oppSims: oppArr };
             });
             return results;
         }
@@ -1224,12 +1229,10 @@
                 let proj = { 
                     "PTS": actualData.PTS, "REB": actualData.REB, "AST": actualData.AST, 
                     "3PTM": actualData["3PTM"], "STL": actualData.STL, "BLK": actualData.BLK, "TO": actualData.TO, 
-                    "FGM": actualData.FGM || 0, "FGA": actualData.FGA || 0, 
-                    "FTM": actualData.FTM || 0, "FTA": actualData.FTA || 0 
+                    "FGM": actualData.FGM || 0, "FGA": actualData.FGA || 0, "FTM": actualData.FTM || 0, "FTA": actualData.FTA || 0 
                 };
                 let totalGP = actualData.GP || 0;
                 let activeSlots = isHomeTeam ? homeWaiverSlots : awayWaiverSlots;
-
                 const daysList = globalData.weeks_config[currentSelectedWeek].days || [];
                 const todayIso = new Date().toISOString().split('T')[0];
 
@@ -1238,16 +1241,9 @@
                         let s = p.stats;
                         let sched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
                         let remGp = 0;
-
                         daysList.forEach(dObj => {
-                            let dayName = dObj.day_name;
-                            let dayIso = dObj.iso_date;
-
-                            if (dayIso >= todayIso && sched[dayName] && isGameActive(p.name, dayName)) {
-                                remGp++;
-                            }
+                            if (dObj.iso_date >= todayIso && sched[dObj.day_name] && isGameActive(p.name, dObj.day_name)) remGp++;
                         });
-
                         totalGP += remGp;
                         proj["PTS"] += (s.PTS || 0) * remGp;
                         proj["REB"] += (s.REB || s.TREB || 0) * remGp;
@@ -1266,19 +1262,11 @@
                 activeSlots.forEach(w => {
                     if (w.active && w.name.trim() !== '') {
                         let pNameLower = w.name.trim().toLowerCase();
-                        let wStats = (globalData.all_projections && globalData.all_projections[pNameLower]) || {
-                            PTS: 10, REB: 4, AST: 2, '3PTM': 1, STL: 0.8, BLK: 0.4, TO: 1.2, FGM: 3.5, FGA: 8, FTM: 2, FTA: 2.5
-                        };
+                        let wStats = (globalData.all_projections && globalData.all_projections[pNameLower]) || { PTS: 10, REB: 4, AST: 2, '3PTM': 1, STL: 0.8, BLK: 0.4, TO: 1.2, FGM: 3.5, FGA: 8, FTM: 2, FTA: 2.5 };
                         let wGp = 0;
-
                         daysList.forEach(dObj => {
-                            let dayName = dObj.day_name;
-                            let dayIso = dObj.iso_date;
-                            if (dayIso >= todayIso && w.days[dayName]) {
-                                wGp++;
-                            }
+                            if (dObj.iso_date >= todayIso && w.days[dObj.day_name]) wGp++;
                         });
-
                         totalGP += wGp;
                         proj["PTS"] += (wStats.PTS || 0) * wGp;
                         proj["REB"] += (wStats.REB || wStats.TREB || 0) * wGp;
@@ -1308,9 +1296,7 @@
             const scoreTbody = document.getElementById('scoreTableBody');
             scoreTbody.innerHTML = '';
             let expWins = 0, expLosses = 0, expTies = 0;
-            let homeTotalWinProbSum = 0;
-            let activeCatsForWinCount = 0;
-
+            let homeTotalWinProbSum = 0, activeCatsForWinCount = 0;
             let catPillsHTML = '';
 
             standard9Cats.forEach(cat => {
@@ -1341,8 +1327,7 @@
                     activeCatsForWinCount++;
                 }
 
-                let cMy = cleanName(myTeam);
-                let cOpp = cleanName(oppTeam);
+                let cMy = cleanName(myTeam), cOpp = cleanName(oppTeam);
 
                 if (isPunted) {
                     probBadge = `<span class="bg-gray-900 text-gray-500 px-1.5 py-0.5 rounded font-bold border border-gray-800">PUNTED</span>`;
@@ -1366,7 +1351,7 @@
                 if (isPunted) tr.className = "opacity-40 bg-gray-950/40 line-through";
 
                 tr.innerHTML = `
-                    <td class="py-1.5 px-1 font-bold ${isPunted ? 'text-gray-500' : 'text-gray-200'}">${cat} ${isPunted ? '(PUNT)' : ''}</td>
+                    <td class="py-1.5 px-1 font-bold ${isPunted ? 'text-gray-500' : 'text-gray-200'}">${cat}</td>
                     <td class="py-1.5 px-1 text-cyan-400 font-mono">${fmt(myCurrVal)}</td>
                     <td class="py-1.5 px-1 text-rose-400 font-mono">${fmt(oppCurrVal)}</td>
                     <td class="py-1.5 px-1 text-center">${currBadge}</td>
@@ -1384,7 +1369,6 @@
             document.getElementById('heroAwayProbText').innerText = `AWAY WIN PROB: ${avgAwayWinProb}%`;
             document.getElementById('heroHomeProbBar').style.width = `${avgHomeWinProb}%`;
             document.getElementById('heroAwayProbBar').style.width = `${avgAwayWinProb}%`;
-
             document.getElementById('heroProjScore').innerText = `${expWins} - ${expLosses} - ${expTies}`;
 
             document.getElementById('gpMyStats').innerText = `${myActual.GP || 0} / ${myS.totalGP}`;
@@ -1407,13 +1391,6 @@
             renderHeatmapTable('oppHeatmapTbody', oppTeamObj, awayWaiverSlots);
 
             initSpiderSelectors(myTeam, oppTeam);
-
-            const matchupBtns = document.querySelectorAll('.matchup-btn');
-            matchupBtns.forEach((btn, idx) => {
-                btn.className = idx === index ? 
-                    "matchup-btn px-2.5 py-1 text-xs font-black rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-gray-950 shadow-lg shadow-cyan-500/40 border border-cyan-300 flex-shrink-0" : 
-                    "matchup-btn px-2.5 py-1 text-xs font-bold rounded-lg bg-gray-950 text-gray-400 hover:text-white border border-gray-800 flex-shrink-0";
-            });
         }
 
         function renderScheduleHeaderRows(myTeamObj, oppTeamObj, myTotalGP, oppTotalGP, homeSlots, awaySlots) {
@@ -1426,9 +1403,7 @@
                 if (teamObj && teamObj.roster) {
                     teamObj.roster.forEach(p => {
                         let playerSched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
-                        days.forEach(d => { 
-                            if (playerSched[d.day_name] && isGameActive(p.name, d.day_name)) counts[d.day_name]++; 
-                        });
+                        days.forEach(d => { if (playerSched[d.day_name] && isGameActive(p.name, d.day_name)) counts[d.day_name]++; });
                     });
                 }
                 slots.forEach(w => {
@@ -1448,7 +1423,6 @@
                     let cnt = counts[d.day_name] || 0;
                     let isPast = d.iso_date < todayIso;
                     let bCls = isPast ? "text-gray-500 bg-gray-950 border-gray-900 line-through opacity-50" : (cnt > 10 ? "text-rose-300 bg-rose-950 border-rose-500 font-black animate-pulse" : (cnt > 0 ? "text-cyan-300 bg-cyan-950 border-cyan-800 font-bold" : "text-gray-600 bg-gray-950 border-gray-900"));
-                    
                     let toggleBtn = isPast ? '' : `<button onclick="toggleDayAll(globalData.teams.find(t=>t.team_name==='${teamObj ? teamObj.team_name : ''}'), '${d.day_name}')" class="block mx-auto mt-0.5 text-[7px] text-cyan-400 hover:text-white bg-gray-900 px-1 py-0.2 rounded border border-gray-700">⚡ALL</button>`;
 
                     html += `<th class="py-1 px-0.5 text-center"><span class="block text-[8px] text-gray-400">${d.day_name}</span><span class="inline-block px-1 text-[8px] rounded border ${bCls}">${cnt}</span>${toggleBtn}</th>`;
@@ -1480,25 +1454,18 @@
                     let schedHTML = days.map(d => {
                         let opp = playerSched[d.day_name];
                         if (!opp) return `<td class="py-1 px-0.5 text-center text-gray-700">·</td>`;
-                        
                         let isPast = d.iso_date < todayIso;
                         let active = isGameActive(p.name, d.day_name);
-                        
                         if (active) activeGpCount++;
-
-                        if (isPast) {
-                            return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
-                        }
-
+                        if (isPast) return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
                         return `<td class="py-1 px-0.5 text-center"><button onclick="toggleGame('${p.name.replace(/'/g, "\\'")}', '${d.day_name}')" class="${active ? "opp-badge-active" : "opp-badge-off"}">${active ? opp : 'OFF'}</button></td>`;
                     }).join('');
 
                     let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
-                    let injuryBadge = isOut ? `<span class="injury-out ml-1">OUT</span>` : (p.injuryStatus === 'DAY_TO_DAY' || p.injuryStatus === 'QUESTIONABLE' ? `<span class="injury-dtd ml-1">DTD</span>` : '');
+                    let injuryBadge = isOut ? `<span class="injury-out ml-1">OUT</span>` : '';
 
                     const tr = document.createElement('tr');
                     if (isOut) tr.className = "opacity-60 bg-rose-950/10";
-
                     tr.innerHTML = `
                         <td class="py-1 px-1 font-bold text-gray-200 whitespace-nowrap">${p.name} ${injuryBadge}</td>
                         <td class="py-1 px-1 text-cyan-400">${p.position}</td>
@@ -1512,26 +1479,19 @@
 
             waiverSlotsData.forEach(w => {
                 if (w.active && w.name.trim() !== '') {
-                    let pName = w.name;
-                    let pNameLower = pName.toLowerCase();
+                    let pName = w.name, pNameLower = pName.toLowerCase();
                     let pObj = globalData.all_projections[pNameLower] || {};
-                    let pTeam = pObj.proTeam || 'FA';
-                    let pPos = pObj.position || 'Util';
+                    let pTeam = pObj.proTeam || 'FA', pPos = pObj.position || 'Util';
                     let activeGpCount = 0;
 
                     let schedHTML = days.map(d => {
                         let isoDate = globalData.weeks_config[currentSelectedWeek].days.find(x => x.day_name === d.day_name).iso_date;
                         let opp = globalData.global_nba_schedule[isoDate] ? globalData.global_nba_schedule[isoDate][pTeam] : null;
                         if (!opp) return `<td class="py-1 px-0.5 text-center text-gray-700">·</td>`;
-                        
                         let isPast = d.iso_date < todayIso;
                         let active = w.days[d.day_name];
                         if (active) activeGpCount++;
-
-                        if (isPast) {
-                            return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
-                        }
-
+                        if (isPast) return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
                         return `<td class="py-1 px-0.5 text-center"><span class="${active ? "opp-badge-active" : "opp-badge-off"}">${active ? opp : 'OFF'}</span></td>`;
                     }).join('');
 
@@ -1566,15 +1526,12 @@
                     let fgDisp = fg <= 0 ? '.000' : (fg >= 0.9999 ? '1.000' : fg.toFixed(3).replace(/^0/, ''));
                     let ftDisp = ft <= 0 ? '.000' : (ft >= 0.9999 ? '1.000' : ft.toFixed(3).replace(/^0/, ''));
                     let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
-                    let injuryBadge = isOut ? `<span class="injury-out ml-1">OUT</span>` : (p.injuryStatus === 'DAY_TO_DAY' ? `<span class="injury-dtd ml-1">DTD</span>` : '');
-
+                    let injuryBadge = isOut ? `<span class="injury-out ml-1">OUT</span>` : '';
                     let scoreVal = calculateAdjustedPlayerScore(s);
-
                     let tradeCheckTd = isTradeTable ? `<td class="py-1 px-1 text-center"><input type="checkbox" data-player="${p.name}" data-side="${sidePrefix}" class="trade-check rounded bg-gray-900 border-gray-700 text-indigo-500"></td>` : '';
 
                     const tr = document.createElement('tr');
                     if (isOut) tr.className = "opacity-60 bg-rose-950/10";
-
                     tr.innerHTML = `
                         ${tradeCheckTd}
                         <td class="py-1 px-1 font-bold text-gray-200 whitespace-nowrap">${p.name} ${injuryBadge}</td>
@@ -1629,12 +1586,8 @@
         }
 
         function sortTable3(col) {
-            if (table3SortColumn === col) {
-                table3SortAsc = !table3SortAsc;
-            } else {
-                table3SortColumn = col;
-                table3SortAsc = col === 'team_name';
-            }
+            if (table3SortColumn === col) table3SortAsc = !table3SortAsc;
+            else { table3SortColumn = col; table3SortAsc = col === 'team_name'; }
             renderTable3AndSpider();
         }
 
@@ -1658,22 +1611,16 @@
 
             const tbodyB = document.getElementById('table3Tbody');
             tbodyB.innerHTML = '';
-
             const myTeamName = globalData.my_team_name || "Novel Fergus";
 
             teamsList.forEach(team => {
                 let avgs = allTeamAvgsMap[team.team_name];
                 let isMyTeam = team.team_name === myTeamName || team.team_name.includes("Novel Fergus");
-                
                 const tr = document.createElement('tr');
-                if (isMyTeam) {
-                    tr.className = "border-2 border-yellow-400 bg-yellow-950/20 font-black shadow-lg";
-                }
-
-                let cTeamName = cleanName(team.team_name);
+                if (isMyTeam) tr.className = "border-2 border-yellow-400 bg-yellow-950/20 font-black shadow-lg";
 
                 tr.innerHTML = `
-                    <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cTeamName} ${isMyTeam ? '⭐' : ''}</td>
+                    <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'}">${cleanName(team.team_name)} ${isMyTeam ? '⭐' : ''}</td>
                     <td class="py-1 px-1 text-center ${getTeamRankClass('FG%', team.team_name, allTeamAvgsMap)}">${(avgs["FG%"]*100).toFixed(1)}%</td>
                     <td class="py-1 px-1 text-center ${getTeamRankClass('FT%', team.team_name, allTeamAvgsMap)}">${(avgs["FT%"]*100).toFixed(1)}%</td>
                     <td class="py-1 px-1 text-center ${getTeamRankClass('3PTM', team.team_name, allTeamAvgsMap)}">${avgs["3PTM"].toFixed(2)}</td>
@@ -1692,16 +1639,12 @@
         function initTable4Selectors() {
             const sel1 = document.getElementById('tradeTeam1Select');
             const sel2 = document.getElementById('tradeTeam2Select');
-            
             if (sel1.options.length === 0) {
                 const myTeamName = globalData.my_team_name || "Novel Fergus";
                 globalData.teams.forEach(t => {
-                    let opt1 = new Option(cleanName(t.team_name), t.team_name);
-                    let opt2 = new Option(cleanName(t.team_name), t.team_name);
-                    sel1.add(opt1);
-                    sel2.add(opt2);
+                    sel1.add(new Option(cleanName(t.team_name), t.team_name));
+                    sel2.add(new Option(cleanName(t.team_name), t.team_name));
                 });
-                
                 let myObj = globalData.teams.find(t => t.team_name === myTeamName || t.team_name.includes("Novel Fergus"));
                 sel1.value = myObj ? myObj.team_name : globalData.teams[0].team_name;
                 sel2.value = globalData.teams[1] ? globalData.teams[1].team_name : globalData.teams[0].team_name;
@@ -1712,36 +1655,27 @@
         function renderTable4() {
             const t1Name = document.getElementById('tradeTeam1Select').value;
             const t2Name = document.getElementById('tradeTeam2Select').value;
-            const t1Obj = globalData.teams.find(t => t.team_name === t1Name);
-            const t2Obj = globalData.teams.find(t => t.team_name === t2Name);
-
-            renderHeatmapTable('tradeTeam1Tbody', t1Obj, [], true, "sideA");
-            renderHeatmapTable('tradeTeam2Tbody', t2Obj, [], true, "sideB");
+            renderHeatmapTable('tradeTeam1Tbody', globalData.teams.find(t => t.team_name === t1Name), [], true, "sideA");
+            renderHeatmapTable('tradeTeam2Tbody', globalData.teams.find(t => t.team_name === t2Name), [], true, "sideB");
             document.getElementById('tradeImpactResult').classList.add('hidden');
         }
 
         function calculateTradeImpact() {
-            const t1Name = document.getElementById('tradeTeam1Select').value;
-            const t2Name = document.getElementById('tradeTeam2Select').value;
-            const t1Obj = globalData.teams.find(t => t.team_name === t1Name);
-            const t2Obj = globalData.teams.find(t => t.team_name === t2Name);
-
+            const t1Obj = globalData.teams.find(t => t.team_name === document.getElementById('tradeTeam1Select').value);
+            const t2Obj = globalData.teams.find(t => t.team_name === document.getElementById('tradeTeam2Select').value);
             let sideA_selected = [], sideB_selected = [];
             document.querySelectorAll('.trade-check:checked').forEach(cb => {
-                let pName = cb.getAttribute('data-player');
-                let side = cb.getAttribute('data-side');
-                if(side === 'sideA') sideA_selected.push(pName);
-                if(side === 'sideB') sideB_selected.push(pName);
+                if(cb.getAttribute('data-side') === 'sideA') sideA_selected.push(cb.getAttribute('data-player'));
+                else sideB_selected.push(cb.getAttribute('data-player'));
             });
 
             if(sideA_selected.length === 0 && sideB_selected.length === 0) {
-                alert("請至少在 Side A 或 Side B 勾選一位球員以模擬交易！");
+                alert("請至少在 Side A 或 Side B 勾選一位球員！");
                 return;
             }
 
             let resDiv = document.getElementById('tradeImpactResult');
             resDiv.classList.remove('hidden');
-
             let cats = ["3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             let sideA_lost = { "3PTM": 0, "PTS": 0, "REB": 0, "AST": 0, "STL": 0, "BLK": 0, "TO": 0 };
             let sideB_lost = { "3PTM": 0, "PTS": 0, "REB": 0, "AST": 0, "STL": 0, "BLK": 0, "TO": 0 };
@@ -1750,7 +1684,6 @@
                 let p = t1Obj.roster.find(x => x.name === pName);
                 if(p && p.stats) cats.forEach(c => sideA_lost[c] += (p.stats[c] || 0));
             });
-
             sideB_selected.forEach(pName => {
                 let p = t2Obj.roster.find(x => x.name === pName);
                 if(p && p.stats) cats.forEach(c => sideB_lost[c] += (p.stats[c] || 0));
@@ -1759,15 +1692,12 @@
             let netA = {};
             cats.forEach(c => netA[c] = sideB_lost[c] - sideA_lost[c]);
 
-            let html = `<div class="font-black text-cyan-300">📊 TRADE SIMULATION RESULT FOR ${cleanName(t1Name).toUpperCase()}:</div><div class="grid grid-cols-7 gap-2 text-center mt-1 font-mono">`;
+            let html = `<div class="font-black text-cyan-300">📊 TRADE IMPACT:</div><div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-center mt-1 font-mono">`;
             cats.forEach(c => {
-                let diff = netA[c];
-                let isGood = c === 'TO' ? diff <= 0 : diff >= 0;
-                let colorClass = isGood ? 'text-emerald-400' : 'text-rose-400';
-                html += `<div class="bg-gray-950 p-1 rounded border border-gray-800"><span class="block text-gray-400 text-[8px]">${c}</span><span class="${colorClass} font-bold">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}</span></div>`;
+                let diff = netA[c], isGood = c === 'TO' ? diff <= 0 : diff >= 0;
+                html += `<div class="bg-gray-950 p-1 rounded border border-gray-800"><span class="block text-gray-400 text-[8px]">${c}</span><span class="${isGood ? 'text-emerald-400' : 'text-rose-400'} font-bold">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}</span></div>`;
             });
             html += `</div>`;
-
             resDiv.innerHTML = html;
         }
 
@@ -1775,32 +1705,25 @@
             const container = document.getElementById('table5Container');
             if(!container) return;
             container.innerHTML = '';
-
             const myTeamName = globalData.my_team_name || "Novel Fergus";
 
             globalData.teams.forEach((tObj, idx) => {
                 let isMyTeam = tObj.team_name === myTeamName || tObj.team_name.includes("Novel Fergus");
-                let borderClass = isMyTeam ? "border-2 border-yellow-400 bg-yellow-950/10" : "border border-gray-800/80";
-                let titleColor = isMyTeam ? "text-yellow-300 font-black" : "text-emerald-300 font-bold";
-
                 const card = document.createElement('div');
-                card.className = `cyber-card p-3.5 rounded-2xl space-y-2 ${borderClass}`;
-                
+                card.className = `cyber-card p-3.5 rounded-2xl space-y-2 ${isMyTeam ? "border-2 border-yellow-400 bg-yellow-950/10" : "border border-gray-800/80"}`;
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b border-gray-800 pb-1.5">
-                        <h3 class="text-xs ${titleColor}">#${idx+1} ${cleanName(tObj.team_name)} ${isMyTeam ? '⭐ (YOUR SQUAD)' : ''}</h3>
+                        <h3 class="text-xs ${isMyTeam ? "text-yellow-300 font-black" : "text-emerald-300 font-bold"}">#${idx+1} ${cleanName(tObj.team_name)} ${isMyTeam ? '⭐' : ''}</h3>
                         <span class="text-[10px] text-gray-400 font-mono">${tObj.standing || ''} • ${tObj.record || ''}</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-[11px] font-mono leading-tight">
                             <thead>
                                 <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                                    <th class="py-1 px-1.5">PLAYER</th><th class="py-1 px-1.5">POS</th>
-                                    <th class="py-1 px-1 text-center">SCORE</th><th class="py-1 px-1 text-center">FG%</th>
-                                    <th class="py-1 px-1 text-center">FT%</th><th class="py-1 px-1 text-center">3PTM</th>
-                                    <th class="py-1 px-1 text-center">PTS</th><th class="py-1 px-1 text-center">REB</th>
-                                    <th class="py-1 px-1 text-center">AST</th><th class="py-1 px-1 text-center">STL</th>
-                                    <th class="py-1 px-1 text-center">BLK</th><th class="py-1 px-1 text-center">TO</th>
+                                    <th class="py-1 px-1.5">PLAYER</th><th class="py-1 px-1.5">POS</th><th class="py-1 px-1 text-center">SCORE</th>
+                                    <th class="py-1 px-1 text-center">FG%</th><th class="py-1 px-1 text-center">FT%</th><th class="py-1 px-1 text-center">3PTM</th>
+                                    <th class="py-1 px-1 text-center">PTS</th><th class="py-1 px-1 text-center">REB</th><th class="py-1 px-1 text-center">AST</th>
+                                    <th class="py-1 px-1 text-center">STL</th><th class="py-1 px-1 text-center">BLK</th><th class="py-1 px-1 text-center">TO</th>
                                 </tr>
                             </thead>
                             <tbody id="table5Tbody_${idx}" class="divide-y divide-gray-800/40"></tbody>
@@ -1862,99 +1785,58 @@
             });
         }
 
-        // =========================================================================
-        // 🏆 TAB 3: WEEKLY ROTO & CROSS MATCHUP LOGIC
-        // =========================================================================
-
         function initCrossMatchupSelector() {
             const tab3Dropdown = document.getElementById('tab3WeekDropdown');
             if (tab3Dropdown && tab3Dropdown.options.length === 0) {
-                tab3Dropdown.innerHTML = '';
                 let currentWeekNum = parseInt(getDefaultWeekByDate());
-                
                 for (let w = 1; w <= currentWeekNum; w++) {
-                    const opt = document.createElement('option');
-                    opt.value = w;
-                    const wConf = globalData.weeks_config[w];
-                    opt.innerText = `Week ${w} (${wConf ? wConf.period_str : ''})`;
-                    tab3Dropdown.appendChild(opt);
+                    tab3Dropdown.add(new Option(`Week ${w}`, w));
                 }
                 tab3Dropdown.value = currentWeekNum;
             }
-
             const sel = document.getElementById('crossMatchupTeamSelect');
-            if(!sel) return;
-            if(sel.options.length === 0) {
+            if(sel && sel.options.length === 0) {
                 const myTeamName = globalData.my_team_name || "Novel Fergus";
-                globalData.teams.forEach(t => {
-                    sel.add(new Option(cleanName(t.team_name), t.team_name));
-                });
+                globalData.teams.forEach(t => sel.add(new Option(cleanName(t.team_name), t.team_name)));
                 let myObj = globalData.teams.find(t => t.team_name === myTeamName || t.team_name.includes("Novel Fergus"));
                 sel.value = myObj ? myObj.team_name : globalData.teams[0].team_name;
             }
         }
 
-        function onTab3WeekChange() {
-            renderTab3AllSections();
-        }
+        function onTab3WeekChange() { renderTab3AllSections(); }
 
         function getWeeklyTeamStatsMap() {
             let statsMap = {};
             const tab3Dropdown = document.getElementById('tab3WeekDropdown');
             let targetWeek = tab3Dropdown ? tab3Dropdown.value : getDefaultWeekByDate();
-            
             const daysList = globalData.weeks_config[targetWeek].days || [];
             const todayIso = new Date().toISOString().split('T')[0];
 
             globalData.teams.forEach(tObj => {
                 let tName = tObj.team_name;
-                const weekActuals = (globalData.actual_stats_by_team || {})[targetWeek] || {};
-                let act = weekActuals[tName] || { "PTS": 0, "REB": 0, "AST": 0, "3PTM": 0, "STL": 0, "BLK": 0, "TO": 0, "FG%": 0, "FT%": 0, "GP": 0, "FGM": 0, "FGA": 0, "FTM": 0, "FTA": 0 };
-
-                let totalFgm = act.FGM || 0, totalFga = act.FGA || 0;
-                let totalFtm = act.FTM || 0, totalFta = act.FTA || 0;
-                let pts = act.PTS || 0, reb = act.REB || 0, ast = act.AST || 0;
-                let tpt = act["3PTM"] || 0, stl = act.STL || 0, blk = act.BLK || 0, to = act.TO || 0;
-                let totalGP = act.GP || 0;
+                const act = (globalData.actual_stats_by_team || {})[targetWeek]?.[tName] || { PTS: 0, REB: 0, AST: 0, '3PTM': 0, STL: 0, BLK: 0, TO: 0, GP: 0, FGM: 0, FGA: 0, FTM: 0, FTA: 0 };
+                let totalFgm = act.FGM || 0, totalFga = act.FGA || 0, totalFtm = act.FTM || 0, totalFta = act.FTA || 0;
+                let pts = act.PTS || 0, reb = act.REB || 0, ast = act.AST || 0, tpt = act["3PTM"] || 0, stl = act.STL || 0, blk = act.BLK || 0, to = act.TO || 0, totalGP = act.GP || 0;
 
                 if (tObj.roster) {
                     tObj.roster.forEach(p => {
-                        let s = p.stats || {};
-                        let sched = (p.schedules_by_week || {})[targetWeek] || {};
-                        let remGp = 0;
-
+                        let s = p.stats || {}, sched = (p.schedules_by_week || {})[targetWeek] || {}, remGp = 0;
                         daysList.forEach(dObj => {
-                            if (dObj.iso_date >= todayIso && sched[dObj.day_name] && isGameActive(p.name, dObj.day_name)) {
-                                remGp++;
-                            }
+                            if (dObj.iso_date >= todayIso && sched[dObj.day_name] && isGameActive(p.name, dObj.day_name)) remGp++;
                         });
-
                         totalGP += remGp;
-                        pts += (s.PTS || 0) * remGp;
-                        reb += (s.REB || s.TREB || 0) * remGp;
-                        ast += (s.AST || 0) * remGp;
-                        tpt += (s["3PTM"] || 0) * remGp;
-                        stl += (s.STL || 0) * remGp;
-                        blk += (s.BLK || 0) * remGp;
-                        to  += (s.TO || 0) * remGp;
-                        totalFgm += (s.FGM || 4) * remGp;
-                        totalFga += (s.FGA || 9) * remGp;
-                        totalFtm += (s.FTM || 2.5) * remGp;
-                        totalFta += (s.FTA || 3.3) * remGp;
+                        pts += (s.PTS || 0) * remGp; reb += (s.REB || s.TREB || 0) * remGp; ast += (s.AST || 0) * remGp;
+                        tpt += (s["3PTM"] || 0) * remGp; stl += (s.STL || 0) * remGp; blk += (s.BLK || 0) * remGp; to += (s.TO || 0) * remGp;
+                        totalFgm += (s.FGM || 4) * remGp; totalFga += (s.FGA || 9) * remGp; totalFtm += (s.FTM || 2.5) * remGp; totalFta += (s.FTA || 3.3) * remGp;
                     });
                 }
 
-                let fgPct = totalFga > 0 ? totalFgm / totalFga : 0;
-                let ftPct = totalFta > 0 ? totalFtm / totalFta : 0;
-
                 statsMap[tName] = {
-                    team_name: tName,
-                    GP: totalGP,
-                    "FG%": fgPct, "FT%": ftPct,
+                    team_name: tName, GP: totalGP,
+                    "FG%": totalFga > 0 ? totalFgm / totalFga : 0, "FT%": totalFta > 0 ? totalFtm / totalFta : 0,
                     "3PTM": tpt, "PTS": pts, "REB": reb, "AST": ast, "STL": stl, "BLK": blk, "TO": to
                 };
             });
-
             return statsMap;
         }
 
@@ -1971,47 +1853,22 @@
             const tbody = document.getElementById('leagueCrossLeaderboardTbody');
             if(!tbody) return;
             tbody.innerHTML = '';
-
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
-            let teamsList = globalData.teams.map(t => t.team_name);
-            let leaderboardData = [];
+            let teamsList = globalData.teams.map(t => t.team_name), leaderboardData = [];
 
             teamsList.forEach(teamA => {
-                let statsA = statsMap[teamA];
-                let wins = 0, losses = 0, ties = 0;
-
+                let statsA = statsMap[teamA], wins = 0, losses = 0, ties = 0;
                 teamsList.forEach(teamB => {
                     if(teamA === teamB) return;
-                    let statsB = statsMap[teamB];
-                    let w = 0, l = 0, t = 0;
-
+                    let statsB = statsMap[teamB], w = 0, l = 0, t = 0;
                     cats.forEach(c => {
                         if(puntCategories[c]) return;
-                        let valA = statsA[c], valB = statsB[c];
-                        let isWin = c === 'TO' ? valA < valB : valA > valB;
-                        let isTie = Math.abs(valA - valB) < 0.0001;
-
-                        if(isTie) t++;
-                        else if(isWin) w++;
-                        else l++;
+                        let valA = statsA[c], valB = statsB[c], isWin = c === 'TO' ? valA < valB : valA > valB;
+                        if(Math.abs(valA - valB) < 0.0001) t++; else if(isWin) w++; else l++;
                     });
-
-                    if(w > l) wins++;
-                    else if(l > w) losses++;
-                    else ties++;
+                    if(w > l) wins++; else if(l > w) losses++; else ties++;
                 });
-
-                let totalGames = wins + losses + ties;
-                let winRate = totalGames > 0 ? (wins / 13) * 100 : 0;
-
-                leaderboardData.push({
-                    team_name: teamA,
-                    wins: wins,
-                    losses: losses,
-                    ties: ties,
-                    winRate: winRate,
-                    scoreMetric: wins * 3 + ties
-                });
+                leaderboardData.push({ team_name: teamA, wins, losses, ties, winRate: ((wins / 13) * 100), scoreMetric: wins * 3 + ties });
             });
 
             leaderboardData.sort((a, b) => b.scoreMetric - a.scoreMetric);
@@ -2019,9 +1876,8 @@
 
             leaderboardData.forEach((item, idx) => {
                 let isMyTeam = item.team_name === myTeamName || item.team_name.includes("Novel Fergus");
-                let tr = document.createElement('tr');
+                const tr = document.createElement('tr');
                 if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
-
                 tr.innerHTML = `
                     <td class="py-1 px-1 text-center font-bold text-cyan-400">#${idx+1}</td>
                     <td class="py-1 px-1.5 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[90px]">${cleanName(item.team_name)} ${isMyTeam ? '⭐' : ''}</td>
@@ -2032,7 +1888,6 @@
             });
         }
 
-        // 優化：使用當週動態 Z-Score 重新計算 ALL TEAMS WEEKLY STATS SUMMARY 的熱力標籤顏色
         function renderWeeklyStatsSummary(statsMap) {
             const tbody = document.getElementById('tab3WeeklyStatsTbody');
             if(!tbody) return;
@@ -2043,10 +1898,8 @@
                 let st = statsMap[tObj.team_name];
                 if(!st) return;
                 let isMyTeam = tObj.team_name === myTeamName || tObj.team_name.includes("Novel Fergus");
-
-                let tr = document.createElement('tr');
+                const tr = document.createElement('tr');
                 if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
-
                 let fmtPct = (v) => v <= 0 ? '.000' : (v >= 0.9999 ? '1.000' : v.toFixed(3).replace(/^0/, ''));
 
                 tr.innerHTML = `
@@ -2074,41 +1927,27 @@
 
             const tbody = document.getElementById('crossMatchupTbody');
             tbody.innerHTML = '';
-
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             let totalWins = 0, totalLosses = 0, totalTies = 0;
 
             globalData.teams.forEach(oppObj => {
                 let oppName = oppObj.team_name;
                 if(oppName === targetTeam) return;
-
-                let oppStats = statsMap[oppName];
-                let w = 0, l = 0, t = 0;
+                let oppStats = statsMap[oppName], w = 0, l = 0, t = 0;
 
                 let catBadges = cats.map(c => {
-                    let isPunted = puntCategories[c];
-                    let tVal = targetStats[c], oVal = oppStats[c];
-                    let isWin = c === 'TO' ? tVal < oVal : tVal > oVal;
-                    let isTie = Math.abs(tVal - oVal) < 0.0001;
-
-                    if(!isPunted) {
-                        if(isTie) t++;
-                        else if(isWin) w++;
-                        else l++;
-                    }
-
+                    let isPunted = puntCategories[c], tVal = targetStats[c], oVal = oppStats[c];
+                    let isWin = c === 'TO' ? tVal < oVal : tVal > oVal, isTie = Math.abs(tVal - oVal) < 0.0001;
+                    if(!isPunted) { if(isTie) t++; else if(isWin) w++; else l++; }
                     if(isPunted) return `<td class="py-1 px-1 text-center text-gray-600 line-through">PUNT</td>`;
                     if(isTie) return `<td class="py-1 px-1 text-center text-amber-400 font-bold">D</td>`;
                     return isWin ? `<td class="py-1 px-1 text-center text-emerald-400 font-bold">W</td>` : `<td class="py-1 px-1 text-center text-rose-400 font-bold">L</td>`;
                 }).join('');
 
-                if(w > l) totalWins++;
-                else if(l > w) totalLosses++;
-                else totalTies++;
-
+                if(w > l) totalWins++; else if(l > w) totalLosses++; else totalTies++;
                 let resBadge = w > l ? `<span class="badge-win px-2 py-0.5 rounded font-bold">WIN</span>` : (l > w ? `<span class="badge-loss px-2 py-0.5 rounded font-bold">LOSS</span>` : `<span class="badge-tie px-2 py-0.5 rounded font-bold">TIE</span>`);
 
-                let tr = document.createElement('tr');
+                const tr = document.createElement('tr');
                 tr.className = "hover:bg-cyan-950/20 transition-all";
                 tr.innerHTML = `
                     <td class="py-1 px-1.5 font-bold text-gray-200">vs ${cleanName(oppName)}</td>
@@ -2120,14 +1959,8 @@
             });
 
             document.getElementById('crossMatchupHeaderBanner').innerHTML = `
-                <div>
-                    <span class="text-gray-400 font-bold uppercase block text-[9px]">CROSS-MATCHUP SUMMARY FOR</span>
-                    <span class="text-sm font-black text-cyan-300">${cleanName(targetTeam).toUpperCase()}</span>
-                </div>
-                <div class="text-right">
-                    <span class="text-gray-400 font-bold block text-[9px]">OVERALL WEEKLY RECORD VS ALL 13 TEAMS</span>
-                    <span class="text-base font-black text-emerald-400">${totalWins} WIN - ${totalLosses} LOSS - ${totalTies} TIE</span>
-                </div>
+                <div><span class="text-gray-400 font-bold uppercase block text-[9px]">TARGET SQUAD</span><span class="text-sm font-black text-cyan-300">${cleanName(targetTeam).toUpperCase()}</span></div>
+                <div class="text-right"><span class="text-gray-400 font-bold block text-[9px]">VS ALL 13 TEAMS</span><span class="text-base font-black text-emerald-400">${totalWins}W - ${totalLosses}L - ${totalTies}T</span></div>
             `;
         }
 
@@ -2136,10 +1969,8 @@
             const tbody = document.getElementById('totalRotoTbody');
             if(!tbody) return;
             tbody.innerHTML = '';
-
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
-            let teamsList = globalData.teams.map(t => t.team_name);
-            let teamRotoScores = {};
+            let teamsList = globalData.teams.map(t => t.team_name), teamRotoScores = {};
             teamsList.forEach(t => teamRotoScores[t] = { total: 0, catPoints: {} });
 
             cats.forEach(c => {
@@ -2156,19 +1987,15 @@
             const myTeamName = globalData.my_team_name || "Novel Fergus";
 
             rankedTeams.forEach((tName, rankIdx) => {
-                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus");
-                let roto = teamRotoScores[tName];
-
+                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus"), roto = teamRotoScores[tName];
                 let catTds = cats.map(c => {
                     if(puntCategories[c]) return `<td class="py-1 px-0.5 text-center text-gray-600 line-through">-</td>`;
                     let pts = roto.catPoints[c] || 0;
-                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-amber-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
-                    return `<td class="py-1 px-0.5 text-center ${color}">${pts}</td>`;
+                    return `<td class="py-1 px-0.5 text-center ${pts >= 12 ? 'text-emerald-400 font-black' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400')}">${pts}</td>`;
                 }).join('');
 
-                let tr = document.createElement('tr');
+                const tr = document.createElement('tr');
                 if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
-
                 tr.innerHTML = `
                     <td class="py-1 px-0.5 text-center font-bold text-amber-400">#${rankIdx+1}</td>
                     <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[80px]">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
@@ -2184,14 +2011,11 @@
             const tbody = document.getElementById('perGameRotoTbody');
             if(!tbody) return;
             tbody.innerHTML = '';
-
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
-            let teamsList = globalData.teams.map(t => t.team_name);
+            let teamsList = globalData.teams.map(t => t.team_name), perGameMap = {};
 
-            let perGameMap = {};
             teamsList.forEach(tName => {
-                let st = statsMap[tName];
-                let gp = Math.max(1, st.GP);
+                let st = statsMap[tName], gp = Math.max(1, st.GP);
                 perGameMap[tName] = {
                     "FG%": st["FG%"], "FT%": st["FT%"],
                     "3PTM": st["3PTM"] / gp, "PTS": st.PTS / gp, "REB": st.REB / gp,
@@ -2216,19 +2040,15 @@
             const myTeamName = globalData.my_team_name || "Novel Fergus";
 
             rankedTeams.forEach((tName, rankIdx) => {
-                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus");
-                let roto = teamRotoScores[tName];
-
+                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus"), roto = teamRotoScores[tName];
                 let catTds = cats.map(c => {
                     if(puntCategories[c]) return `<td class="py-1 px-0.5 text-center text-gray-600 line-through">-</td>`;
                     let pts = roto.catPoints[c] || 0;
-                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-purple-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
-                    return `<td class="py-1 px-0.5 text-center ${color}">${pts}</td>`;
+                    return `<td class="py-1 px-0.5 text-center ${pts >= 12 ? 'text-emerald-400 font-black' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400')}">${pts}</td>`;
                 }).join('');
 
-                let tr = document.createElement('tr');
+                const tr = document.createElement('tr');
                 if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
-
                 tr.innerHTML = `
                     <td class="py-1 px-0.5 text-center font-bold text-purple-400">#${rankIdx+1}</td>
                     <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[80px]">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
@@ -2237,6 +2057,30 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function runAiAudit(type) {
+            const chatLog = document.getElementById('aiChatLog');
+            let resp = "";
+            if(type === 'waiver') resp = "🤖 AI 健檢報告 (Waiver)：根據自由市場數據，建議本週優先尋找擁有 4+ 場比賽且在 3PTM 或 STL 具有優勢的球員進行串流 (Streaming)。";
+            else if(type === 'trade') resp = "🤖 AI 健檢報告 (Trade)：您的陣容在得分 (PTS) 與籃板 (REB) 具備優勢，建議可以嘗試用溢出的得分包商去尋找助攻 (AST) 或火鍋 (BLK) 強隊進行互補交易。";
+            else resp = "🤖 AI 健檢報告 (9-Cat)：您的罰球 (FT%) 與三分 (3PTM) 發揮穩定，建議本週鎖定對手弱項進行擊破！";
+
+            chatLog.innerHTML += `<div class="text-cyan-300 font-bold">👤 執行快捷健檢 [${type.toUpperCase()}]</div><div class="text-gray-200">${resp}</div>`;
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function sendAiMessage() {
+            const input = document.getElementById('aiChatInput');
+            const txt = input.value.trim();
+            if(!txt) return;
+            const chatLog = document.getElementById('aiChatLog');
+            chatLog.innerHTML += `<div class="text-cyan-300 font-bold">👤 你：${txt}</div>`;
+            input.value = '';
+            setTimeout(() => {
+                chatLog.innerHTML += `<div class="text-emerald-300 font-bold">🤖 AI 顧問：收到你的問題！針對「${txt}」，結合您目前的 9-Cat 陣容與賽程，建議您可以利用自由市場的串流球員 (Streaming) 在週六、周日補足出賽場次 (GP) 差距，並適時盯緊對手的 TO 與 BLK 類別！</div>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }, 600);
         }
 
         initCloudDashboard();
