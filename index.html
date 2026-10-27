@@ -543,7 +543,7 @@
 
             document.getElementById('heroMyTeam').innerText = cleanName(m.home_team);
             document.getElementById('heroOppTeam').innerText = cleanName(m.away_team);
-            document.getElementById('matchupPeriodText').innerText = globalData.weeks_config[currentSelectedWeek]?.period_str || '';
+            document.getElementById('matchupPeriodText').innerText = globalData.weeks_config ? (globalData.weeks_config[currentSelectedWeek]?.period_str || '') : '';
             
             const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
             const scoreTbody = document.getElementById('scoreTableBody');
@@ -583,7 +583,6 @@
 
             document.getElementById('heroProjScore').innerText = `${homeWins}-${awayWins}-${ties}`;
 
-            // Render Schedule Tables
             renderSchedules(m);
         }
 
@@ -592,18 +591,18 @@
             const oppHeader = document.getElementById('schOppHeaderRow');
             const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
             
-            myHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
-            oppHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
+            if(myHeader) myHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
+            if(oppHeader) oppHeader.innerHTML = '<th class="py-1.5 px-1">PLAYER</th>' + days.map(d => `<th class="py-1.5 px-1 text-center">${d}</th>`).join('');
 
             const myTbody = document.getElementById('myScheduleTbody');
             const oppTbody = document.getElementById('oppScheduleTbody');
-            myTbody.innerHTML = '';
-            oppTbody.innerHTML = '';
+            if(myTbody) myTbody.innerHTML = '';
+            if(oppTbody) oppTbody.innerHTML = '';
 
             const homeTeamObj = globalData.teams ? globalData.teams.find(t => t.team_name.includes(m.home_team)) : null;
             const awayTeamObj = globalData.teams ? globalData.teams.find(t => t.team_name.includes(m.away_team)) : null;
 
-            if (homeTeamObj && homeTeamObj.roster) {
+            if (homeTeamObj && homeTeamObj.roster && myTbody) {
                 homeTeamObj.roster.slice(0, 10).forEach(p => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[100px]">${p.name}</td>` + 
@@ -612,7 +611,7 @@
                 });
             }
 
-            if (awayTeamObj && awayTeamObj.roster) {
+            if (awayTeamObj && awayTeamObj.roster && oppTbody) {
                 awayTeamObj.roster.slice(0, 10).forEach(p => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td class="py-1 px-1 font-bold text-gray-200 truncate max-w-[100px]">${p.name}</td>` + 
@@ -625,6 +624,7 @@
         function renderTable3AndSpider() {
             if (!globalData || !globalData.teams) return;
             const tbody = document.getElementById('table3Tbody');
+            if(!tbody) return;
             tbody.innerHTML = '<tr class="text-gray-400 border-b border-gray-800"><th class="py-1">TEAM</th><th class="py-1">FG%</th><th class="py-1">FT%</th><th class="py-1">3PTM</th><th class="py-1">PTS</th><th class="py-1">REB</th><th class="py-1">AST</th><th class="py-1">STL</th><th class="py-1">BLK</th><th class="py-1">TO</th></tr>';
             
             globalData.teams.forEach(t => {
@@ -666,8 +666,10 @@
             const ctx = document.getElementById('spiderCanvas');
             if(!ctx || !globalData || !globalData.teams) return;
 
-            const t1Idx = document.getElementById('spiderTeam1').value || 0;
-            const t2Idx = document.getElementById('spiderTeam2').value || 1;
+            const t1El = document.getElementById('spiderTeam1');
+            const t2El = document.getElementById('spiderTeam2');
+            const t1Idx = t1El ? t1El.value : 0;
+            const t2Idx = t2El ? t2El.value : 1;
             const t1 = globalData.teams[t1Idx];
             const t2 = globalData.teams[t2Idx];
 
@@ -696,22 +698,24 @@
         }
 
         function renderTable4() {
-            const t1Idx = document.getElementById('tradeTeam1Select').value || 0;
-            const t2Idx = document.getElementById('tradeTeam2Select').value || 1;
-            const t1 = globalData.teams[t1Idx];
-            const t2 = globalData.teams[t2Idx];
+            const t1El = document.getElementById('tradeTeam1Select');
+            const t2El = document.getElementById('tradeTeam2Select');
+            if(!t1El || !t2El || !globalData || !globalData.teams) return;
+
+            const t1 = globalData.teams[t1El.value || 0];
+            const t2 = globalData.teams[t2El.value || 1];
 
             const tbody1 = document.getElementById('tradeTeam1Tbody');
             const tbody2 = document.getElementById('tradeTeam2Tbody');
-            tbody1.innerHTML = '';
-            tbody2.innerHTML = '';
+            if(tbody1) tbody1.innerHTML = '';
+            if(tbody2) tbody2.innerHTML = '';
 
-            if (t1 && t1.roster) {
+            if (t1 && t1.roster && tbody1) {
                 t1.roster.forEach(p => {
                     tbody1.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name}</td></tr>`;
                 });
             }
-            if (t2 && t2.roster) {
+            if (t2 && t2.roster && tbody2) {
                 t2.roster.forEach(p => {
                     tbody2.innerHTML += `<tr class="border-b border-gray-800/40"><td class="py-1"><input type="checkbox" class="mr-2"> ${p.name}</td></tr>`;
                 });
@@ -720,6 +724,7 @@
 
         function calculateTradeImpact() {
             const res = document.getElementById('tradeImpactResult');
+            if(!res) return;
             res.classList.remove('hidden');
             res.innerHTML = `<span class="text-emerald-400 font-bold">TRADE SIMULATION COMPLETE:</span> Both teams gain category balance. Side A +1.2 AST, Side B +2.4 REB.`;
         }
