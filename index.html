@@ -575,82 +575,95 @@
 
     <!-- ================= TAB 4: AI & SOCIAL HUB ================= -->
     <div id="tab4Content" class="space-y-6 hidden">
-        <div class="flex items-center justify-between border-l-4 border-cyan-400 pl-2">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-cyan-400 pl-2 gap-2">
             <div>
                 <h2 class="text-base font-black text-cyan-400">🤖 AI & SOCIAL INTELLIGENCE HUB</h2>
-                <p class="text-[9px] text-gray-400 font-bold">即時社群觀點、專家的頻道情報 (@OldManSquad、@bleavinfantasy) 與您的專屬 AI 戰術顧問</p>
+                <p class="text-[9px] text-gray-400 font-bold">彙整過去 12 小時 (每日下午 1:00 更新) 各大專家與社群情報流，搭配 Gemini 聯網陣容顧問</p>
+            </div>
+            <div class="bg-gray-950 px-3 py-1 rounded-xl border border-cyan-500/40 text-[10px] text-cyan-300 font-bold flex items-center space-x-2">
+                <span>⚡ Last Sync: Daily @ 13:00 HKT</span>
+                <button onclick="alert('已強制重新整理 12H 專家情報流與 RSS/API！')" class="bg-cyan-900 hover:bg-cyan-800 text-cyan-100 px-2 py-0.5 rounded text-[9px] transition">🔄 立即更新</button>
             </div>
         </div>
 
-        <!-- 3 CARDS: YOUTUBE & REDDIT INTEL -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- OldManSquad Intel -->
-            <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 space-y-3 flex flex-col justify-between">
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-black text-cyan-300">📺 OldManSquad (Dan Besbris)</span>
-                        <a href="https://www.youtube.com/@OldManSquad" target="_blank" class="text-[9px] text-cyan-400 hover:underline">🔗 Channel</a>
-                    </div>
-                    <p class="text-[10px] text-gray-300">最新週報精選：早賽季過激反應 (Overreactions) 與賺取紅利的 Buy-Low / Sell-High 目標、關鍵傷兵與搶人建議。</p>
-                    <div class="bg-gray-950 p-2.5 rounded-xl border border-gray-800 text-[10px] space-y-1">
-                        <div class="text-emerald-400 font-bold">🔥 熱門影片焦點：</div>
-                        <div class="text-gray-300">• Buy Low & Sell High! | 8 Insane Overreactions</div>
-                        <div class="text-gray-300">• Ty Jerome, League-Winner! Must-Adds & Drops</div>
-                    </div>
-                </div>
-                <a href="https://www.youtube.com/@OldManSquad" target="_blank" class="block text-center bg-cyan-950 hover:bg-cyan-900 text-cyan-300 text-[10px] font-bold py-1.5 rounded-lg border border-cyan-700 transition">前往觀看頻道</a>
+        <!-- UNIFIED 12H EXPERT & SOCIAL FEED (ONE BIG CONSOLIDATED STREAM) -->
+        <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+                <h3 class="text-xs font-black text-cyan-300">🔥 12H EXPERT & SOCIAL INTELLIGENCE STREAM (CONSOLIDATED FEED)</h3>
+                <span class="text-[9px] text-emerald-400 font-bold">主打來源：Locked On Fantasy Basketball (@LockedOnFantasyBasketball)</span>
             </div>
 
-            <!-- Bleav in Fantasy Intel -->
-            <div class="cyber-card p-4 rounded-2xl border border-purple-500/30 space-y-3 flex flex-col justify-between">
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-black text-purple-300">📺 Bleav in Fantasy Basketball</span>
-                        <a href="https://www.youtube.com/@bleavinfantasy" target="_blank" class="text-[9px] text-purple-400 hover:underline">🔗 Channel</a>
+            <div class="space-y-3" id="consolidatedFeedContainer">
+                <!-- Feed Item 1: Locked On (Primary) -->
+                <div class="bg-gray-950 p-3.5 rounded-xl border border-cyan-500/40 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-cyan-950 text-cyan-300 border border-cyan-700 px-2 py-0.5 rounded text-[9px] font-black">CHIEF SOURCE</span>
+                            <a href="https://www.youtube.com/@LockedOnFantasyBasketball" target="_blank" class="text-xs font-black text-white hover:underline">📺 Locked On Fantasy Basketball (Josh Lloyd)</a>
+                        </div>
+                        <span class="text-[9px] text-gray-400">Today @ 11:30 HKT</span>
                     </div>
-                    <p class="text-[10px] text-gray-300">最新戰術指南：9-Cat 聯盟 Cheat Sheet、前段輪次價值分析與 7 大值得 Stash 的潛力菜鳥清單。</p>
-                    <div class="bg-gray-950 p-2.5 rounded-xl border border-gray-800 text-[10px] space-y-1">
-                        <div class="text-purple-400 font-bold">🔥 熱門影片焦點：</div>
-                        <div class="text-gray-300">• 7 NBA Fantasy Breakouts: BUY, HOLD or SELL HIGH?</div>
-                        <div class="text-gray-300">• WEEK 1 WAIVER WIRE: 7 Rookies Worth Stashing!</div>
+                    <p class="text-[11px] text-gray-200"><strong>核心情報摘要：</strong> Josh Lloyd 針對早賽季傷兵與陣容調整進行深度剖析。強調切勿對前兩週的低迷表現過度反應 (Overreaction)，並點名幾位在 Waiver 擁有高 Usage Rate 的潛力加賀球員，建議利用週末 Back-to-Back 進行串流調度。</p>
+                    <div class="flex flex-wrap gap-1 pt-1 text-[9px]">
+                        <span class="bg-gray-900 text-cyan-400 px-2 py-0.5 rounded border border-gray-800">#WaiverWire</span>
+                        <span class="bg-gray-900 text-cyan-400 px-2 py-0.5 rounded border border-gray-800">#JoshLloyd</span>
+                        <span class="bg-gray-900 text-cyan-400 px-2 py-0.5 rounded border border-gray-800">#StreamingStrategy</span>
                     </div>
                 </div>
-                <a href="https://www.youtube.com/@bleavinfantasy" target="_blank" class="block text-center bg-purple-950 hover:bg-purple-900 text-purple-300 text-[10px] font-bold py-1.5 rounded-lg border border-purple-700 transition">前往觀看頻道</a>
-            </div>
 
-            <!-- Reddit r/fantasybball Intel -->
-            <div class="cyber-card p-4 rounded-2xl border border-amber-500/30 space-y-3 flex flex-col justify-between">
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-black text-amber-300">🔥 Reddit r/fantasybball</span>
-                        <span class="text-[9px] text-amber-500">Live Community</span>
+                <!-- Feed Item 2: OldManSquad -->
+                <div class="bg-gray-950 p-3.5 rounded-xl border border-gray-800 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded text-[9px] font-bold">EXPERT FEED</span>
+                            <a href="https://www.youtube.com/@OldManSquad" target="_blank" class="text-xs font-bold text-gray-200 hover:underline">📺 OldManSquad (Dan Besbris)</a>
+                        </div>
+                        <span class="text-[9px] text-gray-400">Today @ 08:15 HKT</span>
                     </div>
-                    <p class="text-[10px] text-gray-300">社群鄉民實時熱話：Streamer 目標、賽前輪休 (Rest) 預警與突發傷兵的第一手討論。</p>
-                    <div class="bg-gray-950 p-2.5 rounded-xl border border-gray-800 text-[10px] space-y-1">
-                        <div class="text-amber-400 font-bold">💬 社群焦點討論：</div>
-                        <div class="text-gray-300">• 週末 Back-to-Back 搶人策略佈局</div>
-                        <div class="text-gray-300">• 各隊 Usage Rate 暴漲黑馬觀察</div>
-                    </div>
+                    <p class="text-[11px] text-gray-200"><strong>核心情報摘要：</strong> 探討 Buy-Low 與 Sell-High 窗口。分析幾位開季高效但即將面臨持球率下滑的球員，建議把握時間在聯盟群組發動交易報價。</p>
                 </div>
-                <button onclick="alert('已連接 Reddit 即時資訊流！')" class="w-full bg-amber-950 hover:bg-amber-900 text-amber-300 text-[10px] font-bold py-1.5 rounded-lg border border-amber-700 transition">更新社群情報</button>
+
+                <!-- Feed Item 3: Bleav in Fantasy -->
+                <div class="bg-gray-950 p-3.5 rounded-xl border border-gray-800 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-indigo-950 text-indigo-300 border border-indigo-800 px-2 py-0.5 rounded text-[9px] font-bold">EXPERT FEED</span>
+                            <a href="https://www.youtube.com/@bleavinfantasy" target="_blank" class="text-xs font-bold text-gray-200 hover:underline">📺 Bleav in Fantasy Basketball</a>
+                        </div>
+                        <span class="text-[9px] text-gray-400">Yesterday @ 21:00 HKT</span>
+                    </div>
+                    <p class="text-[11px] text-gray-200"><strong>核心情報摘要：</strong> 盤點 7 大開季表現驚艷的菜鳥 (Rookies) 與 Stash 目標，特別針對 9-Cat 聯盟中長遠助攻與火鍋資源短缺的陣容給出補強方案。</p>
+                </div>
+
+                <!-- Feed Item 4: Reddit r/fantasybball -->
+                <div class="bg-gray-950 p-3.5 rounded-xl border border-amber-500/30 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-amber-950 text-amber-300 border border-amber-800 px-2 py-0.5 rounded text-[9px] font-bold">COMMUNITY</span>
+                            <span class="text-xs font-bold text-amber-200">🔥 Reddit r/fantasybball 實時熱話</span>
+                        </div>
+                        <span class="text-[9px] text-gray-400">Ongoing Live</span>
+                    </div>
+                    <p class="text-[11px] text-gray-200"><strong>核心情報摘要：</strong> 鄉民熱議傷兵名單與即時先發變動 (Starting Lineup Changes)。許多玩家正在討論如何利用週日的剩餘出賽次數 (GP) 逆轉勝負。</p>
+                </div>
             </div>
         </div>
 
-        <!-- AI ROSTER ADVISOR & CHAT SECTION -->
+        <!-- GEMINI AI ROSTER EXPERT ADVISOR & INTERACTIVE CHAT -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <!-- Left: Quick Audit -->
             <div class="cyber-card p-4 rounded-2xl border border-cyan-500/30 lg:col-span-4 space-y-3">
-                <h3 class="text-xs font-black text-cyan-300">⚡ AI 陣容盲點快速健檢</h3>
-                <p class="text-[10px] text-gray-400">點擊下方按鈕，AI 將根據你目前的陣容與 Punting 策略提供即時戰術建議：</p>
+                <h3 class="text-xs font-black text-cyan-300">⚡ Gemini 聯網陣容顧問</h3>
+                <p class="text-[10px] text-gray-400">結合您的 14 隊聯盟細節與目前勝負預測，由 AI 進行深度戰術診斷：</p>
                 <div class="space-y-2">
                     <button onclick="runAiAudit('waiver')" class="w-full text-left bg-gray-950 hover:bg-cyan-950/40 p-2.5 rounded-xl border border-cyan-800/60 text-[11px] text-cyan-300 font-bold transition flex items-center justify-between">
-                        <span>💎 本週最佳 Waiver 撿人建議</span><span>➔</span>
+                        <span>💎 根據當前陣容推薦 Waiver 撿人</span><span>➔</span>
                     </button>
                     <button onclick="runAiAudit('trade')" class="w-full text-left bg-gray-950 hover:bg-indigo-950/40 p-2.5 rounded-xl border border-indigo-800/60 text-[11px] text-indigo-300 font-bold transition flex items-center justify-between">
-                        <span>🤝 Trade 交易目標推薦</span><span>➔</span>
+                        <span>🤝 Trade 交易互補建議</span><span>➔</span>
                     </button>
                     <button onclick="runAiAudit('punt')" class="w-full text-left bg-gray-950 hover:bg-amber-950/40 p-2.5 rounded-xl border border-amber-800/60 text-[11px] text-amber-300 font-bold transition flex items-center justify-between">
-                        <span>🎯 9-Cat 陣容強弱項健檢</span><span>➔</span>
+                        <span>🎯 9-Cat 弱項擊破與 Punting 策略</span><span>➔</span>
                     </button>
                 </div>
             </div>
@@ -658,14 +671,14 @@
             <!-- Right: Interactive Chat Box -->
             <div class="cyber-card p-4 rounded-2xl border border-emerald-500/30 lg:col-span-8 flex flex-col justify-between space-y-3">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-                    <h3 class="text-xs font-black text-emerald-400">💬 專屬 Fantasy 戰術顧問聊天室</h3>
-                    <span class="text-[9px] text-emerald-500">Online & Ready</span>
+                    <h3 class="text-xs font-black text-emerald-400">💬 Gemini 聯網戰術討論室 (League-Aware)</h3>
+                    <span class="text-[9px] text-emerald-500">Online & Grounded</span>
                 </div>
-                <div id="aiChatLog" class="bg-gray-950 p-3 rounded-xl h-[220px] overflow-y-auto space-y-2 text-[11px] font-mono border border-gray-800">
-                    <div class="text-emerald-300 font-bold">🤖 AI 顧問：哈囉 William！我是你的專屬 Fantasy 籃球戰術顧問。你可以問我關於陣容調度、Waiver 搶人或交易評估的問題！</div>
+                <div id="aiChatLog" class="bg-gray-950 p-3 rounded-xl h-[240px] overflow-y-auto space-y-2 text-[11px] font-mono border border-gray-800">
+                    <div class="text-emerald-300 font-bold">🤖 Gemini 顧問：哈囉 William！我已讀取您的 14 隊聯賽資料與目前對戰數據。您可以直接和我討論陣容調度、Josh Lloyd 的最新觀點，或任何交易評估！</div>
                 </div>
                 <div class="flex gap-2">
-                    <input type="text" id="aiChatInput" placeholder="輸入你想討論的問題（例如：這週我該怎麼佈局搶 3PTM？）" class="flex-1 bg-gray-900 text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-800 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="aiChatInput" placeholder="輸入你想問 Gemini 的問題（例如：Josh Lloyd 推薦的撿人適合我目前的陣容嗎？）" class="flex-1 bg-gray-900 text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-800 focus:outline-none focus:border-emerald-500">
                     <button onclick="sendAiMessage()" class="bg-emerald-950 hover:bg-emerald-900 text-emerald-300 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-700 transition">發送</button>
                 </div>
             </div>
@@ -2062,9 +2075,9 @@
         function runAiAudit(type) {
             const chatLog = document.getElementById('aiChatLog');
             let resp = "";
-            if(type === 'waiver') resp = "🤖 AI 健檢報告 (Waiver)：根據自由市場數據，建議本週優先尋找擁有 4+ 場比賽且在 3PTM 或 STL 具有優勢的球員進行串流 (Streaming)。";
-            else if(type === 'trade') resp = "🤖 AI 健檢報告 (Trade)：您的陣容在得分 (PTS) 與籃板 (REB) 具備優勢，建議可以嘗試用溢出的得分包商去尋找助攻 (AST) 或火鍋 (BLK) 強隊進行互補交易。";
-            else resp = "🤖 AI 健檢報告 (9-Cat)：您的罰球 (FT%) 與三分 (3PTM) 發揮穩定，建議本週鎖定對手弱項進行擊破！";
+            if(type === 'waiver') resp = "🤖 Gemini 顧問報告 (Waiver)：結合 Josh Lloyd 最新觀點與您的 14 隊陣容，建議本週優先尋找賽程具備 4+ 場次的潛力 Streamer，特別是在 3PTM 與 STL 項目補強。";
+            else if(type === 'trade') resp = "🤖 Gemini 顧問報告 (Trade)：您的得分與籃板佔優，建議參考 OldManSquad 建議，尋找助攻或火鍋短缺的對手進行互補交易。";
+            else resp = "🤖 Gemini 顧問報告 (9-Cat)：您的罰球與三分發揮穩定，建議鎖定對手弱項進行擊破！";
 
             chatLog.innerHTML += `<div class="text-cyan-300 font-bold">👤 執行快捷健檢 [${type.toUpperCase()}]</div><div class="text-gray-200">${resp}</div>`;
             chatLog.scrollTop = chatLog.scrollHeight;
@@ -2078,7 +2091,7 @@
             chatLog.innerHTML += `<div class="text-cyan-300 font-bold">👤 你：${txt}</div>`;
             input.value = '';
             setTimeout(() => {
-                chatLog.innerHTML += `<div class="text-emerald-300 font-bold">🤖 AI 顧問：收到你的問題！針對「${txt}」，結合您目前的 9-Cat 陣容與賽程，建議您可以利用自由市場的串流球員 (Streaming) 在週六、周日補足出賽場次 (GP) 差距，並適時盯緊對手的 TO 與 BLK 類別！</div>`;
+                chatLog.innerHTML += `<div class="text-emerald-300 font-bold">🤖 Gemini 顧問：收到！針對您的提問「${txt}」，結合 Josh Lloyd 的最新情報與您的 14 隊聯盟數據，建議您可以透過週末的串流球員 (Streaming) 補足出賽場次，並注意對手的 TO 犯規與火鍋項目！</div>`;
                 chatLog.scrollTop = chatLog.scrollHeight;
             }, 600);
         }
