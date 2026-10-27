@@ -2,12 +2,14 @@ name: Auto Update Fantasy Dashboard
 
 on:
   schedule:
-    # 簡化為：每小時執行一次，確保每次都能順利抓取數據且不會觸發 cron 語法錯誤
-    - cron: '0 * * * *'
+    # 比賽高峰期（香港時間早上 7:00 - 下午 1:00，即 UTC 23:00 - 05:00），每 5 分鐘跑一次
+    - cron: '*/5 23 * * *'
+    - cron: '*/5 0-5 * * *'
     # 傍晚賽事統計期（香港時間下午 6:00 - 7:00，即 UTC 10:00 - 11:00），每 5 分鐘跑一次
-    - cron: '*/5 10 * * *'
-    - cron: '*/5 11 * * *'
-  workflow_dispatch: # 隨時可以手動按鈕更新！
+    - cron: '*/5 10-11 * * *'
+    # 其餘離峰時段，每小時跑一次
+    - cron: '0 * * * *'
+  workflow_dispatch: # 隨時可以手動按鈕強制重新整理！
 
 jobs:
   update-data:
