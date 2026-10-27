@@ -79,7 +79,6 @@
             <div id="matchupButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar whitespace-nowrap flex-nowrap py-0.5 w-full"></div>
         </div>
 
-        <!-- HERO BANNER -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
             <section class="cyber-card p-4 rounded-2xl border border-purple-500/30 lg:col-span-5 flex flex-col justify-between space-y-3">
                 <div class="flex justify-between items-start gap-2">
@@ -131,7 +130,6 @@
                 </div>
             </section>
 
-            <!-- 9-CAT SCOREBOARD -->
             <div class="cyber-card p-4 rounded-2xl space-y-3 border border-cyan-500/20 lg:col-span-7 flex flex-col justify-between">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-2">
                     <h3 class="text-xs font-black text-gray-100">9-cat Scoreboard Monte Carlo simulation</h3>
@@ -153,7 +151,6 @@
             </div>
         </div>
 
-        <!-- DUAL STREAMER LAB & RANKER -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div class="cyber-card p-4 rounded-2xl space-y-3 border border-cyan-500/30">
                 <h3 id="labHomeTitle" class="text-xs font-black text-cyan-400">⚡ HOME STREAMER LAB</h3>
@@ -180,7 +177,6 @@
             </table>
         </div>
         
-        <!-- SCHEDULE GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div class="cyber-card p-3.5 rounded-2xl border border-cyan-500/30 overflow-x-auto">
                 <h3 class="text-xs font-black text-cyan-300 mb-2" id="schMyTitle">Home Schedule</h3>
@@ -262,8 +258,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-            
-            <!-- LEFT: UNIFIED 12H FEED -->
             <div class="cyber-card rounded-2xl border border-cyan-500/30 flex flex-col lg:col-span-5 h-[500px]">
                 <div class="p-3 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 rounded-t-2xl">
                     <h3 class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
@@ -284,14 +278,12 @@
                 </div>
             </div>
 
-            <!-- RIGHT: AI CHAT CONSULTANT -->
             <div class="cyber-card rounded-2xl border border-emerald-500/30 flex flex-col lg:col-span-7 h-[500px]">
                 <div class="p-3 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 rounded-t-2xl">
                     <h3 class="text-xs font-black text-emerald-400">💬 專屬聯網戰術顧問 (Gemini via Vercel)</h3>
                     <span class="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded font-bold">ROSTER-AWARE</span>
                 </div>
 
-                <!-- CHAT LOG -->
                 <div id="aiChatLog" class="p-4 flex-1 overflow-y-auto space-y-3 text-[11px] font-mono custom-scroll bg-gray-950/40">
                     <div class="p-3 bg-gray-900/80 border-l-2 border-emerald-400 rounded-lg text-gray-200">
                         <p class="font-bold text-emerald-300 mb-1">🤖 系統提報：</p>
@@ -299,14 +291,12 @@
                     </div>
                 </div>
 
-                <!-- QUICK ACTIONS -->
                 <div class="px-4 py-2 border-t border-gray-800 flex gap-2 overflow-x-auto no-scrollbar">
                     <button onclick="sendQuickPrompt('根據我目前的陣容與 Punting 策略，幫我推薦今天自由市場最該撿的 2 名 Waiver 球員。')" class="bg-gray-900 hover:bg-gray-800 text-cyan-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">⚡ 推薦 Waiver</button>
                     <button onclick="sendQuickPrompt('幫我分析我的陣容弱項，並推薦可以透過交易（Trade）補強的目標。')" class="bg-gray-900 hover:bg-gray-800 text-indigo-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">🤝 交易評估</button>
                     <button onclick="sendQuickPrompt('請根據今日最新的傷兵情報，告訴我有哪幾位球員的 Fantasy 價值大幅提升？')" class="bg-gray-900 hover:bg-gray-800 text-rose-300 border border-gray-700 px-2.5 py-1 rounded text-[10px] whitespace-nowrap transition">🚨 傷兵得益者</button>
                 </div>
 
-                <!-- INPUT AREA -->
                 <div class="p-3 border-t border-gray-800 bg-gray-900/50 rounded-b-2xl flex gap-2">
                     <input type="text" id="aiChatInput" placeholder="輸入戰術問題..." class="flex-1 bg-black text-xs text-gray-100 px-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:border-emerald-500 font-mono" onkeypress="if(event.key === 'Enter') sendAiMessage()">
                     <button onclick="sendAiMessage()" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-100 font-bold text-xs px-4 py-2 rounded-xl border border-emerald-600 transition shadow-lg shadow-emerald-900/40">SEND</button>
@@ -320,11 +310,13 @@
         let globalData = null;
         let currentSelectedWeek = "1";
         let selectedMatchupIndex = 0;
+        let benchedMap = {};
         let puntCategories = { "FG%": false, "FT%": false, "3PTM": false, "PTS": false, "REB": false, "AST": false, "STL": false, "BLK": false, "TO": false };
-        let isTab4Unlocked = false; // 🔒 密碼鎖解鎖狀態
+        let isTab4Unlocked = false;
 
-        // 🔗 您的 Vercel 代理網址
         const VERCEL_PROXY_URL = "https://gemini-proxy-wheat-five.vercel.app/api/gemini";
+
+        function cleanName(str) { return str ? str.replace(/team/gi, '').trim() : ''; }
 
         function highlightPlayerNames(text) {
             let clean = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -340,8 +332,7 @@
                 context += `當前陣容清單：${myTeamObj.roster.map(p => p.name).join(', ')}\n`;
             }
             let punts = Object.keys(puntCategories).filter(k => puntCategories[k]);
-            if (punts.length > 0) context += `玩家戰術策略 (Punting)：直接放棄 ${punts.join(', ')} 這幾個類別\n`;
-            else context += `玩家戰術策略：平均發展，無特定 Punt 類別\n`;
+            context += punts.length > 0 ? `玩家戰術策略 (Punting)：直接放棄 ${punts.join(', ')}\n` : `玩家戰術策略：平均發展\n`;
             return context;
         }
 
@@ -371,13 +362,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: userPrompt }] }],
-                        tools: [{ googleSearch: {} }],
-                        systemInstruction: { parts: [{ text: `你是一位專業的 Bloomberg 風格 NBA Fantasy 分析師。今天是 ${dateStr}。必須實時聯網取得今日最新情報。` }] }
+                        tools: [{ google_search: {} }],
+                        systemInstruction: { parts: [{ text: `你是一位專業的 NBA Fantasy 分析師。今天是 ${dateStr}。` }] }
                     })
                 });
 
                 const result = await response.json();
-                if (result.error) throw new Error(typeof result.error === 'string' ? result.error : result.error.message);
+                if (result.error) throw new Error(typeof result.error === 'string' ? result.error : (result.error.message || JSON.stringify(result.error)));
                 const candidate = result.candidates?.[0];
 
                 if (candidate && candidate.content?.parts?.[0]?.text) {
@@ -393,7 +384,7 @@
                         }
                     }
                 } else {
-                    container.innerHTML = `<div class="text-rose-400 p-4">無法取得資料，可能伺服器回應異常。</div>`;
+                    container.innerHTML = `<div class="text-rose-400 p-4">無法取得資料，伺服器未回傳內文。</div>`;
                 }
             } catch (err) {
                 container.innerHTML = `<div class="text-rose-400 p-4">連線錯誤: ${err.message}</div>`;
@@ -428,14 +419,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: `${contextStr}\n玩家問題：${txt}\n(請基於上述玩家陣容與今日 ${dateStr} 的實時 NBA 情報給出具體建議。提到球員時請用 **球員姓名** 格式)` }] }],
-                        tools: [{ googleSearch: {} }]
+                        tools: [{ google_search: {} }]
                     })
                 });
 
                 const result = await response.json();
                 document.getElementById(loadingId).remove();
                 
-                if (result.error) throw new Error(typeof result.error === 'string' ? result.error : result.error.message);
+                if (result.error) throw new Error(typeof result.error === 'string' ? result.error : (result.error.message || JSON.stringify(result.error)));
                 const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "無效的回應內容。";
                 
                 chatLog.innerHTML += `<div class="p-3 bg-gray-900/80 border-l-2 border-emerald-400 rounded-lg text-gray-200"><p class="font-bold text-emerald-300 text-[10px] mb-1">🤖 Gemini 顧問:</p><div class="leading-relaxed whitespace-pre-line">${highlightPlayerNames(replyText)}</div></div>`;
@@ -446,9 +437,7 @@
             }
         }
 
-        // ================= GENERAL DASHBOARD LOGIC =================
         function switchTab(tabId) {
-            // 🔒 Tab 4 密碼鎖邏輯
             if (tabId === 'tab4' && !isTab4Unlocked) {
                 let pwd = prompt("🔒 系統鎖定：請輸入戰術情報中心密碼以解鎖");
                 if (pwd === "HorusAldus") {
@@ -456,7 +445,7 @@
                     alert("✅ 密碼正確，解鎖成功！");
                 } else {
                     if (pwd !== null) alert("❌ 密碼錯誤，拒絕存取。");
-                    return; // 終止切換，留在原本的 Tab
+                    return;
                 }
             }
 
@@ -475,8 +464,25 @@
                 if(globalData && globalData.league_info) {
                     document.getElementById('leagueTitle').innerText = globalData.league_info.name;
                 }
+                
+                // 動態加載 Week 下拉選單
+                const dropdown = document.getElementById('weekDropdown');
+                if(dropdown) {
+                    dropdown.innerHTML = '';
+                    for (let w = 1; w <= 23; w++) {
+                        const opt = document.createElement('option');
+                        opt.value = w;
+                        const wConf = globalData.weeks_config ? globalData.weeks_config[w] : null;
+                        opt.innerText = `Week ${w} ${wConf ? '('+wConf.period_str+')' : ''}`;
+                        dropdown.appendChild(opt);
+                    }
+                    dropdown.value = currentSelectedWeek;
+                }
+
                 initPuntControls();
-            } catch (err) { console.error("Data missing or loading error"); }
+                buildMatchupButtons();
+                renderDashboard(0);
+            } catch (err) { console.error("Data missing or loading error", err); }
         }
 
         function initPuntControls() {
@@ -486,18 +492,65 @@
             Object.keys(puntCategories).forEach(cat => {
                 let lbl = document.createElement('label');
                 lbl.className = "flex items-center space-x-0.5 cursor-pointer text-[9px] text-gray-300 font-bold bg-gray-900 px-1.5 py-0.5 rounded border border-gray-800 whitespace-nowrap";
-                lbl.innerHTML = `<input type="checkbox" onchange="puntCategories['${cat}'] = this.checked;" class="rounded bg-gray-950 border-gray-700 text-amber-500"> <span>${cat}</span>`;
+                lbl.innerHTML = `<input type="checkbox" onchange="puntCategories['${cat}'] = this.checked; renderDashboard(selectedMatchupIndex);" class="rounded bg-gray-950 border-gray-700 text-amber-500"> <span>${cat}</span>`;
                 container.appendChild(lbl);
             });
         }
-        
-        function onWeekChange() {}
-        function renderDashboard(idx) {}
-        function renderTable3AndSpider() {}
-        function renderSpiderChart() {}
-        function renderTable4() {}
-        function calculateTradeImpact() {}
-        function onTab3WeekChange() {}
+
+        function buildMatchupButtons() {
+            const container = document.getElementById('matchupButtonsContainer');
+            if(!container || !globalData) return;
+            container.innerHTML = '';
+            const matchups = globalData.matchups_by_week ? globalData.matchups_by_week[currentSelectedWeek] || [] : [];
+            matchups.forEach((m, idx) => {
+                const btn = document.createElement('button');
+                btn.className = idx === selectedMatchupIndex ? 
+                    "px-2.5 py-1 text-xs font-black rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-gray-950 shadow-lg border border-cyan-300 flex-shrink-0" : 
+                    "px-2.5 py-1 text-xs font-bold rounded-lg bg-gray-950 text-gray-400 border border-gray-800 flex-shrink-0";
+                btn.innerText = `${cleanName(m.home_team)} vs ${cleanName(m.away_team)}`;
+                btn.onclick = () => renderDashboard(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function onWeekChange() {
+            currentSelectedWeek = document.getElementById('weekDropdown').value;
+            buildMatchupButtons();
+            renderDashboard(0);
+        }
+
+        function renderDashboard(idx) {
+            selectedMatchupIndex = idx;
+            if(!globalData || !globalData.matchups_by_week) return;
+            const matchups = globalData.matchups_by_week[currentSelectedWeek] || [];
+            if(matchups.length === 0) return;
+            const m = matchups[idx];
+
+            document.getElementById('heroMyTeam').innerText = cleanName(m.home_team);
+            document.getElementById('heroOppTeam').innerText = cleanName(m.away_team);
+            document.getElementById('matchupPeriodText').innerText = globalData.weeks_config[currentSelectedWeek]?.period_str || '';
+            
+            // 填寫 9-Cat 比分預測表格
+            const scoreTbody = document.getElementById('scoreTableBody');
+            scoreTbody.innerHTML = '';
+            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
+            
+            cats.forEach(cat => {
+                let isPunted = puntCategories[cat];
+                const tr = document.createElement('tr');
+                if (isPunted) tr.className = "opacity-40 bg-gray-950/40 line-through";
+                tr.innerHTML = `
+                    <td class="py-1.5 px-1 font-bold ${isPunted ? 'text-gray-500' : 'text-gray-200'}">${cat}</td>
+                    <td class="py-1.5 px-1 text-cyan-400 font-mono">0.0</td>
+                    <td class="py-1.5 px-1 text-rose-400 font-mono">0.0</td>
+                    <td class="py-1.5 px-1 text-center"><span class="text-amber-400">D</span></td>
+                    <td class="py-1.5 px-1 text-cyan-300 font-bold font-mono">0.0</td>
+                    <td class="py-1.5 px-1 text-rose-300 font-bold font-mono">0.0</td>
+                    <td class="py-1.5 px-1">${isPunted ? '<span class="text-gray-500">PUNTED</span>' : '<span class="badge-win px-1.5 py-0.5 rounded">Toss Up</span>'}</td>
+                `;
+                scoreTbody.appendChild(tr);
+            });
+        }
 
         initCloudDashboard();
     </script>
