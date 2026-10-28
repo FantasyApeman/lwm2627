@@ -51,6 +51,17 @@
             text-decoration: line-through;
             opacity: 0.5;
         }
+        .opp-badge-bench-has-game { 
+            background: rgba(245, 158, 11, 0.25); 
+            color: #fbbf24; 
+            border: 1px solid rgba(245, 158, 11, 0.8); 
+            font-weight: 800; 
+            font-size: 9px; 
+            border-radius: 4px; 
+            padding: 1.5px 4px; 
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
 
         .tab-btn-active {
             background: linear-gradient(135deg, #06b6d4, #2563eb);
@@ -243,36 +254,6 @@
             <div class="cyber-card p-4 rounded-2xl space-y-3 border border-rose-500/30">
                 <h3 id="labAwayTitle" class="text-xs font-black text-rose-400">⚡ AWAY STREAMER LAB</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="awayWaiverContainer"></div>
-            </div>
-        </div>
-
-        <div class="cyber-card p-4 rounded-2xl space-y-3 border border-emerald-500/40">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-                <div>
-                    <h3 class="text-xs font-black text-emerald-400">💎 FREE AGENTS VALUE RANKER & 9-CAT HEATMAP (TOP 10 WAIVER PLAYERS)</h3>
-                    <p class="text-[9px] text-gray-400 font-bold">過濾已被全聯盟 14 隊持有之球員，即時顯示自由市場最佳球員的 9 類別 Z-Score 數據以補強弱點！</p>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-[11px] font-mono leading-tight">
-                    <thead>
-                        <tr class="text-gray-400 border-b border-gray-800 uppercase text-[9px]">
-                            <th class="py-1.5 px-1.5">PLAYER</th>
-                            <th class="py-1.5 px-1.5">POS</th>
-                            <th class="py-1.5 px-1 text-center">SCORE</th>
-                            <th class="py-1.5 px-1 text-center">FG%</th>
-                            <th class="py-1.5 px-1 text-center">FT%</th>
-                            <th class="py-1.5 px-1 text-center">3PTM</th>
-                            <th class="py-1.5 px-1 text-center">PTS</th>
-                            <th class="py-1.5 px-1 text-center">REB</th>
-                            <th class="py-1.5 px-1 text-center">AST</th>
-                            <th class="py-1.5 px-1 text-center">STL</th>
-                            <th class="py-1.5 px-1 text-center">BLK</th>
-                            <th class="py-1.5 px-1 text-center">TO</th>
-                        </tr>
-                    </thead>
-                    <tbody id="faRankerTbody" class="divide-y divide-gray-800/40"></tbody>
-                </table>
             </div>
         </div>
 
@@ -749,7 +730,6 @@
             return context;
         }
 
-        // ================= TAB 4 AI & AUTO FALLBACK MODEL ENGINE =================
         async function callGeminiAPI(key, payload) {
             const candidateModels = [
                 'gemini-2.5-flash',
@@ -1042,60 +1022,6 @@
 
             document.getElementById('homeWaiverContainer').innerHTML = buildLabHTML(homeWaiverSlots, true);
             document.getElementById('awayWaiverContainer').innerHTML = buildLabHTML(awayWaiverSlots, false);
-
-            renderFARanker();
-        }
-
-        function renderFARanker() {
-            const tbody = document.getElementById('faRankerTbody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-
-            let rosteredSet = new Set();
-            globalData.teams.forEach(t => {
-                (t.roster || []).forEach(p => {
-                    rosteredSet.add(normalizeName(p.name));
-                });
-            });
-
-            let faList = [];
-            Object.keys(globalData.all_projections || {}).forEach(key => {
-                let normKey = normalizeName(key);
-                if (!rosteredSet.has(normKey)) {
-                    let p = globalData.all_projections[key];
-                    if (p) {
-                        let adjustedScore = calculateAdjustedPlayerScore(p);
-                        faList.push({ name: p.name || key, pos: p.position || 'Util', stats: p, score: adjustedScore });
-                    }
-                }
-            });
-
-            faList.sort((a,b) => b.score - a.score);
-
-            faList.slice(0, 10).forEach(fa => {
-                let s = fa.stats || {};
-                let fg = s['FG%'] || 0.45, ft = s['FT%'] || 0.78, tpt = s['3PTM'] || 0, pts = s.PTS || 0, reb = s.REB || s.TREB || 0, ast = s.AST || 0, stl = s.STL || 0, blk = s.BLK || 0, to = s.TO || 0;
-                let fgDisp = fg <= 0 ? '.000' : (fg >= 0.9999 ? '1.000' : fg.toFixed(3).replace(/^0/, ''));
-                let ftDisp = ft <= 0 ? '.000' : (ft >= 0.9999 ? '1.000' : ft.toFixed(3).replace(/^0/, ''));
-
-                let tr = document.createElement('tr');
-                tr.className = "hover:bg-emerald-950/20 transition-all";
-                tr.innerHTML = `
-                    <td class="py-1 px-1.5 font-bold text-gray-100 whitespace-nowrap">⚡ ${fa.name}</td>
-                    <td class="py-1 px-1.5 text-emerald-300 text-[10px]">${fa.pos}</td>
-                    <td class="py-1 px-1 text-center font-bold text-amber-300">${fa.score.toFixed(1)}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('FG%', fg)}">${fgDisp}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('FT%', ft)}">${ftDisp}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('3PTM', tpt)}">${tpt}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('PTS', pts)}">${pts}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('REB', reb)}">${reb}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('AST', ast)}">${ast}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('STL', stl)}">${stl}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('BLK', blk)}">${blk}</td>
-                    <td class="py-1 px-1 text-center ${getZClass('TO', to)}">${to}</td>
-                `;
-                tbody.appendChild(tr);
-            });
         }
 
         function calculateAdjustedPlayerScore(pObj) {
@@ -1215,9 +1141,10 @@
             let allActive = true;
             teamObj.roster.forEach(p => {
                 let sched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
+                let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
+                let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
                 if (sched[dayName]) {
-                    const key = `${currentSelectedWeek}_${p.name}_${dayName}`;
-                    if (benchedMap[key]) allActive = false;
+                    if (!isGameActive(p.name, dayName, isBench)) allActive = false;
                 }
             });
 
@@ -1231,9 +1158,13 @@
             renderDashboard(selectedMatchupIndex);
         }
 
-        function isGameActive(playerName, dayName) {
+        function isGameActive(playerName, dayName, isBench = false) {
             const key = `${currentSelectedWeek}_${playerName}_${dayName}`;
-            return !benchedMap[key];
+            if (benchedMap[key] !== undefined) {
+                return !benchedMap[key];
+            }
+            if (isBench) return false;
+            return true;
         }
 
         function initializeOutPlayers() {
@@ -1243,8 +1174,11 @@
             globalData.teams.forEach(t => {
                 if (t.roster) {
                     t.roster.forEach(p => {
+                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
                         let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
-                        if (isOut) {
+                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+
+                        if (isOut || isBench) {
                             for (let w = 1; w <= 23; w++) {
                                 const days = (globalData.weeks_config[w] && globalData.weeks_config[w].days) || [];
                                 days.forEach(dObj => {
@@ -1446,13 +1380,16 @@
                     teamObj.roster.forEach(p => {
                         let s = p.stats;
                         let sched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
+                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
+                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+
                         let remGp = 0;
 
                         daysList.forEach(dObj => {
                             let dayName = dObj.day_name;
                             let dayIso = dObj.iso_date;
 
-                            if (dayIso >= todayIso && sched[dayName] && isGameActive(p.name, dayName)) {
+                            if (dayIso >= todayIso && sched[dayName] && isGameActive(p.name, dayName, isBench)) {
                                 remGp++;
                             }
                         });
@@ -1635,8 +1572,11 @@
                 if (teamObj && teamObj.roster) {
                     teamObj.roster.forEach(p => {
                         let playerSched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
+                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
+                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+
                         days.forEach(d => { 
-                            if (playerSched[d.day_name] && isGameActive(p.name, d.day_name)) counts[d.day_name]++; 
+                            if (playerSched[d.day_name] && isGameActive(p.name, d.day_name, isBench)) counts[d.day_name]++; 
                         });
                     });
                 }
@@ -1652,7 +1592,7 @@
             let oppCounts = getCounts(oppTeamObj, awaySlots);
 
             function makeHeader(counts, totalGP, colorClass, teamObj) {
-                let html = `<th class="py-1 px-1">PLAYER</th><th class="py-1 px-1">POS</th><th class="py-1 px-1">TEAM</th>`;
+                let html = `<th class="py-1 px-1">PLAYER</th><th class="py-1 px-1">SLOT</th><th class="py-1 px-1">POS</th><th class="py-1 px-1">TEAM</th>`;
                 days.forEach(d => {
                     let cnt = counts[d.day_name] || 0;
                     let isPast = d.iso_date < todayIso;
@@ -1685,13 +1625,17 @@
 
                 sortedRoster.forEach(p => {
                     let playerSched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
+                    let slotStr = p.slot || p.selected_position || p.lineupSlot || (p.isBench ? "Bench" : "UTIL");
+                    let isBench = slotStr.toString().toLowerCase().includes('bench') || slotStr.toString().toLowerCase() === 'bn' || slotStr.toString().toLowerCase() === 'b';
+                    let slotColor = isBench ? "text-amber-400 font-bold" : (slotStr === 'IR' || slotStr === 'IL' ? "text-rose-400 font-bold" : "text-cyan-400 font-bold");
+
                     let activeGpCount = 0;
                     let schedHTML = days.map(d => {
                         let opp = playerSched[d.day_name];
                         if (!opp) return `<td class="py-1 px-0.5 text-center text-gray-700">·</td>`;
                         
                         let isPast = d.iso_date < todayIso;
-                        let active = isGameActive(p.name, d.day_name);
+                        let active = isGameActive(p.name, d.day_name, isBench);
                         
                         if (active) activeGpCount++;
 
@@ -1699,7 +1643,10 @@
                             return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
                         }
 
-                        return `<td class="py-1 px-0.5 text-center"><button onclick="toggleGame('${p.name.replace(/'/g, "\\'")}', '${d.day_name}')" class="${active ? "opp-badge-active" : "opp-badge-off"}">${active ? opp : 'OFF'}</button></td>`;
+                        let btnClass = active ? "opp-badge-active" : (isBench ? "opp-badge-bench-has-game" : "opp-badge-off");
+                        let btnText = active ? opp : (isBench ? `⚠️ ${opp}` : 'OFF');
+
+                        return `<td class="py-1 px-0.5 text-center"><button onclick="toggleGame('${p.name.replace(/'/g, "\\'")}', '${d.day_name}')" class="${btnClass}">${btnText}</button></td>`;
                     }).join('');
 
                     let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
@@ -1710,7 +1657,8 @@
 
                     tr.innerHTML = `
                         <td class="py-1 px-1 font-bold text-gray-200 whitespace-nowrap">${p.name} ${injuryBadge}</td>
-                        <td class="py-1 px-1 text-cyan-400">${p.position}</td>
+                        <td class="py-1 px-1 ${slotColor} text-[10px]">${slotStr}</td>
+                        <td class="py-1 px-1 text-gray-400 text-[10px]">${p.position || ''}</td>
                         <td class="py-1 px-1 text-purple-400 font-bold">${p.proTeam}</td>
                         ${schedHTML}
                         <td class="py-1 px-1 font-bold text-cyan-300 text-center">${activeGpCount}</td>
@@ -1748,7 +1696,8 @@
                     tr.className = "bg-emerald-950/20";
                     tr.innerHTML = `
                         <td class="py-1 px-1 font-black text-emerald-400 whitespace-nowrap">⚡ ${pName}</td>
-                        <td class="py-1 px-1 text-emerald-300">${pPos}</td>
+                        <td class="py-1 px-1 text-emerald-400 font-bold text-[10px]">UTIL</td>
+                        <td class="py-1 px-1 text-emerald-300 text-[10px]">${pPos}</td>
                         <td class="py-1 px-1 text-emerald-300 font-bold">${pTeam}</td>
                         ${schedHTML}
                         <td class="py-1 px-1 font-black text-emerald-300 text-center">${activeGpCount}</td>
@@ -2126,10 +2075,13 @@
                     tObj.roster.forEach(p => {
                         let s = p.stats || {};
                         let sched = (p.schedules_by_week || {})[targetWeek] || {};
+                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
+                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+
                         let remGp = 0;
 
                         daysList.forEach(dObj => {
-                            if (dObj.iso_date >= todayIso && sched[dObj.day_name] && isGameActive(p.name, dObj.day_name)) {
+                            if (dObj.iso_date >= todayIso && sched[dObj.day_name] && isGameActive(p.name, dObj.day_name, isBench)) {
                                 remGp++;
                             }
                         });
