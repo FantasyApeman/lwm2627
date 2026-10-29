@@ -608,7 +608,7 @@
         </div>
     </div>
 
-    <!-- ================= TAB 4: AI & SOCIAL HUB ================= -->
+    <!-- ================= TAB 4: AI & SOCIAL HUB (WITH AUTO FALLBACK MODEL ENGINE) ================= -->
     <div id="tab4Content" class="space-y-6 hidden">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-cyan-400 pl-2 gap-2">
             <div>
@@ -683,6 +683,28 @@
 
         let table3SortColumn = 'team_name';
         let table3SortAsc = true;
+
+        // ESPN 官方 Slot 排序權重表
+        const SLOT_ORDER = {
+            'PG': 1,
+            'SG': 2,
+            'SF': 3,
+            'PF': 4,
+            'C': 5,
+            'G': 6,
+            'F': 7,
+            'UTIL': 8,
+            'UT': 8,
+            'BENCH': 9,
+            'BE': 9,
+            'IR': 10,
+            'IL': 10
+        };
+
+        function getSlotRank(p) {
+            let rawSlot = (p.slot_position || p.slot || p.selected_position || p.lineupSlot || 'UTIL').toString().toUpperCase();
+            return SLOT_ORDER[rawSlot] !== undefined ? SLOT_ORDER[rawSlot] : 8;
+        }
         
         let homeWaiverSlots = [
             { active: true, name: "", days: { MON: false, TUE: false, WED: false, THU: false, FRI: false, SAT: false, SUN: false } },
@@ -936,9 +958,8 @@
 
         async function initCloudDashboard() {
             try {
-                // 帶上時間戳記防止快取
                 const response = await fetch('data.json?v=' + Date.now());
-                if (!response.ok) throw new Error('Failed to load data.json');
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
                 globalData = await response.json();
 
                 const datalist = document.getElementById('playerGlobalList');
@@ -1546,7 +1567,6 @@
             document.getElementById('gpOppPct').innerText = `${oppGpPct.toFixed(1)}%`;
             document.getElementById('gpOppRem').innerText = `${oppS.totalGP - (oppActual.GP || 0)} left`;
 
-            // ✅ 修正：調用正確名稱 renderScheduleHeaderRows (而非 HeaderRows)
             renderScheduleHeaderRows(myTeamObj, oppTeamObj, myS.totalGP, oppS.totalGP, homeWaiverSlots, awayWaiverSlots);
             renderScheduleTable('myScheduleTbody', myTeamObj, homeWaiverSlots);
             renderScheduleTable('oppScheduleTbody', oppTeamObj, awayWaiverSlots);
@@ -1619,20 +1639,17 @@
             const todayIso = new Date().toISOString().split('T')[0];
 
             if (teamObj && teamObj.roster) {
+                // 按照 ESPN 官方 Slot 權重表進行標準排序 (PG -> SG -> SF -> PF -> C -> G -> F -> UTIL -> Bench -> IR)
                 let sortedRoster = [...teamObj.roster].sort((a, b) => {
-                    let aOut = a.injuryStatus === 'OUT' || a.injuryStatus === 'IL' || a.injuryStatus === 'IR';
-                    let bOut = b.injuryStatus === 'OUT' || b.injuryStatus === 'IL' || b.injuryStatus === 'IR';
-                    return aOut === bOut ? 0 : aOut ? 1 : -1;
+                    return getSlotRank(a) - getSlotRank(b);
                 });
 
                 sortedRoster.forEach(p => {
                     let playerSched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
-                    
-                    // 優先讀取 espn-api 的 slot_position 屬性
                     let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
                     let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
-                    let slotStr = rawSlot ? (rawSlot === 'BE' ? 'Bench' : rawSlot) : (isBench ? "Bench" : "UTIL");
-                    
+                    let slotStr = rawSlot ? (rawSlot === 'BE' ? 'Bench' : (rawSlot === 'UT' ? 'UTIL' : rawSlot)) : (isBench ? "Bench" : "UTIL");
+
                     let slotColor = isBench ? "text-amber-400 font-bold" : (slotStr === 'IR' || slotStr === 'IL' ? "text-rose-400 font-bold" : "text-cyan-400 font-bold");
 
                     let activeGpCount = 0;
@@ -1649,7 +1666,6 @@
                             return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
                         }
 
-                        // 板凳球員若有比賽且未 Toggle 上陣，顯色 highlight Warning
                         let btnClass = active ? "opp-badge-active" : (isBench ? "opp-badge-bench-has-game" : "opp-badge-off");
                         let btnText = active ? opp : (isBench ? `⚠️ ${opp}` : 'OFF');
 
@@ -1720,9 +1736,7 @@
             tbody.innerHTML = '';
             if (teamObj && teamObj.roster) {
                 let sortedRoster = [...teamObj.roster].sort((a, b) => {
-                    let aOut = a.injuryStatus === 'OUT' || a.injuryStatus === 'IL' || a.injuryStatus === 'IR';
-                    let bOut = b.injuryStatus === 'OUT' || b.injuryStatus === 'IL' || b.injuryStatus === 'IR';
-                    return aOut === bOut ? 0 : aOut ? 1 : -1;
+                    return getSlotRank(a) - getSlotRank(b);
                 });
 
                 sortedRoster.forEach(p => {
@@ -2279,130 +2293,3 @@
                     <td class="py-1 px-1 text-center">${resBadge}</td>
                     ${catBadges}
                 `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('crossMatchupHeaderBanner').innerHTML = `
-                <div>
-                    <span class="text-gray-400 font-bold uppercase block text-[9px]">CROSS-MATCHUP SUMMARY FOR</span>
-                    <span class="text-sm font-black text-cyan-300">${cleanName(targetTeam).toUpperCase()}</span>
-                </div>
-                <div class="text-right">
-                    <span class="text-gray-400 font-bold block text-[9px]">OVERALL WEEKLY RECORD VS ALL 13 TEAMS</span>
-                    <span class="text-base font-black text-emerald-400">${totalWins} WIN - ${totalLosses} LOSS - ${totalTies} TIE</span>
-                </div>
-            `;
-        }
-
-        function renderTotalRotoRank(passedStatsMap) {
-            let statsMap = passedStatsMap || getWeeklyTeamStatsMap();
-            const tbody = document.getElementById('totalRotoTbody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-
-            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
-            let teamsList = globalData.teams.map(t => t.team_name);
-            let teamRotoScores = {};
-            teamsList.forEach(t => teamRotoScores[t] = { total: 0, catPoints: {} });
-
-            cats.forEach(c => {
-                if(puntCategories[c]) return;
-                let sorted = [...teamsList].sort((a,b) => c === 'TO' ? statsMap[a][c] - statsMap[b][c] : statsMap[b][c] - statsMap[a][c]);
-                sorted.forEach((tName, idx) => {
-                    let pts = 14 - idx;
-                    teamRotoScores[tName].catPoints[c] = pts;
-                    teamRotoScores[tName].total += pts;
-                });
-            });
-
-            let rankedTeams = [...teamsList].sort((a,b) => teamRotoScores[b].total - teamRotoScores[a].total);
-            const myTeamName = globalData.my_team_name || "Novel Fergus";
-
-            rankedTeams.forEach((tName, rankIdx) => {
-                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus");
-                let roto = teamRotoScores[tName];
-
-                let catTds = cats.map(c => {
-                    if(puntCategories[c]) return `<td class="py-1 px-0.5 text-center text-gray-600 line-through">-</td>`;
-                    let pts = roto.catPoints[c] || 0;
-                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-amber-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
-                    return `<td class="py-1 px-0.5 text-center ${color}">${pts}</td>`;
-                }).join('');
-
-                let tr = document.createElement('tr');
-                if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
-
-                tr.innerHTML = `
-                    <td class="py-1 px-0.5 text-center font-bold text-amber-400">#${rankIdx+1}</td>
-                    <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[80px]">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
-                    <td class="py-1 px-0.5 text-center font-black text-amber-300">${roto.total}</td>
-                    ${catTds}
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderPerGameRotoRank(passedStatsMap) {
-            let statsMap = passedStatsMap || getWeeklyTeamStatsMap();
-            const tbody = document.getElementById('perGameRotoTbody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-
-            const cats = ["FG%", "FT%", "3PTM", "PTS", "REB", "AST", "STL", "BLK", "TO"];
-            let teamsList = globalData.teams.map(t => t.team_name);
-
-            let perGameMap = {};
-            teamsList.forEach(tName => {
-                let st = statsMap[tName];
-                let gp = Math.max(1, st.GP);
-                perGameMap[tName] = {
-                    "FG%": st["FG%"], "FT%": st["FT%"],
-                    "3PTM": st["3PTM"] / gp, "PTS": st.PTS / gp, "REB": st.REB / gp,
-                    "AST": st.AST / gp, "STL": st.STL / gp, "BLK": st.BLK / gp, "TO": st.TO / gp
-                };
-            });
-
-            let teamRotoScores = {};
-            teamsList.forEach(t => teamRotoScores[t] = { total: 0, catPoints: {} });
-
-            cats.forEach(c => {
-                if(puntCategories[c]) return;
-                let sorted = [...teamsList].sort((a,b) => c === 'TO' ? perGameMap[a][c] - perGameMap[b][c] : perGameMap[b][c] - perGameMap[a][c]);
-                sorted.forEach((tName, idx) => {
-                    let pts = 14 - idx;
-                    teamRotoScores[tName].catPoints[c] = pts;
-                    teamRotoScores[tName].total += pts;
-                });
-            });
-
-            let rankedTeams = [...teamsList].sort((a,b) => teamRotoScores[b].total - teamRotoScores[a].total);
-            const myTeamName = globalData.my_team_name || "Novel Fergus";
-
-            rankedTeams.forEach((tName, rankIdx) => {
-                let isMyTeam = tName === myTeamName || tName.includes("Novel Fergus");
-                let roto = teamRotoScores[tName];
-
-                let catTds = cats.map(c => {
-                    if(puntCategories[c]) return `<td class="py-1 px-0.5 text-center text-gray-600 line-through">-</td>`;
-                    let pts = roto.catPoints[c] || 0;
-                    let color = pts >= 12 ? 'text-emerald-400 font-black' : (pts >= 8 ? 'text-purple-300 font-bold' : (pts <= 3 ? 'text-rose-400' : 'text-gray-400'));
-                    return `<td class="py-1 px-0.5 text-center ${color}">${pts}</td>`;
-                }).join('');
-
-                let tr = document.createElement('tr');
-                if(isMyTeam) tr.className = "border-l-4 border-yellow-400 bg-yellow-950/20 font-black";
-
-                tr.innerHTML = `
-                    <td class="py-1 px-0.5 text-center font-bold text-purple-400">#${rankIdx+1}</td>
-                    <td class="py-1 px-1 font-bold ${isMyTeam ? 'text-yellow-300' : 'text-gray-200'} truncate max-w-[80px]">${cleanName(tName)} ${isMyTeam ? '⭐' : ''}</td>
-                    <td class="py-1 px-0.5 text-center font-black text-purple-300">${roto.total}</td>
-                    ${catTds}
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        initCloudDashboard();
-    </script>
-</body>
-</html>
