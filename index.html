@@ -608,7 +608,7 @@
         </div>
     </div>
 
-    <!-- ================= TAB 4: AI & SOCIAL HUB (WITH AUTO FALLBACK MODEL ENGINE) ================= -->
+    <!-- ================= TAB 4: AI & SOCIAL HUB ================= -->
     <div id="tab4Content" class="space-y-6 hidden">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-cyan-400 pl-2 gap-2">
             <div>
@@ -936,7 +936,8 @@
 
         async function initCloudDashboard() {
             try {
-                const response = await fetch('data.json');
+                // 帶上時間戳記防止快取
+                const response = await fetch('data.json?v=' + Date.now());
                 if (!response.ok) throw new Error('Failed to load data.json');
                 globalData = await response.json();
 
@@ -955,7 +956,7 @@
                     const opt = document.createElement('option');
                     opt.value = w;
                     const wConf = globalData.weeks_config[w];
-                    opt.innerText = `Week ${w} (${wConf.period_str})`;
+                    opt.innerText = `Week ${w} (${wConf ? wConf.period_str : ''})`;
                     dropdown.appendChild(opt);
                 }
 
@@ -1141,8 +1142,8 @@
             let allActive = true;
             teamObj.roster.forEach(p => {
                 let sched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
-                let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
-                let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+                let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
+                let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
                 if (sched[dayName]) {
                     if (!isGameActive(p.name, dayName, isBench)) allActive = false;
                 }
@@ -1174,9 +1175,9 @@
             globalData.teams.forEach(t => {
                 if (t.roster) {
                     t.roster.forEach(p => {
-                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
+                        let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
                         let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
-                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+                        let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
 
                         if (isOut || isBench) {
                             for (let w = 1; w <= 23; w++) {
@@ -1380,8 +1381,8 @@
                     teamObj.roster.forEach(p => {
                         let s = p.stats;
                         let sched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
-                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
-                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+                        let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
+                        let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
 
                         let remGp = 0;
 
@@ -1545,9 +1546,10 @@
             document.getElementById('gpOppPct').innerText = `${oppGpPct.toFixed(1)}%`;
             document.getElementById('gpOppRem').innerText = `${oppS.totalGP - (oppActual.GP || 0)} left`;
 
-            HeaderRows(myTeamObj, oppTeamObj, myS.totalGP, oppS.totalGP, homeWaiverSlots, awayWaiverSlots);
-            Table('myScheduleTbody', myTeamObj, homeWaiverSlots);
-            Table('oppScheduleTbody', oppTeamObj, awayWaiverSlots);
+            // ✅ 修正：調用正確名稱 renderScheduleHeaderRows (而非 HeaderRows)
+            renderScheduleHeaderRows(myTeamObj, oppTeamObj, myS.totalGP, oppS.totalGP, homeWaiverSlots, awayWaiverSlots);
+            renderScheduleTable('myScheduleTbody', myTeamObj, homeWaiverSlots);
+            renderScheduleTable('oppScheduleTbody', oppTeamObj, awayWaiverSlots);
 
             renderHeatmapTable('myHeatmapTbody', myTeamObj, homeWaiverSlots);
             renderHeatmapTable('oppHeatmapTbody', oppTeamObj, awayWaiverSlots);
@@ -1572,8 +1574,8 @@
                 if (teamObj && teamObj.roster) {
                     teamObj.roster.forEach(p => {
                         let playerSched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
-                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
-                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+                        let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
+                        let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
 
                         days.forEach(d => { 
                             if (playerSched[d.day_name] && isGameActive(p.name, d.day_name, isBench)) counts[d.day_name]++; 
@@ -1610,106 +1612,107 @@
             document.getElementById('schOppHeaderRow').innerHTML = makeHeader(oppCounts, oppTotalGP, 'text-rose-300', oppTeamObj);
         }
 
-function renderScheduleTable(tbodyId, teamObj, waiverSlotsData) {
-    const tbody = document.getElementById(tbodyId);
-    tbody.innerHTML = '';
-    const days = globalData.weeks_config[currentSelectedWeek].days;
-    const todayIso = new Date().toISOString().split('T')[0];
+        function renderScheduleTable(tbodyId, teamObj, waiverSlotsData) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+            const days = globalData.weeks_config[currentSelectedWeek].days;
+            const todayIso = new Date().toISOString().split('T')[0];
 
-    if (teamObj && teamObj.roster) {
-        let sortedRoster = [...teamObj.roster].sort((a, b) => {
-            let aOut = a.injuryStatus === 'OUT' || a.injuryStatus === 'IL' || a.injuryStatus === 'IR';
-            let bOut = b.injuryStatus === 'OUT' || b.injuryStatus === 'IL' || b.injuryStatus === 'IR';
-            return aOut === bOut ? 0 : aOut ? 1 : -1;
-        });
+            if (teamObj && teamObj.roster) {
+                let sortedRoster = [...teamObj.roster].sort((a, b) => {
+                    let aOut = a.injuryStatus === 'OUT' || a.injuryStatus === 'IL' || a.injuryStatus === 'IR';
+                    let bOut = b.injuryStatus === 'OUT' || b.injuryStatus === 'IL' || b.injuryStatus === 'IR';
+                    return aOut === bOut ? 0 : aOut ? 1 : -1;
+                });
 
-        sortedRoster.forEach(p => {
-            let playerSched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
-            
-            // Read espn-api's slot_position attribute first
-            let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
-            let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toLowerCase().includes('bench')) || p.isBench === true;
-            let slotStr = rawSlot ? (rawSlot === 'BE' ? 'Bench' : rawSlot) : (isBench ? "Bench" : "UTIL");
-            
-            let slotColor = isBench ? "text-amber-400 font-bold" : (slotStr === 'IR' || slotStr === 'IL' ? "text-rose-400 font-bold" : "text-cyan-400 font-bold");
+                sortedRoster.forEach(p => {
+                    let playerSched = (p.schedules_by_week || {})[currentSelectedWeek] || {};
+                    
+                    // 優先讀取 espn-api 的 slot_position 屬性
+                    let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
+                    let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
+                    let slotStr = rawSlot ? (rawSlot === 'BE' ? 'Bench' : rawSlot) : (isBench ? "Bench" : "UTIL");
+                    
+                    let slotColor = isBench ? "text-amber-400 font-bold" : (slotStr === 'IR' || slotStr === 'IL' ? "text-rose-400 font-bold" : "text-cyan-400 font-bold");
 
-            let activeGpCount = 0;
-            let schedHTML = days.map(d => {
-                let opp = playerSched[d.day_name];
-                if (!opp) return `<td class="py-1 px-0.5 text-center text-gray-700">·</td>`;
-                
-                let isPast = d.iso_date < todayIso;
-                let active = isGameActive(p.name, d.day_name, isBench);
-                
-                if (active) activeGpCount++;
+                    let activeGpCount = 0;
+                    let schedHTML = days.map(d => {
+                        let opp = playerSched[d.day_name];
+                        if (!opp) return `<td class="py-1 px-0.5 text-center text-gray-700">·</td>`;
+                        
+                        let isPast = d.iso_date < todayIso;
+                        let active = isGameActive(p.name, d.day_name, isBench);
+                        
+                        if (active) activeGpCount++;
 
-                if (isPast) {
-                    return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
+                        if (isPast) {
+                            return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
+                        }
+
+                        // 板凳球員若有比賽且未 Toggle 上陣，顯色 highlight Warning
+                        let btnClass = active ? "opp-badge-active" : (isBench ? "opp-badge-bench-has-game" : "opp-badge-off");
+                        let btnText = active ? opp : (isBench ? `⚠️ ${opp}` : 'OFF');
+
+                        return `<td class="py-1 px-0.5 text-center"><button onclick="toggleGame('${p.name.replace(/'/g, "\\'")}', '${d.day_name}')" class="${btnClass}">${btnText}</button></td>`;
+                    }).join('');
+
+                    let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
+                    let injuryBadge = isOut ? `<span class="injury-out ml-1">OUT</span>` : (p.injuryStatus === 'DAY_TO_DAY' || p.injuryStatus === 'QUESTIONABLE' ? `<span class="injury-dtd ml-1">DTD</span>` : '');
+
+                    const tr = document.createElement('tr');
+                    if (isOut) tr.className = "opacity-60 bg-rose-950/10";
+
+                    tr.innerHTML = `
+                        <td class="py-1 px-1 font-bold text-gray-200 whitespace-nowrap">${p.name} ${injuryBadge}</td>
+                        <td class="py-1 px-1 ${slotColor} text-[10px]">${slotStr}</td>
+                        <td class="py-1 px-1 text-gray-400 text-[10px]">${p.position || ''}</td>
+                        <td class="py-1 px-1 text-purple-400 font-bold">${p.proTeam}</td>
+                        ${schedHTML}
+                        <td class="py-1 px-1 font-bold text-cyan-300 text-center">${activeGpCount}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            waiverSlotsData.forEach(w => {
+                if (w.active && w.name.trim() !== '') {
+                    let pName = w.name;
+                    let pNameLower = pName.toLowerCase();
+                    let pObj = globalData.all_projections[pNameLower] || {};
+                    let pTeam = pObj.proTeam || 'FA';
+                    let pPos = pObj.position || 'Util';
+                    let activeGpCount = 0;
+
+                    let schedHTML = days.map(d => {
+                        let isoDate = globalData.weeks_config[currentSelectedWeek].days.find(x => x.day_name === d.day_name).iso_date;
+                        let opp = globalData.global_nba_schedule[isoDate] ? globalData.global_nba_schedule[isoDate][pTeam] : null;
+                        if (!opp) return `<td class="py-1 px-0.5 text-center text-gray-700">·</td>`;
+                        
+                        let isPast = d.iso_date < todayIso;
+                        let active = w.days[d.day_name];
+                        if (active) activeGpCount++;
+
+                        if (isPast) {
+                            return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
+                        }
+
+                        return `<td class="py-1 px-0.5 text-center"><span class="${active ? "opp-badge-active" : "opp-badge-off"}">${active ? opp : 'OFF'}</span></td>`;
+                    }).join('');
+
+                    const tr = document.createElement('tr');
+                    tr.className = "bg-emerald-950/20";
+                    tr.innerHTML = `
+                        <td class="py-1 px-1 font-black text-emerald-400 whitespace-nowrap">⚡ ${pName}</td>
+                        <td class="py-1 px-1 text-emerald-400 font-bold text-[10px]">UTIL</td>
+                        <td class="py-1 px-1 text-emerald-300 text-[10px]">${pPos}</td>
+                        <td class="py-1 px-1 text-emerald-300 font-bold">${pTeam}</td>
+                        ${schedHTML}
+                        <td class="py-1 px-1 font-black text-emerald-300 text-center">${activeGpCount}</td>
+                    `;
+                    tbody.appendChild(tr);
                 }
-
-                let btnClass = active ? "opp-badge-active" : (isBench ? "opp-badge-bench-has-game" : "opp-badge-off");
-                let btnText = active ? opp : (isBench ? `⚠️ ${opp}` : 'OFF');
-
-                return `<td class="py-1 px-0.5 text-center"><button onclick="toggleGame('${p.name.replace(/'/g, "\\'")}', '${d.day_name}')" class="${btnClass}">${btnText}</button></td>`;
-            }).join('');
-
-            let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
-            let injuryBadge = isOut ? `<span class="injury-out ml-1">OUT</span>` : (p.injuryStatus === 'DAY_TO_DAY' || p.injuryStatus === 'QUESTIONABLE' ? `<span class="injury-dtd ml-1">DTD</span>` : '');
-
-            const tr = document.createElement('tr');
-            if (isOut) tr.className = "opacity-60 bg-rose-950/10";
-
-            tr.innerHTML = `
-                <td class="py-1 px-1 font-bold text-gray-200 whitespace-nowrap">${p.name} ${injuryBadge}</td>
-                <td class="py-1 px-1 ${slotColor} text-[10px]">${slotStr}</td>
-                <td class="py-1 px-1 text-gray-400 text-[10px]">${p.position || ''}</td>
-                <td class="py-1 px-1 text-purple-400 font-bold">${p.proTeam}</td>
-                ${schedHTML}
-                <td class="py-1 px-1 font-bold text-cyan-300 text-center">${activeGpCount}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    waiverSlotsData.forEach(w => {
-        if (w.active && w.name.trim() !== '') {
-            let pName = w.name;
-            let pNameLower = pName.toLowerCase();
-            let pObj = globalData.all_projections[pNameLower] || {};
-            let pTeam = pObj.proTeam || 'FA';
-            let pPos = pObj.position || 'Util';
-            let activeGpCount = 0;
-
-            let schedHTML = days.map(d => {
-                let isoDate = globalData.weeks_config[currentSelectedWeek].days.find(x => x.day_name === d.day_name).iso_date;
-                let opp = globalData.global_nba_schedule[isoDate] ? globalData.global_nba_schedule[isoDate][pTeam] : null;
-                if (!opp) return `<td class="py-1 px-0.5 text-center text-gray-700">·</td>`;
-                
-                let isPast = d.iso_date < todayIso;
-                let active = w.days[d.day_name];
-                if (active) activeGpCount++;
-
-                if (isPast) {
-                    return `<td class="py-1 px-0.5 text-center opacity-40"><span class="px-1.5 py-0.5 text-[8px] rounded bg-gray-900 text-gray-500 border border-gray-800 cursor-not-allowed">${opp}</span></td>`;
-                }
-
-                return `<td class="py-1 px-0.5 text-center"><span class="${active ? "opp-badge-active" : "opp-badge-off"}">${active ? opp : 'OFF'}</span></td>`;
-            }).join('');
-
-            const tr = document.createElement('tr');
-            tr.className = "bg-emerald-950/20";
-            tr.innerHTML = `
-                <td class="py-1 px-1 font-black text-emerald-400 whitespace-nowrap">⚡ ${pName}</td>
-                <td class="py-1 px-1 text-emerald-400 font-bold text-[10px]">UTIL</td>
-                <td class="py-1 px-1 text-emerald-300 text-[10px]">${pPos}</td>
-                <td class="py-1 px-1 text-emerald-300 font-bold">${pTeam}</td>
-                ${schedHTML}
-                <td class="py-1 px-1 font-black text-emerald-300 text-center">${activeGpCount}</td>
-            `;
-            tbody.appendChild(tr);
+            });
         }
-    });
-}
 
         function renderHeatmapTable(tbodyId, teamObj, waiverSlotsData = [], isTradeTable = false, sidePrefix = "") {
             const tbody = document.getElementById(tbodyId);
@@ -2079,8 +2082,8 @@ function renderScheduleTable(tbodyId, teamObj, waiverSlotsData) {
                     tObj.roster.forEach(p => {
                         let s = p.stats || {};
                         let sched = (p.schedules_by_week || {})[targetWeek] || {};
-                        let slotStr = (p.slot || p.selected_position || p.lineupSlot || '').toString().toLowerCase();
-                        let isBench = slotStr.includes('bench') || slotStr === 'bn' || slotStr === 'b' || p.isBench === true;
+                        let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
+                        let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
 
                         let remGp = 0;
 
