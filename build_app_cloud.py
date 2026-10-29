@@ -104,9 +104,8 @@ for cat, col in cat_cols.items():
 
 print("🚀 [2/5] Initializing ESPN League connection...")
 league = League(league_id=LEAGUE_ID, year=YEAR, espn_s2=ESPN_S2, swid=SWID)
-current_week = getattr(league, 'current_week', 1)
 
-print("🚀 [3/5] Building schedule, matchups, actual stats, and lineup slot positions...")
+print("🚀 [3/5] Building schedule, matchups, and actual stats from box_scores...")
 start_date_w1 = datetime.date(2026, 10, 19)
 weeks_config = {}
 global_nba_schedule = {}
@@ -229,14 +228,13 @@ for w in range(1, 24):
                 actual_stats_by_team[w_str][h_name] = parse_lineup_stats(box.home_lineup)
                 actual_stats_by_team[w_str][a_name] = parse_lineup_stats(box.away_lineup)
                 
-                # 提取當週所有球員在 ESPN 陣容中的 slot_position
-                if w == current_week:
-                    for bp in (box.home_lineup + box.away_lineup):
-                        bp_name_clean = bp.name.strip().lower()
-                        slot = getattr(bp, 'slot_position', None) or getattr(bp, 'lineupSlot', 'UTIL')
-                        if slot == 'BE':
-                            slot = 'Bench'
-                        player_slot_map[bp_name_clean] = slot
+                # 從 BoxPlayer 物件提取 slot_position
+                for p in box.home_lineup + box.away_lineup:
+                    p_name_key = p.name.strip().lower()
+                    s_pos = getattr(p, 'slot_position', getattr(p, 'lineupSlot', 'UTIL'))
+                    if s_pos == 'BE':
+                        s_pos = 'Bench'
+                    player_slot_map[p_name_key] = s_pos
     except Exception:
         pass
 
@@ -265,12 +263,13 @@ for team in league.teams:
         pos_raw = getattr(player, 'eligibleSlots', None) or getattr(player, 'eligible_positions', None) or getattr(player, 'position', None)
         pos_str = excel_proj_dict.get(mapped_key, {}).get("position", clean_positions(pos_raw))
 
-        # 讀取 ESPN 陣容即時 Slot Position (如 PG, SG, Bench, IR, UTIL)
-        raw_slot = player_slot_map.get(
-            lower_pname,
+        # 讀取球員的陣容位置 (slot_position)
+        slot_pos = player_slot_map.get(
+            lower_pname, 
             getattr(player, 'slot_position', getattr(player, 'lineupSlot', 'UTIL'))
         )
-        slot_pos = 'Bench' if raw_slot == 'BE' else (raw_slot if raw_slot else 'UTIL')
+        if slot_pos == 'BE':
+            slot_pos = 'Bench'
         is_bench = (slot_pos == 'Bench' or slot_pos == 'BE')
 
         schedules_by_week = {}
@@ -307,7 +306,7 @@ for team in league.teams:
 full_data = {
     "league_info": {
         "name": league.settings.name,
-        "current_week": current_week,
+        "current_week": 1,
         "team_count": len(league.teams)
     },
     "my_team_name": "Novel Fergus",
@@ -326,4 +325,4 @@ print("🚀 [5/5] Compiling and Writing to data.json...")
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(full_data, f, ensure_ascii=False)
 
-print("✅ SUCCESS! data.json generated successfully from Google Sheets & ESPN API.")
+print("✅ SUCCESS! data.json generated successfully from Google Sheets.")
