@@ -30,6 +30,14 @@ EXACT_NAME_ALIAS = {
     "alex sarr": "alexandre sarr"
 }
 
+# ESPN API 數字代碼與縮寫轉換表
+SLOT_MAP = {
+    0: 'PG', 1: 'SG', 2: 'SF', 3: 'PF', 4: 'C', 5: 'G', 6: 'F',
+    7: 'UTIL', 8: 'Bench', 9: 'IR', 10: 'Bench', 11: 'Bench', 12: 'IR',
+    'BE': 'Bench', 'UT': 'UTIL', 'IL': 'IR', 'IR': 'IR', 'BENCH': 'Bench',
+    'PG': 'PG', 'SG': 'SG', 'SF': 'SF', 'PF': 'PF', 'C': 'C', 'G': 'G', 'F': 'F', 'UTIL': 'UTIL'
+}
+
 VALID_POSITIONS = ["PG", "SG", "G", "SF", "PF", "F", "C"]
 
 def clean_team_name(name):
@@ -109,16 +117,14 @@ print("🚀 [3/5] Fetching current active week lineup slots & building schedules
 curr_week = getattr(league, 'current_week', 1)
 player_slot_map = {}
 
-# 只針對「當前週次」抓取即時 Slot Position，避免被未來週次 (Week 23) 的 0 (PG) 覆蓋
 try:
-    current_boxes = league.box_scores(matchup_period=curr_week)
+    current_boxes = league.box_scores(week=curr_week)
     for box in current_boxes:
         if box.home_team and box.away_team:
             for p in box.home_lineup + box.away_lineup:
                 p_name_key = p.name.strip().lower()
-                s_pos = getattr(p, 'slot_position', getattr(p, 'lineupSlot', 'UTIL'))
-                if s_pos == 'BE':
-                    s_pos = 'Bench'
+                raw_s = getattr(p, 'slot_position', getattr(p, 'lineupSlot', 'UTIL'))
+                s_pos = SLOT_MAP.get(raw_s, SLOT_MAP.get(str(raw_s).upper(), str(raw_s)))
                 player_slot_map[p_name_key] = s_pos
 except Exception as e:
     print(f"⚠️ Could not fetch current week box scores: {e}")
@@ -272,13 +278,12 @@ for team in league.teams:
         pos_str = excel_proj_dict.get(mapped_key, {}).get("position", clean_positions(pos_raw))
 
         # 讀取球員的即時陣容位置 (slot_position)
-        slot_pos = player_slot_map.get(
-            lower_pname, 
-            getattr(player, 'lineupSlot', getattr(player, 'slot_position', 'UTIL'))
-        )
-        if slot_pos == 'BE':
-            slot_pos = 'Bench'
-        is_bench = (slot_pos == 'Bench' or slot_pos == 'BE')
+        raw_slot = player_slot_map.get(lower_pname)
+        if raw_slot is None:
+            raw_slot = getattr(player, 'lineupSlot', getattr(player, 'slot_position', 'UTIL'))
+
+        slot_pos = SLOT_MAP.get(raw_slot, SLOT_MAP.get(str(raw_slot).upper(), str(raw_slot)))
+        is_bench = (slot_pos in ['Bench', 'BE', 'BE/IR', 'IR'])
 
         schedules_by_week = {}
         for w_str, w_info in weeks_config.items():
