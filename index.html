@@ -1170,7 +1170,6 @@
             if (benchedMap[key] !== undefined) {
                 return !benchedMap[key];
             }
-            if (isBench) return false;
             return true;
         }
 
@@ -1183,9 +1182,9 @@
                     t.roster.forEach(p => {
                         let rawSlot = p.slot_position || p.slot || p.selected_position || p.lineupSlot;
                         let isOut = p.injuryStatus === 'OUT' || p.injuryStatus === 'IL' || p.injuryStatus === 'IR';
-                        let isBench = rawSlot === 'BE' || rawSlot === 'Bench' || (rawSlot && rawSlot.toString().toLowerCase().includes('bench')) || p.isBench === true;
 
-                        if (isOut || isBench) {
+
+                        if (isOut) {
                             for (let w = 1; w <= 23; w++) {
                                 const days = (globalData.weeks_config[w] && globalData.weeks_config[w].days) || [];
                                 days.forEach(dObj => {
