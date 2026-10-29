@@ -6,7 +6,7 @@ import requests
 import os
 from espn_api.basketball import League
 
-# 從 GitHub Secrets 或本地環境安全讀取金鑰
+# ESPN Credentials
 LEAGUE_ID = 1697903242
 YEAR = 2027
 SWID = os.environ.get("SWID", "{2F303C3E-7439-43CB-B35A-5330424C062A}")
@@ -32,7 +32,7 @@ EXACT_NAME_ALIAS = {
 
 VALID_POSITIONS = ["PG", "SG", "G", "SF", "PF", "F", "C"]
 
-# ESPN 官方陣容位置顯示次序排序表
+# ESPN Official Roster Display Order
 SLOT_ORDER_MAP = {
     'PG': 1, 'SG': 2, 'SF': 3, 'PF': 4, 'C': 5,
     'G': 6, 'F': 7, 'UTIL': 8, 'UT': 8,
@@ -61,9 +61,9 @@ def normalize_team(team_code):
     tc = str(team_code).strip().upper()
     return TEAM_MAPPING.get(tc, tc)
 
-print("🚀 [1/5] Reading projection from Google Sheets...")
+print("🚀 [1/5] Reading projections...")
 sheet_url = "https://docs.google.com/spreadsheets/d/1J9KnGlHBjjBmUy0GNIXDNmh5BdS8EMucl8FkD9lwg3c/export?format=csv"
-df_proj = pd.read_csv(sheet_url)
+df_proj = pd.read_csv(sheet_url).fillna(0)
 
 excel_proj_dict = {}
 player_team_map = {}
@@ -71,7 +71,7 @@ all_player_names = []
 
 for _, row in df_proj.iterrows():
     p_name = str(row.get('PLAYER', row.get('Player', ''))).strip()
-    if not p_name or p_name == 'nan': continue
+    if not p_name or p_name == '0': continue
     all_player_names.append(p_name)
     p_key = p_name.lower()
     team_name = normalize_team(row.get('TEAM', row.get('Team', 'FA')))
@@ -109,7 +109,7 @@ for cat, col in cat_cols.items():
         vals = df_top150[col_name].dropna().values
         stats_meta[cat] = {'mean': float(np.mean(vals)), 'std': float(np.std(vals)) if np.std(vals) > 0 else 1.0}
 
-print("🚀 [2/5] Initializing ESPN League connection...")
+print("🚀 [2/5] Connecting to ESPN League...")
 league = League(league_id=LEAGUE_ID, year=YEAR, espn_s2=ESPN_S2, swid=SWID)
 
 print("🚀 [3/5] Building schedule and matchups...")
@@ -236,7 +236,7 @@ for w in range(1, 24):
     except Exception:
         pass
 
-print("🚀 [4/5] Integrating Rosters and Standings...")
+print("🚀 [4/5] Processing Rosters...")
 teams_sorted = sorted(league.teams, key=lambda x: (x.wins / max(1, x.wins + x.losses)), reverse=True)
 team_standings = {clean_team_name(t.team_name): f"{idx+1}{'st' if idx==0 else 'nd' if idx==1 else 'rd' if idx==2 else 'th'} Place" for idx, t in enumerate(teams_sorted)}
 
@@ -261,7 +261,7 @@ for team in league.teams:
         pos_raw = getattr(player, 'eligibleSlots', None) or getattr(player, 'eligible_positions', None) or getattr(player, 'position', None)
         pos_str = excel_proj_dict.get(mapped_key, {}).get("position", clean_positions(pos_raw))
 
-        # 直接讀取 ESPN live roster 的即時陣容位置 (lineupSlot)
+        # Direct lineupSlot extraction matching test_roster_slots.py
         raw_slot = getattr(player, 'lineupSlot', getattr(player, 'slot_position', 'UTIL'))
         raw_slot_str = str(raw_slot).upper()
         if raw_slot_str in ['BE', 'BENCH']:
@@ -294,7 +294,7 @@ for team in league.teams:
             "schedules_by_week": schedules_by_week
         })
 
-    # 依照 ESPN 官方標準位置順序排序 (PG, SG, SF, PF, C, G, F, UTIL, Bench, IR)
+    # Sort roster by ESPN slot order
     roster_list.sort(key=lambda x: SLOT_ORDER_MAP.get(x["slot_position"], 99))
 
     teams_data.append({
@@ -329,4 +329,4 @@ print("🚀 [5/5] Compiling and Writing to data.json...")
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(full_data, f, ensure_ascii=False)
 
-print("✅ SUCCESS! data.json generated successfully with correct ESPN slot positions.")
+print("✅ SUCCESS! data.json updated.")
