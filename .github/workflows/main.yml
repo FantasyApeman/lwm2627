@@ -2,24 +2,24 @@ name: Auto Update Fantasy Dashboard
 
 on:
   schedule:
-    # 比賽高峰期（香港時間早上 7:00 - 下午 1:00，即 UTC 23:00 - 05:00），每 5 分鐘跑一次
-    - cron: '*/5 23 * * *'
-    - cron: '*/5 0-5 * * *'
-    # 傍晚賽事統計期（香港時間下午 6:00 - 7:00，即 UTC 10:00 - 11:00），每 5 分鐘跑一次
-    - cron: '*/5 10-11 * * *'
-    # 其餘離峰時段，每小時跑一次
-    - cron: '0 * * * *'
+    # 全日每 30 分鐘自動更新一次
+    - cron: '*/30 * * * *'
   workflow_dispatch: # 隨時可以手動按鈕強制重新整理！
+
+# 保留防撞機制：若上一次未跑完，自動取消舊任務，確保不會發生 Git 衝突
+concurrency:
+  group: update-data-group
+  cancel-in-progress: true
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
